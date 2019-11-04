@@ -7,11 +7,12 @@ CompatHelper is a Julia package that helps you keep your `[compat]` entries up-t
 
 Whenever one of your package's dependencies releases a new version, CompatHelper opens a pull request on your repository that modifies your `[compat]` entry to reflect the newly released version.
 
-The easiest way to use CompatHelper is to install it as a GitHub Action.
-
 ## Installation
 
+The easiest way to use CompatHelper is to install it as a GitHub Action.
+
 To install CompatHelper as a GitHub Action on your repository:
+
 1. Go to the GitHub page for your repository.
 2. Click on the "Actions" tab.
 3. If you have never set up any GitHub Actions on your repository, you will be brought to a page that says "Get started with GitHub Actions". In the top right-hand corner, click on the button that says "Skip this: Set up a workflow yourself". Then go to step 5.
