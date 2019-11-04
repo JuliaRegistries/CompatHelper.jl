@@ -1,7 +1,12 @@
 # Documentation: http://docs.travis-ci.com/user/languages/julia/
 branches:
   only:
-    - master
+  - master
+  - staging
+  - trying
+  - /^release\/.*$/ # release branches
+  - /^v[0-9]+\.[0-9]+\.[0-9]+$/ # version tags
+
 language: julia
 os:
   - linux
