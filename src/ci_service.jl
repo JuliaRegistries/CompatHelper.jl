@@ -1,10 +1,10 @@
 function github_actions_set_git_identity!()
     try
-        run(`git config --global user.email 'nobody@example.com'`)
+        run(`git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'`)
     catch
     end
     try
-        run(`git config --global user.name 'Compat Helper'`)
+        run(`git config --global user.name 'github-actions[bot]'`)
     catch
     end
     return nothing
