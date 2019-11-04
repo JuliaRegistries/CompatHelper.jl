@@ -2,7 +2,7 @@ import GitHub
 import Pkg
 
 function make_pr_for_missing_compat_entries(repo::GitHub.Repo,
-                                            dep_to_current_compat_entry::Dict{Package, Union{VersionNumber, Nothing}},
+                                            dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
                                             dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                                             deps_with_missing_compat_entry::Set{Package},
                                             nonforked_pull_requests::Vector{GitHub.PullRequest},

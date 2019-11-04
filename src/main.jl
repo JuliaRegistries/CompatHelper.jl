@@ -20,7 +20,6 @@ function main(env = ENV,
         deps_with_missing_compat_entry = get_project_deps(repo; auth = auth)
     get_latest_version_from_registries!(dep_to_latest_version,
                                         default_registries)
-    ###
     all_open_pull_requests = get_all_pull_requests(repo, "open"; auth = auth)
     nonforked_pull_requests = exclude_pull_requests_from_forks(repo, all_open_pull_requests)
     num_nonforked_pull_requests = length(nonforked_pull_requests)

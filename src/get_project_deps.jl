@@ -20,14 +20,14 @@ function get_project_deps(repo::GitHub.Repo; auth::GitHub.Authorization)
 end
 
 function get_project_deps(project_file::String)
-    dep_to_current_compat_entry = Dict{Package, Union{VersionNumber, Nothing}}()
+    dep_to_current_compat_entry = Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}}()
     dep_to_latest_version = Dict{Package, Union{VersionNumber, Nothing}}()
     deps_with_missing_compat_entry = Set{Package}()
     get_project_deps!(dep_to_current_compat_entry, dep_to_latest_version, deps_with_missing_compat_entry, project_file)
     return dep_to_current_compat_entry, dep_to_latest_version, deps_with_missing_compat_entry
 end
 
-function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{VersionNumber, Nothing}},
+function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
                            dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                            deps_with_missing_compat_entry::Set{Package},
                            project_file::String)
@@ -46,16 +46,16 @@ function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Vers
             package = Package(name, uuid)
             compat_entry = convert(String, strip(get(compat, name, "")))::String
             if length(compat_entry) > 0
-                compat_entry_versionnnumber = try
-                    VersionNumber(compat_entry)
+                compat_entry_versionspec = try
+                    Pkg.Types.semver_spec(compat_entry)
                 catch
                     nothing
                 end
             else
                 push!(deps_with_missing_compat_entry, package)
-                compat_entry_versionnnumber = nothing
+                compat_entry_versionspec = nothing
             end
-            dep_to_current_compat_entry[package] = compat_entry_versionnnumber
+            dep_to_current_compat_entry[package] = compat_entry_versionspec
             dep_to_latest_version[package] = nothing
         end
     end

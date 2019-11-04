@@ -2,7 +2,7 @@ import GitHub
 import Pkg
 
 function make_pr_for_new_version(repo::GitHub.Repo,
-                                 dep_to_current_compat_entry::Dict{Package, Union{VersionNumber, Nothing}},
+                                 dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
                                  dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                                  deps_with_missing_compat_entry::Set{Package},
                                  nonforked_pull_requests::Vector{GitHub.PullRequest},
@@ -10,15 +10,13 @@ function make_pr_for_new_version(repo::GitHub.Repo,
                                  auth::GitHub.Authorization)
     original_directory = pwd()
     for dep in keys(dep_to_current_compat_entry)
-        if dep in deps_with_missing_compat_entry || isnothing(dep_to_current_compat_entry[dep])
-            make_pr_for_new_version(repo,
-                                    dep,
-                                    dep_to_current_compat_entry,
-                                    dep_to_latest_version,
-                                    nonforked_pull_requests,
-                                    nonforked_pr_titles;
-                                    auth = auth)
-        end
+        make_pr_for_new_version(repo,
+                                dep,
+                                dep_to_current_compat_entry,
+                                dep_to_latest_version,
+                                nonforked_pull_requests,
+                                nonforked_pr_titles;
+                                auth = auth)
     end
     cd(original_directory)
     return nothing
@@ -26,7 +24,7 @@ end
 
 function make_pr_for_new_version(repo::GitHub.Repo,
                                  dep::Package,
-                                 dep_to_current_compat_entry::Dict{Package, Union{VersionNumber, Nothing}},
+                                 dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
                                  dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                                  nonforked_pull_requests::Vector{GitHub.PullRequest},
                                  nonforked_pr_titles::Vector{String};
@@ -37,8 +35,8 @@ function make_pr_for_new_version(repo::GitHub.Repo,
     current_compat_entry = dep_to_current_compat_entry[dep]
     latest_version = dep_to_latest_version[dep]
 
-    if !isnothing(current_compat_entry) && current_compat_entry >= latest_version
-        @info("current_compat_entry >= latest_version", current_compat_entry, latest_version)
+    if !isnothing(current_compat_entry) && latest_version in current_compat_entry
+        @info("latest_version in current_compat_entry", current_compat_entry, latest_version)
     else
         new_compat_entry = "$(latest_version.major).$(latest_version.minor)"
         new_pr_title = "CompatHelper: bump compat for \"$(name)\" to \"$(new_compat_entry)\""
