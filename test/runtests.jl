@@ -17,7 +17,9 @@ registries_2 = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "General",
     @testset "assert.jl" begin
         @test_nowarn CompatHelper.always_assert(true)
         @test CompatHelper.always_assert(true) isa Nothing
-        @test CompatHelper.always_assert(true) == Nothing
+        @test CompatHelper.always_assert(true) == nothing
+        @test @test_nowarn CompatHelper.always_assert(true) isa Nothing
+        @test @test_nowarn CompatHelper.always_assert(true) == nothing
         @test_throws CompatHelper.AlwaysAssertionError CompatHelper.always_assert(false)
     end
     @testset "ci_service.jl" begin
