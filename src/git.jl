@@ -1,6 +1,8 @@
 function git_make_commit(; commit_message::String)
     result = try
-        success(`git commit -m $(commit_message)`)
+        cmd = `git commit -m $(commit_message)`
+        p = pipeline(cmd; stdout=stdout, stderr=stderr)
+        success(p)
     catch
         false
     end
