@@ -22,8 +22,8 @@ registries_2 = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "General",
     end
     @testset "ci_service.jl" begin
         withenv("GITHUB_REPOSITORY" => "foo/bar") do
-            @test CompatHelper.auto_detect_ci_service() isa CIService
-            @test CompatHelper.auto_detect_ci_service() isa GitHubActions
+            @test CompatHelper.auto_detect_ci_service() isa CompatHelper.CIService
+            @test CompatHelper.auto_detect_ci_service() isa CompatHelper.GitHubActions
         end
         withenv("GITHUB_REPOSITORY" => nothing) do
             @test_throws ErrorException CompatHelper.auto_detect_ci_service()
