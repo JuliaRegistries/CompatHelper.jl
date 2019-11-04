@@ -94,9 +94,9 @@ function make_pr_for_new_version(repo::GitHub.Repo,
             else
                 @info("Commit was not a success")
             end
+            cd(original_directory)
+            rm(tmp_dir; force = true, recursive = true)
         end
-        cd(original_directory)
-        rm(tmp_dir; force = true, recursive = true)
     end
 
     cd(original_directory)
