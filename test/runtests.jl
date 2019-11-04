@@ -14,5 +14,19 @@ registries_2 = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "General",
                                                        url = "https://github.com/BioJulia/BioJuliaRegistry.git")]
 
 @testset "CompatHelper.jl" begin
-    @test 1 == 1
+    @testset "assert.jl" begin
+        @test_nowarn CompatHelper.always_assert(true)
+        @test CompatHelper.always_assert(true) isa Nothing
+        @test CompatHelper.always_assert(true) == Nothing
+        @test_throws CompatHelper.AlwaysAssertionError CompatHelper.always_assert(false)
+    end
+    @testset "ci_service.jl" begin
+        withenv("GITHUB_REPOSITORY" => "foo/bar") do
+            @test CompatHelper.auto_detect_ci_service() isa CIService
+            @test CompatHelper.auto_detect_ci_service() isa GitHubActions
+        end
+        withenv("GITHUB_REPOSITORY" => nothing) do
+            @test_throws ErrorException CompatHelper.auto_detect_ci_service()
+        end
+    end
 end
