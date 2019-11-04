@@ -79,7 +79,7 @@ function make_pr_for_new_version(repo::GitHub.Repo,
                 end
                 new_pr_body = string("This pull request bumps the compat ",
                                      "entry for the `$(name)` package ",
-                                     "to `new_compat_entry`.\n\n",
+                                     "to `$(new_compat_entry)`.\n\n",
                                      "Note: I have not tested your package ",
                                      "with this new compat entry. ",
                                      "It is your responsibility to make sure that ",
