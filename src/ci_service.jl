@@ -10,7 +10,7 @@ function github_actions_set_git_identity!()
     return nothing
 end
 
-function auto_detect_ci_service(; env=ENV)
+function auto_detect_ci_service(; env::AbstractDict = ENV)
     if haskey(env, "GITHUB_REPOSITORY")
         github_actions_set_git_identity!()
         return GitHubActions()
@@ -19,12 +19,12 @@ function auto_detect_ci_service(; env=ENV)
     end
 end
 
-function github_repository(ci_cfg::GitHubActions; env = ENV)
+function github_repository(ci_cfg::GitHubActions; env::AbstractDict = ENV)
     result = env["GITHUB_REPOSITORY"]::String
     return result
 end
 
-function github_token(ci_cfg::GitHubActions; env = ENV)
+function github_token(ci_cfg::GitHubActions; env::AbstractDict = ENV)
     result = env["GITHUB_TOKEN"]::String
     return result
 end
