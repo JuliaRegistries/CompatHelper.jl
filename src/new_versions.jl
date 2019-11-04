@@ -38,7 +38,11 @@ function make_pr_for_new_version(repo::GitHub.Repo,
     if !isnothing(current_compat_entry) && latest_version in current_compat_entry
         @info("latest_version in current_compat_entry", current_compat_entry, latest_version)
     else
-        new_compat_entry = "$(latest_version.major).$(latest_version.minor)"
+        if latest_version.major == 0 && latest_version.minor == 0
+            new_compat_entry = "0.0.$(latest_version.patch)"
+        else
+            new_compat_entry = "$(latest_version.major).$(latest_version.minor)"
+        end
         new_pr_title = "CompatHelper: bump compat for \"$(name)\" to \"$(new_compat_entry)\""
         if new_pr_title in nonforked_pr_titles
             @info("An open PR with the title already exists", new_pr_title)
