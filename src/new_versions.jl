@@ -1,7 +1,8 @@
 import GitHub
 import Pkg
 
-function make_pr_for_new_version(repo::GitHub.Repo,
+function make_pr_for_new_version(precommit_hook::Function,
+                                 repo::GitHub.Repo,
                                  dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
                                  dep_to_current_compat_entry_verbatim::Dict{Package, Union{String, Nothing}},
                                  dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
@@ -15,7 +16,8 @@ function make_pr_for_new_version(repo::GitHub.Repo,
     original_directory = pwd()
     always_assert(keep_existing_compat || drop_existing_compat)
     for dep in keys(dep_to_current_compat_entry)
-        make_pr_for_new_version(repo,
+        make_pr_for_new_version(precommit_hook,
+                                repo,
                                 dep,
                                 dep_to_current_compat_entry,
                                 dep_to_current_compat_entry_verbatim,
@@ -31,7 +33,8 @@ function make_pr_for_new_version(repo::GitHub.Repo,
     return nothing
 end
 
-function make_pr_for_new_version(repo::GitHub.Repo,
+function make_pr_for_new_version(precommit_hook::Function,
+                                 repo::GitHub.Repo,
                                  dep::Package,
                                  dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
                                  dep_to_current_compat_entry_verbatim::Dict{Package, Union{String, Nothing}},
@@ -65,7 +68,8 @@ function make_pr_for_new_version(repo::GitHub.Repo,
             drop_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
                                                    compat_entry_for_latest_version,
                                                    :drop)
-            make_pr_for_new_version(compat_entry_for_latest_version,
+            make_pr_for_new_version(precommit_hook,
+                                    compat_entry_for_latest_version,
                                     drop_compat,
                                     repo,
                                     dep,
@@ -83,7 +87,8 @@ function make_pr_for_new_version(repo::GitHub.Repo,
             keep_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
                                                    compat_entry_for_latest_version,
                                                    :keep)
-            make_pr_for_new_version(compat_entry_for_latest_version,
+            make_pr_for_new_version(precommit_hook,
+                                    compat_entry_for_latest_version,
                                     keep_compat,
                                     repo,
                                     dep,
@@ -120,7 +125,8 @@ end
     return "$(strip(new_compat))"
 end
 
-function make_pr_for_new_version(compat_entry_for_latest_version::String,
+function make_pr_for_new_version(precommit_hook::Function,
+                                 compat_entry_for_latest_version::String,
                                  new_compat_entry::String,
                                  repo::GitHub.Repo,
                                  dep::Package,
@@ -202,7 +208,15 @@ function make_pr_for_new_version(compat_entry_for_latest_version::String,
                            sorted = true,
                            by = key -> (Pkg.Types.project_key_order(key), key))
         end
-        run(`git add -A`)
+        try
+            run(`git add -A`)
+        catch
+        end
+        precommit_hook()
+        try
+            run(`git add -A`)
+        catch
+        end
         commit_message = "Automated commit by CompatHelper.jl"
         commit_was_success = git_make_commit(; commit_message = commit_message)
         if commit_was_success
