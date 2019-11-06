@@ -136,11 +136,11 @@ function make_pr_for_new_version(compat_entry_for_latest_version::String,
     original_directory = pwd()
     always_assert(keep_or_drop == :keep || keep_or_drop == :drop)
     if keep_or_drop == :keep
-        pr_body_keep_or_drop = string("It drops the compat entries for ",
+        pr_body_keep_or_drop = string("It keeps the compat entries for ",
                                       "earlier versions.")
     end
     if keep_or_drop == :drop
-        pr_body_keep_or_drop = string("It keeps the compat entries for ",
+        pr_body_keep_or_drop = string("It drops the compat entries for ",
                                       "earlier versions.")
     end
     name = dep.name
