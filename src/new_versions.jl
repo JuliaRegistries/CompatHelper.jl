@@ -68,13 +68,13 @@ function make_pr_for_new_version(precommit_hook::Function,
         else
             compat_entry_for_latest_version = "$(latest_version.major).$(latest_version.minor)"
         end
-        if drop_existing_compat
-            drop_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
-                                                   compat_entry_for_latest_version,
-                                                   :drop)
+        if isnothing(current_compat_entry)
+            brand_new_compat = old_compat_to_new_compat(nothing,
+                                                        compat_entry_for_latest_version,
+                                                        :brandnewentry)
             make_pr_for_new_version(precommit_hook,
                                     compat_entry_for_latest_version,
-                                    drop_compat,
+                                    brand_new_compat,
                                     repo,
                                     dep,
                                     dep_to_current_compat_entry,
@@ -83,28 +83,48 @@ function make_pr_for_new_version(precommit_hook::Function,
                                     pr_list,
                                     pr_titles;
                                     auth = auth,
-                                    keep_or_drop = :drop,
-                                    parenthetical_in_pr_title = parenthetical_in_pr_title,
+                                    keep_or_drop = :brandnewentry,
+                                    parenthetical_in_pr_title = false,
                                     master_branch = master_branch)
-        end
-        if keep_existing_compat
-            keep_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
-                                                   compat_entry_for_latest_version,
-                                                   :keep)
-            make_pr_for_new_version(precommit_hook,
-                                    compat_entry_for_latest_version,
-                                    keep_compat,
-                                    repo,
-                                    dep,
-                                    dep_to_current_compat_entry,
-                                    dep_to_current_compat_entry_verbatim,
-                                    dep_to_latest_version,
-                                    pr_list,
-                                    pr_titles;
-                                    auth = auth,
-                                    keep_or_drop = :keep,
-                                    parenthetical_in_pr_title = parenthetical_in_pr_title,
-                                    master_branch = master_branch)
+        else
+            if drop_existing_compat
+                drop_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
+                                                       compat_entry_for_latest_version,
+                                                       :drop)
+                make_pr_for_new_version(precommit_hook,
+                                        compat_entry_for_latest_version,
+                                        drop_compat,
+                                        repo,
+                                        dep,
+                                        dep_to_current_compat_entry,
+                                        dep_to_current_compat_entry_verbatim,
+                                        dep_to_latest_version,
+                                        pr_list,
+                                        pr_titles;
+                                        auth = auth,
+                                        keep_or_drop = :drop,
+                                        parenthetical_in_pr_title = parenthetical_in_pr_title,
+                                        master_branch = master_branch)
+            end
+            if keep_existing_compat
+                keep_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
+                                                       compat_entry_for_latest_version,
+                                                       :keep)
+                make_pr_for_new_version(precommit_hook,
+                                        compat_entry_for_latest_version,
+                                        keep_compat,
+                                        repo,
+                                        dep,
+                                        dep_to_current_compat_entry,
+                                        dep_to_current_compat_entry_verbatim,
+                                        dep_to_latest_version,
+                                        pr_list,
+                                        pr_titles;
+                                        auth = auth,
+                                        keep_or_drop = :keep,
+                                        parenthetical_in_pr_title = parenthetical_in_pr_title,
+                                        master_branch = master_branch)
+            end
         end
     end
     cd(original_directory)
@@ -144,7 +164,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  parenthetical_in_pr_title::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString})
     original_directory = pwd()
-    always_assert(keep_or_drop == :keep || keep_or_drop == :drop)
+    name = dep.name
+    always_assert(keep_or_drop == :keep || keep_or_drop == :drop || keep_or_drop == :brandnewentry)
     if keep_or_drop == :keep
         pr_body_keep_or_drop = string("This keeps the compat entries for ",
                                       "earlier versions.\n\n")
@@ -153,7 +174,12 @@ function make_pr_for_new_version(precommit_hook::Function,
         pr_body_keep_or_drop = string("This drops the compat entries for ",
                                       "earlier versions.\n\n")
     end
-    name = dep.name
+    if keep_or_drop == :brandnewentry
+        pr_body_keep_or_drop = string("This is a brand new compat entry. ",
+                                      "Previously, you did not have a ",
+                                      "compat entry for the ",
+                                      "`$(name)` package.\n\n")
+    end
     if dep_to_current_compat_entry_verbatim[dep] isa Nothing
         new_pr_body = string("This pull request sets the compat ",
                              "entry for the `$(name)` package ",
