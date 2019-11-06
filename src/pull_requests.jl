@@ -31,12 +31,28 @@ end
 function exclude_pull_requests_from_forks(repo::GitHub.Repo, pr_list::Vector{GitHub.PullRequest})
     non_forked_pull_requests = Vector{GitHub.PullRequest}(undef, 0)
     for pr in pr_list
-        pr_head_repo = pr.head.repo
-        if _repos_are_the_same(repo, pr_head_repo)
+        always_assert(_repos_are_the_same(repo, pr.base.repo))
+        if _repos_are_the_same(repo, pr.head.repo)
             push!(non_forked_pull_requests, pr)
         end
     end
     return non_forked_pull_requests
+end
+
+function only_my_pull_requests(pr_list::Vector{GitHub.PullRequest}; my_username::String)
+    _my_username_lowercase = lowercase(strip(my_username))
+    n = length(pr_list)
+    pr_is_mine = BitVector(undef, n)
+    for i = 1:n
+        pr_user_login = pr_list[i].user.login
+        if lowercase(strip(pr_user_login)) == _my_username_lowercase
+            pr_is_mine[i] = true
+        else
+            pr_is_mine[i] = false
+        end
+    end
+    my_pr_list = pr_list[pr_is_mine]
+    return my_pr_list
 end
 
 function create_new_pull_request(repo::GitHub.Repo;
