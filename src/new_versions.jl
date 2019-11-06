@@ -144,17 +144,30 @@ function make_pr_for_new_version(compat_entry_for_latest_version::String,
                                       "earlier versions.\n\n")
     end
     name = dep.name
-    old_compat_entry_verbatim = convert(String, strip(dep_to_current_compat_entry_verbatim[dep]))
-    new_pr_body = string("This pull request changes the compat ",
-                         "entry for the `$(name)` package ",
-                         "from `$(old_compat_entry_verbatim)` ",
-                         "to `$(new_compat_entry)`.\n\n",
-                         "$(pr_body_keep_or_drop)",
-                         "Note: I have not tested your package ",
-                         "with this new compat entry. ",
-                         "It is your responsibility to make sure that ",
-                         "your package tests pass before you merge this ",
-                         "pull request.")
+    if dep_to_current_compat_entry_verbatim[dep] isa Nothing
+        new_pr_body = string("This pull request sets the compat ",
+                             "entry for the `$(name)` package ",
+                             "to `$(new_compat_entry)`.\n\n",
+                             "$(pr_body_keep_or_drop)",
+                             "Note: I have not tested your package ",
+                             "with this new compat entry. ",
+                             "It is your responsibility to make sure that ",
+                             "your package tests pass before you merge this ",
+                             "pull request.")
+    else
+        old_compat_entry_verbatim = convert(String, strip(dep_to_current_compat_entry_verbatim[dep]))
+        new_pr_body = string("This pull request changes the compat ",
+                             "entry for the `$(name)` package ",
+                             "from `$(old_compat_entry_verbatim)` ",
+                             "to `$(new_compat_entry)`.\n\n",
+                             "$(pr_body_keep_or_drop)",
+                             "Note: I have not tested your package ",
+                             "with this new compat entry. ",
+                             "It is your responsibility to make sure that ",
+                             "your package tests pass before you merge this ",
+                             "pull request.")
+    end
+
     pr_title_parenthetical = ""
     if keep_or_drop == :keep && parenthetical_in_pr_title
         pr_title_parenthetical = " (keep existing compat)"
