@@ -13,7 +13,9 @@ function get_project_deps(repo::GitHub.Repo; auth::GitHub.Authorization)
     end
     cd(joinpath(tmp_dir, "REPO"))
     project_file = joinpath(tmp_dir, "REPO", "Project.toml")
-    dep_to_current_compat_entry, dep_to_latest_version, deps_with_missing_compat_entry = get_project_deps(project_file)
+    dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
+                                 dep_to_latest_version,
+                                 deps_with_missing_compat_entry = get_project_deps(project_file)
     cd(original_directory)
     rm(tmp_dir; force = true, recursive = true)
     result = dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
