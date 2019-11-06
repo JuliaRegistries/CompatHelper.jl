@@ -64,7 +64,7 @@ function make_pr_for_new_version(precommit_hook::Function,
               dep)
     else
         if isnothing(latest_version)
-            @error("The dependency \"name\" was not found in any of the registries", dep)
+            @error("The dependency \"$(name)\" was not found in any of the registries", dep)
             cd(original_directory)
             return nothing
         end
