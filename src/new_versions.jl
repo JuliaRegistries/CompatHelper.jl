@@ -175,7 +175,7 @@ function make_pr_for_new_version(compat_entry_for_latest_version::String,
     if keep_or_drop == :drop && parenthetical_in_pr_title
         pr_title_parenthetical = " (drop existing compat)"
     end
-    new_pr_title = "CompatHelper: bump compat for \"$(name)\" to include \"$(compat_entry_for_latest_version)\"$(pr_title_parenthetical)"
+    new_pr_title = "CompatHelper: bump compat for \"$(name)\" to \"$(compat_entry_for_latest_version)\"$(pr_title_parenthetical)"
     if new_pr_title in pr_titles
         @info("An open PR with the title already exists", new_pr_title)
     else
