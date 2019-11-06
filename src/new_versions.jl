@@ -160,6 +160,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  parenthetical_in_pr_title::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString})
     original_directory = pwd()
+    name = dep.name
     always_assert(keep_or_drop == :keep || keep_or_drop == :drop || keep_or_drop == :brandnewentry)
     if keep_or_drop == :keep
         pr_body_keep_or_drop = string("This keeps the compat entries for ",
@@ -169,7 +170,12 @@ function make_pr_for_new_version(precommit_hook::Function,
         pr_body_keep_or_drop = string("This drops the compat entries for ",
                                       "earlier versions.\n\n")
     end
-    name = dep.name
+    if keep_or_drop == :brandnewentry
+        pr_body_keep_or_drop = string("This is a brand new compat entry. ",
+                                      "Previously, you did not have a ",
+                                      "compat entry for the ",
+                                      "`$(name)` package.")
+    end
     if dep_to_current_compat_entry_verbatim[dep] isa Nothing
         new_pr_body = string("This pull request sets the compat ",
                              "entry for the `$(name)` package ",
