@@ -18,6 +18,7 @@ function main(env::AbstractDict = ENV,
     auth = GitHub.authenticate(env["GITHUB_TOKEN"])
     repo = GitHub.repo(env["GITHUB_REPOSITORY"]; auth = auth)
     dep_to_current_compat_entry,
+        dep_to_current_compat_entry_verbatim,
         dep_to_latest_version,
         deps_with_missing_compat_entry = get_project_deps(repo; auth = auth)
     get_latest_version_from_registries!(dep_to_latest_version,
@@ -32,6 +33,7 @@ function main(env::AbstractDict = ENV,
     end
     make_pr_for_new_version(repo,
                             dep_to_current_compat_entry,
+                            dep_to_current_compat_entry_verbatim,
                             dep_to_latest_version,
                             deps_with_missing_compat_entry,
                             pr_list,
