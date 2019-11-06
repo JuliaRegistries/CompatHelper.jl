@@ -63,7 +63,11 @@ function make_pr_for_new_version(precommit_hook::Function,
               name,
               dep)
     else
-        @info("", name, dep)
+        if isnothing(latest_version)
+            @error("The dependency \"name\" was not found in any of the registries", dep)
+            cd(original_directory)
+            return nothing
+        end
         if latest_version.major == 0 && latest_version.minor == 0
             compat_entry_for_latest_version = "0.0.$(latest_version.patch)"
         else
