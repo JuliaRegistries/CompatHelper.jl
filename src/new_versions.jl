@@ -136,18 +136,20 @@ function make_pr_for_new_version(compat_entry_for_latest_version::String,
     original_directory = pwd()
     always_assert(keep_or_drop == :keep || keep_or_drop == :drop)
     if keep_or_drop == :keep
-        pr_body_keep_or_drop = string("It keeps the compat entries for ",
-                                      "earlier versions.")
+        pr_body_keep_or_drop = string("This keeps the compat entries for ",
+                                      "earlier versions.\n\n")
     end
     if keep_or_drop == :drop
-        pr_body_keep_or_drop = string("It drops the compat entries for ",
-                                      "earlier versions.")
+        pr_body_keep_or_drop = string("This drops the compat entries for ",
+                                      "earlier versions.\n\n")
     end
     name = dep.name
-    new_pr_body = string("This pull request bumps the compat ",
+    old_compat_entry_verbatim = convert(String, strip(dep_to_current_compat_entry_verbatim[dep]))
+    new_pr_body = string("This pull request changes the compat ",
                          "entry for the `$(name)` package ",
+                         "from `$(old_compat_entry_verbatim)` ",
                          "to `$(new_compat_entry)`.\n\n",
-                         "$(pr_body_keep_or_drop)\n\n",
+                         "$(pr_body_keep_or_drop)",
                          "Note: I have not tested your package ",
                          "with this new compat entry. ",
                          "It is your responsibility to make sure that ",
@@ -160,7 +162,7 @@ function make_pr_for_new_version(compat_entry_for_latest_version::String,
     if keep_or_drop == :drop && parenthetical_in_pr_title
         pr_title_parenthetical = " (drop existing compat)"
     end
-    new_pr_title = "CompatHelper: bump compat for \"$(name)\" to \"$(compat_entry_for_latest_version)\"$(pr_title_parenthetical)"
+    new_pr_title = "CompatHelper: bump compat for \"$(name)\" to include \"$(compat_entry_for_latest_version)\"$(pr_title_parenthetical)"
     if new_pr_title in pr_titles
         @info("An open PR with the title already exists", new_pr_title)
     else
