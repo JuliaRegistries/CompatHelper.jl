@@ -180,7 +180,17 @@ function make_pr_for_new_version(precommit_hook::Function,
                                       "compat entry for the ",
                                       "`$(name)` package.\n\n")
     end
+    pr_title_parenthetical = ""
+    if keep_or_drop == :keep && parenthetical_in_pr_title
+        pr_title_parenthetical = " (keep existing compat)"
+    end
+    if keep_or_drop == :drop && parenthetical_in_pr_title
+        pr_title_parenthetical = " (drop existing compat)"
+    end
     if dep_to_current_compat_entry_verbatim[dep] isa Nothing
+        new_pr_title = string("CompatHelper: add new compat entry for ",
+                              "\"$(name)\" at version ",
+                              "\"$(compat_entry_for_latest_version)\"")
         new_pr_body = string("This pull request sets the compat ",
                              "entry for the `$(name)` package ",
                              "to `$(new_compat_entry)`.\n\n",
@@ -191,6 +201,10 @@ function make_pr_for_new_version(precommit_hook::Function,
                              "your package tests pass before you merge this ",
                              "pull request.")
     else
+        new_pr_title = string("CompatHelper: bump compat for ",
+                              "\"$(name)\" to ",
+                              "\"$(compat_entry_for_latest_version)\"",
+                              "$(pr_title_parenthetical)")
         old_compat_entry_verbatim = convert(String, strip(dep_to_current_compat_entry_verbatim[dep]))
         new_pr_body = string("This pull request changes the compat ",
                              "entry for the `$(name)` package ",
@@ -203,15 +217,6 @@ function make_pr_for_new_version(precommit_hook::Function,
                              "your package tests pass before you merge this ",
                              "pull request.")
     end
-
-    pr_title_parenthetical = ""
-    if keep_or_drop == :keep && parenthetical_in_pr_title
-        pr_title_parenthetical = " (keep existing compat)"
-    end
-    if keep_or_drop == :drop && parenthetical_in_pr_title
-        pr_title_parenthetical = " (drop existing compat)"
-    end
-    new_pr_title = "CompatHelper: bump compat for \"$(name)\" to \"$(compat_entry_for_latest_version)\"$(pr_title_parenthetical)"
     if new_pr_title in pr_titles
         @info("An open PR with the title already exists", new_pr_title)
     else
