@@ -28,3 +28,7 @@ function github_token(ci_cfg::GitHubActions; env::AbstractDict = ENV)
     result = env["GITHUB_TOKEN"]::String
     return result
 end
+
+function get_my_username(ci_cfg::GitHubActions; auth = nothing, env::AbstractDict = ENV)
+    return "github-actions[bot]"
+end

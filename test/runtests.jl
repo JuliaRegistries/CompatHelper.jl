@@ -26,9 +26,13 @@ registries_2 = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "General",
         withenv("GITHUB_REPOSITORY" => "foo/bar") do
             @test CompatHelper.auto_detect_ci_service() isa CompatHelper.CIService
             @test CompatHelper.auto_detect_ci_service() isa CompatHelper.GitHubActions
+            @test_throws ArgumentError CompatHelper.main(; keep_existing_compat = false, drop_existing_compat = false)
         end
         withenv("GITHUB_REPOSITORY" => nothing) do
             @test_throws ErrorException CompatHelper.auto_detect_ci_service()
         end
+    end
+    @testset "new_versions.jl" begin
+        @test_throws ArgumentError CompatHelper.old_compat_to_new_compat("", "", :abc)
     end
 end

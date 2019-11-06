@@ -5,6 +5,9 @@ abstract type CIService end
 struct GitHubActions <: CIService
 end
 
+struct DefaultBranch
+end
+
 struct AlwaysAssertionError <: Exception
     msg::String
 end
