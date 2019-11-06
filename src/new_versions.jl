@@ -267,7 +267,7 @@ function make_pr_for_new_version(precommit_hook::Function,
             run(`git add -A`)
         catch
         end
-        commit_message = "Automated commit by CompatHelper.jl"
+        commit_message = new_pr_title
         commit_was_success = git_make_commit(; commit_message = commit_message)
         if commit_was_success
             try
