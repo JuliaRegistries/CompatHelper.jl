@@ -63,6 +63,11 @@ function make_pr_for_new_version(precommit_hook::Function,
               name,
               dep)
     else
+        if isnothing(latest_version)
+            @error("The dependency \"$(name)\" was not found in any of the registries", dep)
+            cd(original_directory)
+            return nothing
+        end
         if latest_version.major == 0 && latest_version.minor == 0
             compat_entry_for_latest_version = "0.0.$(latest_version.patch)"
         else
@@ -267,7 +272,7 @@ function make_pr_for_new_version(precommit_hook::Function,
             run(`git add -A`)
         catch
         end
-        commit_message = "Automated commit by CompatHelper.jl"
+        commit_message = new_pr_title
         commit_was_success = git_make_commit(; commit_message = commit_message)
         if commit_was_success
             try
