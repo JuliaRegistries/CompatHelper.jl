@@ -63,6 +63,7 @@ function make_pr_for_new_version(precommit_hook::Function,
               name,
               dep)
     else
+        @info("", name, dep)
         if latest_version.major == 0 && latest_version.minor == 0
             compat_entry_for_latest_version = "0.0.$(latest_version.patch)"
         else
