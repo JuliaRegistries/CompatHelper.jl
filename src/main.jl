@@ -4,11 +4,15 @@ const default_registries = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "Gener
                                                                    uuid = "23338594-aafe-5451-b93e-139f81909106",
                                                                    url = "https://github.com/JuliaRegistries/General.git")]
 
-function main(env::AbstractDict = ENV,
+const default_value_for_keep_existing_compat = true
+const default_value_for_drop_existing_compat = false
+
+function main(precommit_hook::Function = () -> (),
+              env::AbstractDict = ENV,
               ci_cfg::CIService = auto_detect_ci_service(; env = env);
               registries::Vector{Pkg.Types.RegistrySpec} = default_registries,
-              keep_existing_compat::Bool = true,
-              drop_existing_compat::Bool = false,
+              keep_existing_compat::Bool = default_value_for_keep_existing_compat,
+              drop_existing_compat::Bool = default_value_for_drop_existing_compat,
               master_branch::Union{DefaultBranch, AbstractString} = DefaultBranch())
     if !keep_existing_compat && !drop_existing_compat
         throw(ArgumentError("At least one of keep_existing_compat, drop_existing_compat must be true"))
@@ -31,7 +35,8 @@ function main(env::AbstractDict = ENV,
     for i = 1:length(pr_list)
         pr_titles[i] = convert(String, strip(pr_list[i].title))::String
     end
-    make_pr_for_new_version(repo,
+    make_pr_for_new_version(precommit_hook,
+                            repo,
                             dep_to_current_compat_entry,
                             dep_to_current_compat_entry_verbatim,
                             dep_to_latest_version,
