@@ -3,6 +3,7 @@ import Pkg
 
 function make_pr_for_new_version(repo::GitHub.Repo,
                                  dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
+                                 dep_to_current_compat_entry_verbatim::Dict{Package, Union{String, Nothing}},
                                  dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                                  deps_with_missing_compat_entry::Set{Package},
                                  pr_list::Vector{GitHub.PullRequest},
@@ -17,6 +18,7 @@ function make_pr_for_new_version(repo::GitHub.Repo,
         make_pr_for_new_version(repo,
                                 dep,
                                 dep_to_current_compat_entry,
+                                dep_to_current_compat_entry_verbatim,
                                 dep_to_latest_version,
                                 pr_list,
                                 pr_titles;
@@ -32,6 +34,7 @@ end
 function make_pr_for_new_version(repo::GitHub.Repo,
                                  dep::Package,
                                  dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
+                                 dep_to_current_compat_entry_verbatim::Dict{Package, Union{String, Nothing}},
                                  dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                                  pr_list::Vector{GitHub.PullRequest},
                                  pr_titles::Vector{String};
@@ -48,6 +51,7 @@ function make_pr_for_new_version(repo::GitHub.Repo,
     end
     name = dep.name
     current_compat_entry = dep_to_current_compat_entry[dep]
+    current_compat_entry_verbatim = dep_to_current_compat_entry_verbatim[dep]
     latest_version = dep_to_latest_version[dep]
     if !isnothing(current_compat_entry) && latest_version in current_compat_entry
         @info("latest_version in current_compat_entry", current_compat_entry, latest_version)
@@ -58,7 +62,7 @@ function make_pr_for_new_version(repo::GitHub.Repo,
             compat_entry_for_latest_version = "$(latest_version.major).$(latest_version.minor)"
         end
         if drop_existing_compat
-            drop_compat = old_compat_to_new_compat(current_compat_entry,
+            drop_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
                                                    compat_entry_for_latest_version,
                                                    :drop)
             make_pr_for_new_version(compat_entry_for_latest_version,
@@ -66,6 +70,7 @@ function make_pr_for_new_version(repo::GitHub.Repo,
                                     repo,
                                     dep,
                                     dep_to_current_compat_entry,
+                                    dep_to_current_compat_entry_verbatim,
                                     dep_to_latest_version,
                                     pr_list,
                                     pr_titles;
@@ -75,7 +80,7 @@ function make_pr_for_new_version(repo::GitHub.Repo,
                                     master_branch = master_branch)
         end
         if keep_existing_compat
-            keep_compat = old_compat_to_new_compat(current_compat_entry,
+            keep_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
                                                    compat_entry_for_latest_version,
                                                    :keep)
             make_pr_for_new_version(compat_entry_for_latest_version,
@@ -83,6 +88,7 @@ function make_pr_for_new_version(repo::GitHub.Repo,
                                     repo,
                                     dep,
                                     dep_to_current_compat_entry,
+                                    dep_to_current_compat_entry_verbatim,
                                     dep_to_latest_version,
                                     pr_list,
                                     pr_titles;
@@ -119,6 +125,7 @@ function make_pr_for_new_version(compat_entry_for_latest_version::String,
                                  repo::GitHub.Repo,
                                  dep::Package,
                                  dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
+                                 dep_to_current_compat_entry_verbatim::Dict{Package, Union{String, Nothing}},
                                  dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                                  pr_list::Vector{GitHub.PullRequest},
                                  pr_titles::Vector{String};
@@ -136,6 +143,7 @@ function make_pr_for_new_version(compat_entry_for_latest_version::String,
         pr_body_keep_or_drop = string("It keeps the compat entries for ",
                                       "earlier versions.")
     end
+    name = dep.name
     new_pr_body = string("This pull request bumps the compat ",
                          "entry for the `$(name)` package ",
                          "to `$(new_compat_entry)`.\n\n",
@@ -152,7 +160,6 @@ function make_pr_for_new_version(compat_entry_for_latest_version::String,
     if keep_or_drop == :drop && parenthetical_in_pr_title
         pr_title_parenthetical = " (drop existing compat)"
     end
-    name = dep.name
     new_pr_title = "CompatHelper: bump compat for \"$(name)\" to \"$(compat_entry_for_latest_version)\"$(pr_title_parenthetical)"
     if new_pr_title in pr_titles
         @info("An open PR with the title already exists", new_pr_title)

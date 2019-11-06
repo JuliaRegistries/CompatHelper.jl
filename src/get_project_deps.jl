@@ -13,21 +13,35 @@ function get_project_deps(repo::GitHub.Repo; auth::GitHub.Authorization)
     end
     cd(joinpath(tmp_dir, "REPO"))
     project_file = joinpath(tmp_dir, "REPO", "Project.toml")
-    dep_to_current_compat_entry, dep_to_latest_version, deps_with_missing_compat_entry = get_project_deps(project_file)
+    dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
+                                 dep_to_latest_version,
+                                 deps_with_missing_compat_entry = get_project_deps(project_file)
     cd(original_directory)
     rm(tmp_dir; force = true, recursive = true)
-    return dep_to_current_compat_entry, dep_to_latest_version, deps_with_missing_compat_entry
+    result = dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
+                                          dep_to_latest_version,
+                                          deps_with_missing_compat_entry
+    return result
 end
 
 function get_project_deps(project_file::String)
     dep_to_current_compat_entry = Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}}()
+    dep_to_current_compat_entry_verbatim = Dict{Package, Union{String, Nothing}}()
     dep_to_latest_version = Dict{Package, Union{VersionNumber, Nothing}}()
     deps_with_missing_compat_entry = Set{Package}()
-    get_project_deps!(dep_to_current_compat_entry, dep_to_latest_version, deps_with_missing_compat_entry, project_file)
-    return dep_to_current_compat_entry, dep_to_latest_version, deps_with_missing_compat_entry
+    get_project_deps!(dep_to_current_compat_entry,
+                      dep_to_current_compat_entry_verbatim,
+                      dep_to_latest_version,
+                      deps_with_missing_compat_entry,
+                      project_file)
+    result = dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
+                                          dep_to_latest_version,
+                                          deps_with_missing_compat_entry
+    return result
 end
 
 function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
+                           dep_to_current_compat_entry_verbatim::Dict{Package, Union{String, Nothing}},
                            dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                            deps_with_missing_compat_entry::Set{Package},
                            project_file::String)
@@ -46,6 +60,7 @@ function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Pkg.
             package = Package(name, uuid)
             compat_entry = convert(String, strip(get(compat, name, "")))::String
             if length(compat_entry) > 0
+                compat_entry_verbatim = compat_entry
                 compat_entry_versionspec = try
                     Pkg.Types.semver_spec(compat_entry)
                 catch
@@ -54,10 +69,15 @@ function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Pkg.
             else
                 push!(deps_with_missing_compat_entry, package)
                 compat_entry_versionspec = nothing
+                compat_entry_verbatim = nothing
             end
             dep_to_current_compat_entry[package] = compat_entry_versionspec
+            dep_to_current_compat_entry_verbatim[package] = compat_entry_verbatim
             dep_to_latest_version[package] = nothing
         end
     end
-    return dep_to_current_compat_entry, dep_to_latest_version, deps_with_missing_compat_entry
+    result = dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
+                                          dep_to_latest_version,
+                                          deps_with_missing_compat_entry
+    return result
 end
