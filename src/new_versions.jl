@@ -21,7 +21,9 @@ function make_pr_for_new_version(repo::GitHub.Repo,
                                 pr_list,
                                 pr_titles;
                                 auth = auth,
-                                master_branch = master_branch)
+                                master_branch = master_branch,
+                                keep_existing_compat = keep_existing_compat,
+                                drop_existing_compat = drop_existing_compat)
     end
     cd(original_directory)
     return nothing
