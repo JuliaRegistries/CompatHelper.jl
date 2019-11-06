@@ -174,7 +174,7 @@ function make_pr_for_new_version(precommit_hook::Function,
         pr_body_keep_or_drop = string("This is a brand new compat entry. ",
                                       "Previously, you did not have a ",
                                       "compat entry for the ",
-                                      "`$(name)` package.")
+                                      "`$(name)` package.\n\n")
     end
     if dep_to_current_compat_entry_verbatim[dep] isa Nothing
         new_pr_body = string("This pull request sets the compat ",
