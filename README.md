@@ -52,3 +52,7 @@ This setup updates `test/Manifest.toml` and `docs/Manifest.toml` before CompatHe
 This snippet uses `>-` to specify a long one-liner command using multi-line code (i.e., the shell does not see the newline characters after `;`).  Note that every line must ends with `;` when using `>-`.  Do not use `'` inside (outer) Julia code since it is used to quote the command line option `-e '...'`.
 
 A full example is available here: https://github.com/tkf/Kaleido.jl/blob/master/.github/workflows/CompatHelper.yml
+
+## Acknowledgements
+
+- This work was supported in part by National Institutes of Health grants U54GM115677, R01LM011963, and R25MH116440. The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institutes of Health.
