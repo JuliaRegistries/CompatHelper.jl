@@ -3,6 +3,7 @@ import UUIDs
 abstract type CIService end
 
 struct GitHubActions <: CIService
+    username::String
 end
 
 struct DefaultBranch
