@@ -44,15 +44,15 @@ after_success:
 
 jobs:
   include:
-    - stage: AutoMerge Integration Tests
+    - stage: CompatHelper Integration Tests
       env:
-        - AUTOMERGE_RUN_INTEGRATION_TESTS="true"
+        - COMPATHELPER_RUN_INTEGRATION_TESTS="true"
       julia: "1.2" # current stable release
-    - stage: AutoMerge Integration Tests
+    - stage: CompatHelper Integration Tests
       env:
-        - AUTOMERGE_RUN_INTEGRATION_TESTS="true"
+        - COMPATHELPER_RUN_INTEGRATION_TESTS="true"
       julia: "1.3" # next release
-#     - stage: AutoMerge Integration Tests
+#     - stage: CompatHelper Integration Tests
 #       env:
-#         - AUTOMERGE_RUN_INTEGRATION_TESTS="true"
+#         - COMPATHELPER_RUN_INTEGRATION_TESTS="true"
 #       julia: "1.4" # this doesn't exist yet
