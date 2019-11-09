@@ -1,4 +1,3 @@
-# Documentation: http://docs.travis-ci.com/user/languages/julia/
 branches:
   only:
   - master
@@ -7,18 +6,50 @@ branches:
   - /^release\/.*$/ # release branches
   - /^v[0-9]+\.[0-9]+\.[0-9]+$/ # version tags
 
+env:
+  global:
+    - COMPATHELPER_INTEGRATION_TEST_REPO="bcbi-test/compathelper-integration-test-repo.jl"
+    - JULIA_DEBUG="all"
+
+julia:
+  - "1.2" # current stable release
+  - "1.3" # next release
+
 language: julia
+
 os:
   - linux
-  # - osx
-julia:
-  - 1.2
-  # - nightly
+
 matrix:
   allow_failures:
     - julia: nightly
   fast_finish: true
+
 notifications:
   email: false
+
+script: julia --code-coverage --inline=no -e 'using Pkg; Pkg.build(); Pkg.test(coverage=true)'
+
 after_success:
   - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+
+## Important note:
+## If you want to run the integration tests, make sure that you go into the
+## Travis settings for your repository, enable the "Limit concurrent jobs"
+## option, and set the number of concurrent jobs to one (1).
+## For more details, see https://docs.travis-ci.com/user/customizing-the-build/#limiting-concurrent-jobs
+
+jobs:
+  include:
+    - stage: CompatHelper Integration Tests
+      env:
+        - COMPATHELPER_RUN_INTEGRATION_TESTS="true"
+      julia: "1.2" # current stable release
+    - stage: CompatHelper Integration Tests
+      env:
+        - COMPATHELPER_RUN_INTEGRATION_TESTS="true"
+      julia: "1.3" # next release
+#     - stage: CompatHelper Integration Tests
+#       env:
+#         - COMPATHELPER_RUN_INTEGRATION_TESTS="true"
+#       julia: "1.4" # this doesn't exist yet
