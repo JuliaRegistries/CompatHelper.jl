@@ -8,11 +8,13 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                                  deps_with_missing_compat_entry::Set{Package},
                                  pr_list::Vector{GitHub.PullRequest},
-                                 pr_titles::Vector{String};
+                                 pr_titles::Vector{String},
+                                 ci_cfg::CIService;
                                  auth::GitHub.Authorization,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
-                                 master_branch::Union{DefaultBranch, AbstractString})
+                                 master_branch::Union{DefaultBranch, AbstractString},
+                                 pr_title_prefix::String)
     original_directory = pwd()
     always_assert(keep_existing_compat || drop_existing_compat)
     for dep in keys(dep_to_current_compat_entry)
@@ -23,11 +25,13 @@ function make_pr_for_new_version(precommit_hook::Function,
                                 dep_to_current_compat_entry_verbatim,
                                 dep_to_latest_version,
                                 pr_list,
-                                pr_titles;
+                                pr_titles,
+                                ci_cfg;
                                 auth = auth,
                                 master_branch = master_branch,
                                 keep_existing_compat = keep_existing_compat,
-                                drop_existing_compat = drop_existing_compat)
+                                drop_existing_compat = drop_existing_compat,
+                                pr_title_prefix = pr_title_prefix)
     end
     cd(original_directory)
     return nothing
@@ -40,11 +44,13 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  dep_to_current_compat_entry_verbatim::Dict{Package, Union{String, Nothing}},
                                  dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                                  pr_list::Vector{GitHub.PullRequest},
-                                 pr_titles::Vector{String};
+                                 pr_titles::Vector{String},
+                                 ci_cfg::CIService;
                                  auth::GitHub.Authorization,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
-                                 master_branch::Union{DefaultBranch, AbstractString})
+                                 master_branch::Union{DefaultBranch, AbstractString},
+                                 pr_title_prefix::String)
     original_directory = pwd()
     always_assert(keep_existing_compat || drop_existing_compat)
     if keep_existing_compat && drop_existing_compat
@@ -86,11 +92,13 @@ function make_pr_for_new_version(precommit_hook::Function,
                                     dep_to_current_compat_entry_verbatim,
                                     dep_to_latest_version,
                                     pr_list,
-                                    pr_titles;
+                                    pr_titles,
+                                    ci_cfg;
                                     auth = auth,
                                     keep_or_drop = :brandnewentry,
                                     parenthetical_in_pr_title = false,
-                                    master_branch = master_branch)
+                                    master_branch = master_branch,
+                                    pr_title_prefix = pr_title_prefix)
         else
             if drop_existing_compat
                 drop_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
@@ -105,11 +113,13 @@ function make_pr_for_new_version(precommit_hook::Function,
                                         dep_to_current_compat_entry_verbatim,
                                         dep_to_latest_version,
                                         pr_list,
-                                        pr_titles;
+                                        pr_titles,
+                                        ci_cfg;
                                         auth = auth,
                                         keep_or_drop = :drop,
                                         parenthetical_in_pr_title = parenthetical_in_pr_title,
-                                        master_branch = master_branch)
+                                        master_branch = master_branch,
+                                        pr_title_prefix = pr_title_prefix)
             end
             if keep_existing_compat
                 keep_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
@@ -124,11 +134,13 @@ function make_pr_for_new_version(precommit_hook::Function,
                                         dep_to_current_compat_entry_verbatim,
                                         dep_to_latest_version,
                                         pr_list,
-                                        pr_titles;
+                                        pr_titles,
+                                        ci_cfg;
                                         auth = auth,
                                         keep_or_drop = :keep,
                                         parenthetical_in_pr_title = parenthetical_in_pr_title,
-                                        master_branch = master_branch)
+                                        master_branch = master_branch,
+                                        pr_title_prefix = pr_title_prefix)
             end
         end
     end
@@ -163,11 +175,13 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  dep_to_current_compat_entry_verbatim::Dict{Package, Union{String, Nothing}},
                                  dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                                  pr_list::Vector{GitHub.PullRequest},
-                                 pr_titles::Vector{String};
+                                 pr_titles::Vector{String},
+                                 ci_cfg::CIService;
                                  auth::GitHub.Authorization,
                                  keep_or_drop::Symbol,
                                  parenthetical_in_pr_title::Bool,
-                                 master_branch::Union{DefaultBranch, AbstractString})
+                                 master_branch::Union{DefaultBranch, AbstractString},
+                                 pr_title_prefix::String)
     original_directory = pwd()
     name = dep.name
     always_assert(keep_or_drop == :keep || keep_or_drop == :drop || keep_or_drop == :brandnewentry)
@@ -193,7 +207,8 @@ function make_pr_for_new_version(precommit_hook::Function,
         pr_title_parenthetical = " (drop existing compat)"
     end
     if dep_to_current_compat_entry_verbatim[dep] isa Nothing
-        new_pr_title = string("CompatHelper: add new compat entry for ",
+        new_pr_title = string("$(pr_title_prefix)",
+                              "CompatHelper: add new compat entry for ",
                               "\"$(name)\" at version ",
                               "\"$(compat_entry_for_latest_version)\"")
         new_pr_body = string("This pull request sets the compat ",
@@ -206,7 +221,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                              "your package tests pass before you merge this ",
                              "pull request.")
     else
-        new_pr_title = string("CompatHelper: bump compat for ",
+        new_pr_title = string("$(pr_title_prefix)",
+                              "CompatHelper: bump compat for ",
                               "\"$(name)\" to ",
                               "\"$(compat_entry_for_latest_version)\"",
                               "$(pr_title_parenthetical)")
@@ -234,28 +250,16 @@ function make_pr_for_new_version(precommit_hook::Function,
         catch
         end
         cd(joinpath(tmp_dir, "REPO"))
-        default_branch = convert(String, strip(read(`git rev-parse --abbrev-ref HEAD`, String)))::String
-        if master_branch isa DefaultBranch
-            master_branch_name = default_branch
-        else
-            master_branch_name = strip(master_branch)
-        end
-        cmd_checkout_master = `git checkout $(master_branch_name)`
-        pipeline_checkout_master = pipeline(cmd_checkout_master;
-                                            stdout=stdout,
-                                            stderr=stderr)
-        try
-            run(pipeline_checkout_master)
-        catch
-        end
+        default_branch = git_get_current_branch()
+        master_branch_name = git_decide_master_branch(master_branch,
+                                                      default_branch)
+        run(`git checkout $(master_branch_name)`)
         new_branch_name = "compathelper/new_version/$(get_random_string())"
         run(`git branch $(new_branch_name)`)
         run(`git checkout $(new_branch_name)`)
         project_file = joinpath(tmp_dir, "REPO", "Project.toml")
         project = Pkg.TOML.parsefile(project_file)
-
         project["compat"][name] = new_compat_entry
-
         rm(project_file; force = true, recursive = true)
         open(project_file, "w") do io
             Pkg.TOML.print(io,
@@ -263,6 +267,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                            sorted = true,
                            by = key -> (Pkg.Types.project_key_order(key), key))
         end
+        set_git_identity(ci_cfg)
         try
             run(`git add -A`)
         catch
@@ -280,7 +285,7 @@ function make_pr_for_new_version(precommit_hook::Function,
             catch
             end
             create_new_pull_request(repo;
-                                    base_branch = default_branch,
+                                    base_branch = master_branch_name,
                                     head_branch = new_branch_name,
                                     title = new_pr_title,
                                     body = new_pr_body,
