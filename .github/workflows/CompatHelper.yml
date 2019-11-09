@@ -3,6 +3,8 @@ name: CompatHelper
 on:
   schedule:
     - cron: '00 * * * *'
+  issues:
+    types: [opened, reopened]
 
 jobs:
   build:
@@ -16,10 +18,9 @@ jobs:
       - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.julia-version }}
-      - name: Install dependencies
+      - name: Pkg.add("CompatHelper")
         run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
-      - name: CompatHelper.main
+      - name: CompatHelper.main()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JULIA_DEBUG: CompatHelper
         run: julia -e 'using CompatHelper; CompatHelper.main()'
