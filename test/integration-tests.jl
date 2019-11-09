@@ -7,7 +7,7 @@ whoami = username(auth)
 repo_url_without_auth = "https://github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
 repo_url_with_auth = "https://$(whoami):$(TEST_USER_GITHUB_TOKEN)@github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
 repo = GitHub.repo(COMPATHELPER_INTEGRATION_TEST_REPO; auth = auth)
-@test success(`$(GIT) --version`)
+@test success(`git --version`)
 @info("Authenticated to GitHub as \"$(whoami)\"")
 
 close_all_pull_requests(repo; auth = auth, state = "open")
