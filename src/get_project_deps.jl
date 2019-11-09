@@ -49,35 +49,39 @@ function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Pkg.
                            deps_with_missing_compat_entry::Set{Package},
                            project_file::String)
     project = Pkg.TOML.parsefile(project_file)
-    deps = project["deps"]
-    compat = project["compat"]
-    stdlib_uuids = gather_stdlib_uuids()
-    for d in deps
-        name = d[1]
-        uuid = UUIDs.UUID(d[2])
-        if uuid in stdlib_uuids
-            @debug("Skipping stdlib: $(uuid)")
-        elseif endswith(lowercase(strip(name)), lowercase(strip("_jll")))
-            @debug("Skipping JLL package: $(name)")
-        else
-            package = Package(name, uuid)
-            compat_entry = convert(String, strip(get(compat, name, "")))::String
-            if length(compat_entry) > 0
-                compat_entry_verbatim = compat_entry
-                compat_entry_versionspec = try
-                    Pkg.Types.semver_spec(compat_entry)
-                catch
-                    nothing
-                end
+    if haskey(project, "deps")
+        deps = project["deps"]
+        compat = project["compat"]
+        stdlib_uuids = gather_stdlib_uuids()
+        for d in deps
+            name = d[1]
+            uuid = UUIDs.UUID(d[2])
+            if uuid in stdlib_uuids
+                @debug("Skipping stdlib: $(uuid)")
+            elseif endswith(lowercase(strip(name)), lowercase(strip("_jll")))
+                @debug("Skipping JLL package: $(name)")
             else
-                push!(deps_with_missing_compat_entry, package)
-                compat_entry_versionspec = nothing
-                compat_entry_verbatim = nothing
+                package = Package(name, uuid)
+                compat_entry = convert(String, strip(get(compat, name, "")))::String
+                if length(compat_entry) > 0
+                    compat_entry_verbatim = compat_entry
+                    compat_entry_versionspec = try
+                        Pkg.Types.semver_spec(compat_entry)
+                    catch
+                        nothing
+                    end
+                else
+                    push!(deps_with_missing_compat_entry, package)
+                    compat_entry_versionspec = nothing
+                    compat_entry_verbatim = nothing
+                end
+                dep_to_current_compat_entry[package] = compat_entry_versionspec
+                dep_to_current_compat_entry_verbatim[package] = compat_entry_verbatim
+                dep_to_latest_version[package] = nothing
             end
-            dep_to_current_compat_entry[package] = compat_entry_versionspec
-            dep_to_current_compat_entry_verbatim[package] = compat_entry_verbatim
-            dep_to_latest_version[package] = nothing
         end
+    else
+        @info("This project has no dependencies.")
     end
     result = dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
                                           dep_to_latest_version,

@@ -20,17 +20,17 @@ const registries_2 = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "General",
 
 include("testutils.jl")
 
-@testset "CompatHelper.jl" begin
+Test.@testset "CompatHelper.jl" begin
+    Test.@testset "CompatHelper.jl unit tests" begin
+        @info("Running the CompatHelper.jl unit tests")
+        include("unit-tests.jl")
+    end
+
     COMPATHELPER_RUN_INTEGRATION_TESTS = get(ENV, "COMPATHELPER_RUN_INTEGRATION_TESTS", "")::String
     if COMPATHELPER_RUN_INTEGRATION_TESTS == "true"
-        @testset "CompatHelper.jl integration tests" begin
+        Test.@testset "CompatHelper.jl integration tests" begin
             @info("Running the CompatHelper.jl integration tests")
             include("integration-tests.jl")
-        end
-    else
-        @testset "CompatHelper.jl unit tests" begin
-            @info("Running the CompatHelper.jl unit tests")
-            include("unit-tests.jl")
         end
     end
 end

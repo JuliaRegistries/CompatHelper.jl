@@ -15,7 +15,7 @@ end
 
 function git_decide_master_branch(master_branch::DefaultBranch,
                                   default_branch::String)::String
-    return default_branch
+    return convert(String, strip(default_branch))
 end
 
 function git_decide_master_branch(master_branch::AbstractString,
