@@ -28,6 +28,13 @@ matrix:
 notifications:
   email: false
 
+before_script:
+  - git config user.name
+  - git config user.email
+  - rm -f ~/.gitconfig
+  - git config user.name
+  - git config user.email
+
 script: julia --code-coverage --inline=no -e 'using Pkg; Pkg.build(); Pkg.test(coverage=true)'
 
 after_success:
