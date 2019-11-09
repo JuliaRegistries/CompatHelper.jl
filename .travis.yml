@@ -28,17 +28,11 @@ matrix:
 notifications:
   email: false
 
-before_script:
-  - git config user.name
-  - git config user.email
-  - rm -f ~/.gitconfig
-  - git config user.name
-  - git config user.email
+before_script: rm -f ~/.gitconfig
 
 script: julia --code-coverage --inline=no -e 'using Pkg; Pkg.build(); Pkg.test(coverage=true)'
 
-after_success:
-  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+after_success: julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
 
 ## Important note:
 ## If you want to run the integration tests, make sure that you go into the
