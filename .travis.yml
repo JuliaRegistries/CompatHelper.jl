@@ -21,17 +21,15 @@ language: julia
 
 os:
   - linux
-  # - osx
-julia:
-  - 1.2
-  # - nightly
+
 matrix:
   allow_failures:
     - julia: nightly
   fast_finish: true
+
 notifications:
   email: false
-  
+
 script: julia --code-coverage --inline=no -e 'using Pkg; Pkg.build(); Pkg.test(coverage=true)'
 
 after_success:
