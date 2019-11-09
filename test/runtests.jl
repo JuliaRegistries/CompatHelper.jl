@@ -18,6 +18,8 @@ const registries_2 = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "General",
                                                        uuid = "ccbd2cc2-2954-11e9-1ccf-f3e7900901ca",
                                                        url = "https://github.com/BioJulia/BioJuliaRegistry.git")]
 
+include("testutils.jl")
+
 @testset "CompatHelper.jl" begin
     COMPATHELPER_RUN_INTEGRATION_TESTS = get(ENV, "COMPATHELPER_RUN_INTEGRATION_TESTS", "")::String
     if COMPATHELPER_RUN_INTEGRATION_TESTS == "true"
