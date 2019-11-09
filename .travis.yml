@@ -28,7 +28,6 @@ notifications:
 after_success:
   - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
 
-sdfsdfsdfsdfsdf
 ## Important note:
 ## If you want to run the integration tests, make sure that you go into the
 ## Travis settings for your repository, enable the "Limit concurrent jobs"
