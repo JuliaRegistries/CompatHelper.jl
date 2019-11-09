@@ -2,6 +2,10 @@ function GitHubActions()
     return GitHubActions("github-actions[bot]")
 end
 
+function get_my_username(ci_cfg::GitHubActions; auth = nothing, env::AbstractDict = ENV)
+    return ci_cfg.username
+end
+
 function set_git_identity(ci_cfg::GitHubActions)
     run(`git config user.name 'github-actions[bot]'`)
     run(`git config user.email '41898282+github-actions[bot]@users.noreply.github.com'`)
