@@ -2,7 +2,7 @@ name: CompatHelper
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '00,05,10,15,20,25,20,25,40,45,50,55 * * * *'
 
 jobs:
   build:
