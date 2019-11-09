@@ -8,7 +8,7 @@ branches:
 
 env:
   global:
-    - COMPATHELPER_INTEGRATION_TEST_REPO="bcbi-test/compathelper-integration-test-repo.jl"
+    - COMPATHELPER_INTEGRATION_TEST_REPO="bcbi-test/compathelper_integration_test_repo.jl"
     - JULIA_DEBUG="all"
 
 julia:
