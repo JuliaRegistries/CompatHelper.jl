@@ -12,10 +12,8 @@ env:
     - JULIA_DEBUG="all"
 
 julia:
-  - "1.1"
   - "1.2" # current stable release
   - "1.3" # next release
-  - nightly
 
 language: julia
 
