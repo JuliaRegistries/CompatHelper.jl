@@ -34,7 +34,6 @@ end
 
 function auto_detect_ci_service(; env::AbstractDict = ENV)
     if haskey(env, "GITHUB_REPOSITORY")
-        github_actions_set_git_identity()
         return GitHubActions()
     else
          error("Could not detect CI service")

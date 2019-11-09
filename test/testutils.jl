@@ -8,6 +8,8 @@ import Test
 import TimeZones
 
 const timestamp_regex = r"integration\/(\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d-\d\d\d)\/"
+const integration_regex = r"integration\/"
+const compathelper_regex = r"compathelper\/"
 
 function close_all_pull_requests(repo::GitHub.Repo;
                                  auth::GitHub.Authorization,
@@ -17,7 +19,7 @@ function close_all_pull_requests(repo::GitHub.Repo;
                                                            auth = auth)
     for pr in all_pull_requests
         try
-            GitHub.close_pull_request(repo, pr)
+            GitHub.close_pull_request(repo, pr; auth = auth)
         catch
         end
     end
@@ -29,7 +31,7 @@ function delete_stale_branches(AUTOMERGE_INTEGRATION_TEST_REPO)
         cd(git_repo_dir)
         all_origin_branches = list_all_origin_branches(git_repo_dir)::Vector{String}
         for b in all_origin_branches
-            if occursin(timestamp_regex, b)
+            if occursin(timestamp_regex, b) || occursin(integration_regex, b) || occursin(compathelper_regex, b)
                 try
                     run(`git push origin --delete $(b)`)
                 catch

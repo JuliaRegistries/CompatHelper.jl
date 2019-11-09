@@ -285,7 +285,7 @@ function make_pr_for_new_version(precommit_hook::Function,
             catch
             end
             create_new_pull_request(repo;
-                                    base_branch = default_branch,
+                                    base_branch = master_branch_name,
                                     head_branch = new_branch_name,
                                     title = new_pr_title,
                                     body = new_pr_body,
