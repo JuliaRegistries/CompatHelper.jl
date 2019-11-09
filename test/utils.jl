@@ -167,6 +167,13 @@ function templates(parts...)
     return result
 end
 
+function username(auth::GitHub.Authorization)
+    user_information = GitHub.gh_get_json(GitHub.DEFAULT_API,
+                                          "/user";
+                                          auth = auth)
+    return user_information["login"]::String
+end
+
 @inline function utc_to_string(zdt::TimeZones.ZonedDateTime)
     zdt_as_utc = TimeZones.astimezone(zdt, TimeZones.tz"UTC")
     year = TimeZones.Year(zdt_as_utc.utc_datetime).value
