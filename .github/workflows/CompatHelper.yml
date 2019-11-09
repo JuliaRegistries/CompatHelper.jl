@@ -2,7 +2,7 @@ name: CompatHelper
 
 on:
   schedule:
-    - cron: '35 * * * *'
+    - cron: '00 * * * *'
   issues:
     types: [opened, reopened]
 
