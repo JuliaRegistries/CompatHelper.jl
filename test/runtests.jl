@@ -1,11 +1,11 @@
-using CompatHelper
-using Dates
-using GitHub
-using JSON
-using Pkg
-using Printf
-using Test
-using TimeZones
+import CompatHelper
+import Dates
+import GitHub
+import JSON
+import Pkg
+import Printf
+import Test
+import TimeZones
 
 const registries_1 = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "General",
                                                              uuid = "23338594-aafe-5451-b93e-139f81909106",

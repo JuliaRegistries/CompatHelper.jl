@@ -234,28 +234,16 @@ function make_pr_for_new_version(precommit_hook::Function,
         catch
         end
         cd(joinpath(tmp_dir, "REPO"))
-        default_branch = convert(String, strip(read(`git rev-parse --abbrev-ref HEAD`, String)))::String
-        if master_branch isa DefaultBranch
-            master_branch_name = default_branch
-        else
-            master_branch_name = strip(master_branch)
-        end
-        cmd_checkout_master = `git checkout $(master_branch_name)`
-        pipeline_checkout_master = pipeline(cmd_checkout_master;
-                                            stdout=stdout,
-                                            stderr=stderr)
-        try
-            run(pipeline_checkout_master)
-        catch
-        end
+        default_branch = git_get_current_branch()
+        master_branch_name = git_decide_master_branch(master_branch,
+                                                      default_branch)
+        run(`git checkout $(master_branch_name)`)
         new_branch_name = "compathelper/new_version/$(get_random_string())"
         run(`git branch $(new_branch_name)`)
         run(`git checkout $(new_branch_name)`)
         project_file = joinpath(tmp_dir, "REPO", "Project.toml")
         project = Pkg.TOML.parsefile(project_file)
-
         project["compat"][name] = new_compat_entry
-
         rm(project_file; force = true, recursive = true)
         open(project_file, "w") do io
             Pkg.TOML.print(io,

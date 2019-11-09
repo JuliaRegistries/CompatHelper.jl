@@ -1,11 +1,11 @@
-using CompatHelper
-using Dates
-using GitHub
-using JSON
-using Pkg
-using Printf
-using Test
-using TimeZones
+import CompatHelper
+import Dates
+import GitHub
+import JSON
+import Pkg
+import Printf
+import Test
+import TimeZones
 
 const timestamp_regex = r"integration\/(\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d-\d\d\d)\/"
 

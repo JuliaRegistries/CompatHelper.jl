@@ -1,5 +1,3 @@
-include("utils.jl")
-
 @testset "assert.jl" begin
     @test_nowarn CompatHelper.always_assert(true)
     @test CompatHelper.always_assert(true) isa Nothing

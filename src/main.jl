@@ -26,7 +26,8 @@ function main(precommit_hook::Function = () -> (),
         dep_to_latest_version,
         deps_with_missing_compat_entry = get_project_deps(repo; auth = auth)
     get_latest_version_from_registries!(dep_to_latest_version,
-                                        default_registries)
+                                        default_registries;
+                                        master_branch = master_branch)
     _all_open_prs = get_all_pull_requests(repo, "open"; auth = auth)
     _nonforked_prs = exclude_pull_requests_from_forks(repo, _all_open_prs)
     my_username = get_my_username(ci_cfg; auth = auth, env = env)
