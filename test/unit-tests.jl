@@ -26,3 +26,32 @@ end
 Test.@testset "new_versions.jl" begin
     Test.@test_throws ArgumentError CompatHelper.old_compat_to_new_compat("", "", :abc)
 end
+
+Test.@testset "pull_requests.jl" begin
+    a = GitHub.Repo(Dict("name" => "Foo", "full_name" => "Foo", "owner" => "Foo", "id" => 1, "url" => "Foo", "html_url" => "Foo", "fork" => false))
+    b = GitHub.Repo(Dict("name" => "Foo", "full_name" => "Foo", "owner" => "Foo", "id" => 1, "url" => "Foo", "html_url" => "Foo", "fork" => false))
+    c = GitHub.Repo(Dict("name" => "Foo", "full_name" => "Foo", "owner" => "Foo", "id" => 1, "url" => "Foo", "html_url" => "Foo", "fork" => true))
+    Test.@test CompatHelper._repos_are_the_same(a, a)
+    Test.@test CompatHelper._repos_are_the_same(a, b)
+    Test.@test !CompatHelper._repos_are_the_same(a, c)
+    Test.@test CompatHelper._repos_are_the_same(b, a)
+    Test.@test CompatHelper._repos_are_the_same(b, b)
+    Test.@test !CompatHelper._repos_are_the_same(b, c)
+    Test.@test !CompatHelper._repos_are_the_same(c, a)
+    Test.@test !CompatHelper._repos_are_the_same(c, b)
+    Test.@test CompatHelper._repos_are_the_same(c, c)
+end
+
+Test.@testset "utils.jl" begin
+    Test.@test CompatHelper.generate_pr_title_parenthetical(:keep, true) == " (keep existing compat)"
+    Test.@test CompatHelper.generate_pr_title_parenthetical(:drop, true) == " (drop existing compat)"
+    Test.@test CompatHelper.generate_pr_title_parenthetical(:brandnewentry, true) == ""
+    Test.@test CompatHelper.generate_pr_title_parenthetical(:keep, false) == ""
+    Test.@test CompatHelper.generate_pr_title_parenthetical(:drop, false) == ""
+    Test.@test CompatHelper.generate_pr_title_parenthetical(:brandnewentry, false) == ""
+end
+
+Test.@testset "version_numbers.jl" begin
+    Test.@test CompatHelper.generate_compat_entry(v"1.2.3") == "1.2"
+    Test.@test CompatHelper.generate_compat_entry(v"0.0.3") == "0.0.3"
+end

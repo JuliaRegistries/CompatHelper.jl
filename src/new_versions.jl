@@ -53,11 +53,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  pr_title_prefix::String)
     original_directory = pwd()
     always_assert(keep_existing_compat || drop_existing_compat)
-    if keep_existing_compat && drop_existing_compat
-        parenthetical_in_pr_title = true
-    else
-        parenthetical_in_pr_title = false
-    end
+    parenthetical_in_pr_title = keep_existing_compat && drop_existing_compat
     name = dep.name
     current_compat_entry = dep_to_current_compat_entry[dep]
     current_compat_entry_verbatim = dep_to_current_compat_entry_verbatim[dep]
@@ -70,15 +66,11 @@ function make_pr_for_new_version(precommit_hook::Function,
               dep)
     else
         if isnothing(latest_version)
-            @error("The dependency \"$(name)\" was not found in any of the registries", dep)
+            @error("The dependency was not found in any of the registries", name, dep)
             cd(original_directory)
             return nothing
         end
-        if latest_version.major == 0 && latest_version.minor == 0
-            compat_entry_for_latest_version = "0.0.$(latest_version.patch)"
-        else
-            compat_entry_for_latest_version = "$(latest_version.major).$(latest_version.minor)"
-        end
+        compat_entry_for_latest_version = generate_compat_entry(latest_version)
         if isnothing(current_compat_entry)
             brand_new_compat = old_compat_to_new_compat(nothing,
                                                         compat_entry_for_latest_version,
@@ -199,13 +191,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                                       "compat entry for the ",
                                       "`$(name)` package.\n\n")
     end
-    pr_title_parenthetical = ""
-    if keep_or_drop == :keep && parenthetical_in_pr_title
-        pr_title_parenthetical = " (keep existing compat)"
-    end
-    if keep_or_drop == :drop && parenthetical_in_pr_title
-        pr_title_parenthetical = " (drop existing compat)"
-    end
+    pr_title_parenthetical = generate_pr_title_parenthetical(keep_or_drop,
+                                                             parenthetical_in_pr_title)
     if dep_to_current_compat_entry_verbatim[dep] isa Nothing
         new_pr_title = string("$(pr_title_prefix)",
                               "CompatHelper: add new compat entry for ",
@@ -277,9 +264,10 @@ function make_pr_for_new_version(precommit_hook::Function,
             run(`git add -A`)
         catch
         end
-        commit_message = new_pr_title
-        commit_was_success = git_make_commit(; commit_message = commit_message)
+        @info("Attempting to commit...")
+        commit_was_success = git_make_commit(; commit_message = new_pr_title)
         if commit_was_success
+            @info("Commit was a success")
             try
                 run(`git push origin $(new_branch_name)`)
             catch
@@ -290,8 +278,6 @@ function make_pr_for_new_version(precommit_hook::Function,
                                     title = new_pr_title,
                                     body = new_pr_body,
                                     auth = auth,)
-        else
-            @info("Commit was not a success")
         end
         cd(original_directory)
         rm(tmp_dir; force = true, recursive = true)

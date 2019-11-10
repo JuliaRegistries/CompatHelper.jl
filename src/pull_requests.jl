@@ -2,13 +2,23 @@ import GitHub
 
 function get_all_pull_requests(repo::GitHub.Repo,
                                state::String;
-                               auth::GitHub.Authorization)
+                               auth::GitHub.Authorization,
+                               per_page::Integer = 100,
+                               page_limit::Integer = 100)
     all_pull_requests = Vector{GitHub.PullRequest}(undef, 0)
-    myparams = Dict("state" => state, "per_page" => 100, "page" => 1)
-    prs, page_data = GitHub.pull_requests(repo; auth=auth, params = myparams, page_limit = 100)
+    myparams = Dict("state" => state,
+                    "per_page" => per_page,
+                    "page" => 1)
+    prs, page_data = GitHub.pull_requests(repo;
+                                          auth=auth,
+                                          params = myparams,
+                                          page_limit = page_limit)
     append!(all_pull_requests, prs)
     while haskey(page_data, "next")
-        prs, page_data = GitHub.pull_requests(repo; auth=auth, page_limit = 100, start_page = page_data["next"])
+        prs, page_data = GitHub.pull_requests(repo;
+                                              auth=auth,
+                                              page_limit = page_limit,
+                                              start_page = page_data["next"])
         append!(all_pull_requests, prs)
     end
     unique!(all_pull_requests)
