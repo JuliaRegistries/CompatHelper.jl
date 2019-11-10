@@ -73,12 +73,11 @@ with_master_branch(templates("master_4"), "master"; repo_url = repo_url_with_aut
         precommit_hook = () -> ()
         env = ENV
         ci_cfg = CompatHelper.GitHubActions(whoami)
-        Test.@test_logs (:error, "The dependency was not found in any of the registries")
-                        CompatHelper.main(precommit_hook, env, ci_cfg;
-                                          pr_title_prefix = "[test-4c] ",
-                                          master_branch = master_4,
-                                          keep_existing_compat = true,
-                                          drop_existing_compat = true)
+        CompatHelper.main(precommit_hook, env, ci_cfg;
+                          pr_title_prefix = "[test-4c] ",
+                          master_branch = master_4,
+                          keep_existing_compat = true,
+                          drop_existing_compat = true)
     end
 end
 
