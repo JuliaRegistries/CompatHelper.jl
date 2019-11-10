@@ -32,24 +32,23 @@ CompatHelper is now installed as a GitHub Action on your repository.
 * Open the specific repository, navigate to the Settings tab, click Actions option, check if the Actions is enabled for this repository.
 
 
-## Updating `Manifest.toml` files after updating compat information
+## Custom pre-commit hooks
 
-If you check in `Manifest.toml` file(s), the PR created by default CompatHelper setup does not run CI with the latest versions of the dependencies.  In this case, it may be a good idea to run `Pkg.update()` via CompatHelper.  This can be done simply using the following snippet instead `run: julia -e 'using CompatHelper; CompatHelper.main()'`:
+CompatHelper supports running a custom function just before commiting changes.
+By default, this function updates any `Manifest.toml` files in your repository to reflect new compatibility bounds.
+If you want to extend this behaviour, you can pass your own zero-argument function to `CompatHelper.main`, like so:
 
 ```yaml
-run: >-
-  julia -e '
+run: julia -e '
   using CompatHelper;
   CompatHelper.main() do;
-      run(`julia --project=test -e "import Pkg; Pkg.instantiate(); Pkg.update()"`);
-      run(`julia --project=docs -e "import Pkg; Pkg.instantiate(); Pkg.update()"`);
-  end
-  '
+    CompatHelper.update_environments();
+    println("I did it!")
+  end;'
 ```
 
-This setup updates `test/Manifest.toml` and `docs/Manifest.toml` before CompatHelper creates a commit for the pull request.
-
-This snippet uses `>-` to specify a long one-liner command using multi-line code (i.e., the shell does not see the newline characters after `;`).  Note that every line must ends with `;` when using `>-`.  Do not use `'` inside (outer) Julia code since it is used to quote the command line option `-e '...'`.
+This snippet uses `;` to specify the ends of lines, because according to YAML, the entire block of Julia code is a single line.
+Also to note is that you cannot use `'` inside of your Julia command, since it's used to quote the Julia code.
 
 A full example is available here: https://github.com/tkf/Kaleido.jl/blob/master/.github/workflows/CompatHelper.yml
 

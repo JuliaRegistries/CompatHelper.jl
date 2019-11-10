@@ -60,7 +60,7 @@ Test.@testset "version_numbers.jl" begin
     Test.@test CompatHelper.generate_compat_entry(v"0.2.0") == "0.2"
     Test.@test CompatHelper.generate_compat_entry(v"0.0.3") == "0.0.3"
     Test.@test CompatHelper.generate_compat_entry(v"0.0.0") == "0.0.0"
-    
+
     Test.@test CompatHelper._remove_trailing_zeros(v"11.22.33") == "11.22.33"
     Test.@test CompatHelper._remove_trailing_zeros(v"11.22.0") == "11.22"
     Test.@test CompatHelper._remove_trailing_zeros(v"11.0.33") == "11.0.33"
@@ -69,4 +69,21 @@ Test.@testset "version_numbers.jl" begin
     Test.@test CompatHelper._remove_trailing_zeros(v"0.22.0") == "0.22"
     Test.@test CompatHelper._remove_trailing_zeros(v"0.0.33") == "0.0.33"
     Test.@test_throws DomainError CompatHelper._remove_trailing_zeros(v"0.0.0")
+end
+
+Test.@testset "main.jl" begin
+    mktempdir() do dir
+        original = templates("manifests")
+        cp(templates("manifests"), dir; force=true)
+
+        envs = ["", joinpath("a", "b"), joinpath("a", "b", "c")]
+        expected = map(d -> rstrip(joinpath(dir, d), '/'), envs)
+        Test.@test issetequal(CompatHelper.collect_environments(dir), expected)
+
+        CompatHelper.update_environments([dir])
+        root = Pkg.TOML.parsefile(joinpath(dir, "Manifest.toml"))
+        nested = Pkg.TOML.parsefile(joinpath(dir, "a", "b", "Manifest.toml"))
+        Test.@test root["Example"][1]["version"] == "0.5.3"
+        Test.@test nested["Example"][1]["version"] == "0.5.1"
+    end
 end

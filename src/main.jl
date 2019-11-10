@@ -7,7 +7,27 @@ const default_registries = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "Gener
 const default_value_for_keep_existing_compat = true
 const default_value_for_drop_existing_compat = false
 
-function main(precommit_hook::Function = () -> (),
+function collect_environments(dir::AbstractString=".")
+    envs = Set{String}()
+    for (root, dirs, files) in walkdir(dir)
+        if any(in(["Manifest.toml", "JuliaManifest.toml"]), files)
+            push!(envs, root)
+        end
+        for dir in dirs
+            union!(envs, collect_environments(joinpath(root, dir)))
+        end
+    end
+    return envs
+end
+
+function update_environments(envs=collect_environments())
+    for env in envs
+        @info "Updating environment: $env"
+        run(`$(Base.julia_cmd()) -e "using Pkg; Pkg.activate($(repr(env))); Pkg.update()"`)
+    end
+end
+
+function main(precommit_hook::Function = update_manifests,
               env::AbstractDict = ENV,
               ci_cfg::CIService = auto_detect_ci_service(; env = env);
               registries::Vector{Pkg.Types.RegistrySpec} = default_registries,
