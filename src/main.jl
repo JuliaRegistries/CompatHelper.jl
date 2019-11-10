@@ -4,15 +4,12 @@ const default_registries = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "Gener
                                                                    uuid = "23338594-aafe-5451-b93e-139f81909106",
                                                                    url = "https://github.com/JuliaRegistries/General.git")]
 
-const default_value_for_keep_existing_compat = true
-const default_value_for_drop_existing_compat = false
-
-function main(precommit_hook::Function = () -> (),
+function main(precommit_hook::Function = update_manifests,
               env::AbstractDict = ENV,
               ci_cfg::CIService = auto_detect_ci_service(; env = env);
               registries::Vector{Pkg.Types.RegistrySpec} = default_registries,
-              keep_existing_compat::Bool = default_value_for_keep_existing_compat,
-              drop_existing_compat::Bool = default_value_for_drop_existing_compat,
+              keep_existing_compat::Bool = true,
+              drop_existing_compat::Bool = false,
               master_branch::Union{DefaultBranch, AbstractString} = DefaultBranch(),
               pr_title_prefix::String = "")
     if !keep_existing_compat && !drop_existing_compat

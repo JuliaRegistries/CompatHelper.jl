@@ -16,3 +16,11 @@ function generate_pr_title_parenthetical(keep_or_drop::Symbol,
         return ""
     end
 end
+
+function with_tmp_dir(f::Function)
+    tmp_dir = mktempdir()
+    atexit(() -> rm(tmp_dir; force = true, recursive = true))
+    result = f(tmp_dir)
+    rm(tmp_dir; force = true, recursive = true)
+    return result
+end
