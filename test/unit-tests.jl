@@ -53,5 +53,20 @@ end
 
 Test.@testset "version_numbers.jl" begin
     Test.@test CompatHelper.generate_compat_entry(v"1.2.3") == "1.2"
+    Test.@test CompatHelper.generate_compat_entry(v"1.2.0") == "1.2"
+    Test.@test CompatHelper.generate_compat_entry(v"1.0.3") == "1.0"
+    Test.@test CompatHelper.generate_compat_entry(v"1.0.0") == "1.0"
+    Test.@test CompatHelper.generate_compat_entry(v"0.2.3") == "0.2"
+    Test.@test CompatHelper.generate_compat_entry(v"0.2.0") == "0.2"
     Test.@test CompatHelper.generate_compat_entry(v"0.0.3") == "0.0.3"
+    Test.@test CompatHelper.generate_compat_entry(v"0.0.0") == "0.0.0"
+    
+    Test.@test CompatHelper._remove_trailing_zeros(v"11.22.33") == "11.22.33"
+    Test.@test CompatHelper._remove_trailing_zeros(v"11.22.0") == "11.22"
+    Test.@test CompatHelper._remove_trailing_zeros(v"11.0.33") == "11.0.33"
+    Test.@test CompatHelper._remove_trailing_zeros(v"11.0.0") == "11"
+    Test.@test CompatHelper._remove_trailing_zeros(v"0.22.33") == "0.22.33"
+    Test.@test CompatHelper._remove_trailing_zeros(v"0.22.0") == "0.22"
+    Test.@test CompatHelper._remove_trailing_zeros(v"0.0.33") == "0.0.33"
+    Test.@test_throws DomainError CompatHelper._remove_trailing_zeros(v"0.0.0")
 end
