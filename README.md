@@ -14,8 +14,6 @@ The easiest way to use CompatHelper is to install it as a GitHub Action.
 To install CompatHelper as a GitHub Action on your repository:
 
 1. Go to the GitHub page for your repository.
-
-
 2. Click on the "Actions" tab. (If you don't see the "Actions" tab, follow the instructions [here](#actions-setup).)
 3. If you have never set up any GitHub Actions on your repository, you will be brought to a page that says "Get started with GitHub Actions". In the top right-hand corner, click on the button that says "Skip this: Set up a workflow yourself". Then go to step 5.
 4. If you have previously set up a GitHub Action on your repository, you will be brought to a page that says "All workflows" and has a list of all of the GitHub Actions workflows on your repository. Click on the "New workflow" button. Then, in the top right-hand corner, click on the button that says "Skip this: Set up a workflow yourself". Then go to step 5.
@@ -26,9 +24,16 @@ To install CompatHelper as a GitHub Action on your repository:
 
 CompatHelper is now installed as a GitHub Action on your repository.
 
-## Custom Registries
+## Overriding the default branch
 
-To use custom registries in addition to (or instead of) the General registry, use the `registries` keyword argument. For example:
+By default, CompatHelper will open pull requests against your repository's default branch. If you would like to override this behavior, set the `master_branch` keyword argument. For example:
+```julia
+CompatHelper.main(; master_branch = "my-custom-branch")
+```
+
+## Custom registries
+
+To use a list of custom registries instead of the General registry, use the `registries` keyword argument. For example:
 ```julia
 my_registries = [Pkg.RegistrySpec(name = "General",
                                   uuid = "23338594-aafe-5451-b93e-139f81909106",
@@ -40,7 +45,7 @@ my_registries = [Pkg.RegistrySpec(name = "General",
 CompatHelper.main(; registries = my_registries)
 ```
 
-## Actions Setup
+## Actions setup
 * Sign up for the beta of GitHub Actions from https://github.com/features/actions 
 * Open the specific repository, navigate to the Settings tab, click Actions option, check if the Actions is enabled for this repository.
 
