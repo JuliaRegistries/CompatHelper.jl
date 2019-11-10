@@ -12,8 +12,8 @@ env:
     - JULIA_DEBUG="all"
 
 julia:
-  - "1.2" # current stable release
-  - "1.3" # next release
+  - "1.2"
+  - "1.3"
 
 language: julia
 
@@ -43,10 +43,10 @@ jobs:
     - stage: CompatHelper Integration Tests
       env:
         - COMPATHELPER_RUN_INTEGRATION_TESTS="true"
-      julia: "1.2" # current stable release
+      julia: "1.2"
       after_success: julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
     - stage: CompatHelper Integration Tests
       env:
         - COMPATHELPER_RUN_INTEGRATION_TESTS="true"
-      julia: "1.3" # next release
+      julia: "1.3"
       after_success: julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
