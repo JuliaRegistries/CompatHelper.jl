@@ -81,6 +81,20 @@ with_master_branch(templates("master_4"), "master"; repo_url = repo_url_with_aut
     end
 end
 
+with_master_branch(templates("master_5"), "master"; repo_url = repo_url_with_auth) do master_5
+    withenv("GITHUB_REPOSITORY" => COMPATHELPER_INTEGRATION_TEST_REPO,
+            "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
+        precommit_hook = CompatHelper.update_manifests
+        env = ENV
+        ci_cfg = CompatHelper.GitHubActions(whoami)
+        CompatHelper.main(precommit_hook, env, ci_cfg;
+                          pr_title_prefix = "[test-5a] ",
+                          master_branch = master_5,
+                          keep_existing_compat = false,
+                          drop_existing_compat = true)
+    end
+end
+
 all_prs = CompatHelper.get_all_pull_requests(repo, "open";
                                              auth = auth,
                                              per_page = 3,
