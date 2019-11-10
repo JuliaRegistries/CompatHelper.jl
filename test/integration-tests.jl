@@ -83,5 +83,5 @@ end
 
 all_prs = CompatHelper.get_all_pull_requests(repo, "open";
                                              auth = auth,
-                                             per_page = 5,
-                                             page_limit = 5)
+                                             per_page = 3,
+                                             page_limit = 3)
