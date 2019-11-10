@@ -1,6 +1,6 @@
 function update_manifests(path::AbstractString = pwd();
                           registries::Vector{Pkg.Types.RegistrySpec} = default_registries,
-                          delete_old_manifest::Bool = true)
+                          delete_old_manifest::Bool = false)
     environments_to_update = Vector{String}(undef, 0)
     for (root, dirs, files) in walkdir(path)
         for file in files

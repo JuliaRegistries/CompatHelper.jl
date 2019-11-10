@@ -84,7 +84,7 @@ end
 with_master_branch(templates("master_5"), "master"; repo_url = repo_url_with_auth) do master_5
     withenv("GITHUB_REPOSITORY" => COMPATHELPER_INTEGRATION_TEST_REPO,
             "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
-        precommit_hook = CompatHelper.update_manifests
+        precommit_hook = () -> CompatHelper.update_manifests(; delete_old_manifest = true)
         env = ENV
         ci_cfg = CompatHelper.GitHubActions(whoami)
         CompatHelper.main(precommit_hook, env, ci_cfg;
