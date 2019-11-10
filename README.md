@@ -24,14 +24,28 @@ To install CompatHelper as a GitHub Action on your repository:
 
 CompatHelper is now installed as a GitHub Action on your repository.
 
-## Customizing the target branch
+## Overriding the default branch
 
 By default, CompatHelper will open pull requests against your repository's default branch. If you would like to override this behavior, set the `master_branch` keyword argument. For example:
 ```julia
 CompatHelper.main(; master_branch = "my-custom-branch")
 ```
 
-## Actions Setup
+## Custom registries
+
+To use a list of custom registries instead of the General registry, use the `registries` keyword argument. For example:
+```julia
+my_registries = [Pkg.RegistrySpec(name = "General",
+                                  uuid = "23338594-aafe-5451-b93e-139f81909106",
+                                  url = "https://github.com/JuliaRegistries/General.git"),
+                 Pkg.RegistrySpec(name = "BioJuliaRegistry",
+                                  uuid = "ccbd2cc2-2954-11e9-1ccf-f3e7900901ca",
+                                  url = "https://github.com/BioJulia/BioJuliaRegistry.git")]
+
+CompatHelper.main(; registries = my_registries)
+```
+
+## Actions setup
 * Sign up for the beta of GitHub Actions from https://github.com/features/actions 
 * Open the specific repository, navigate to the Settings tab, click Actions option, check if the Actions is enabled for this repository.
 
