@@ -62,22 +62,20 @@ function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Pkg.
                 @debug("Skipping JLL package: $(name)")
             else
                 package = Package(name, uuid)
+                dep_to_latest_version[package] = nothing
                 compat_entry = convert(String, strip(get(compat, name, "")))::String
                 if length(compat_entry) > 0
-                    compat_entry_verbatim = compat_entry
-                    compat_entry_versionspec = try
+                    dep_to_current_compat_entry_verbatim[package] = compat_entry
+                    dep_to_current_compat_entry[package] = try
                         Pkg.Types.semver_spec(compat_entry)
                     catch
                         nothing
                     end
                 else
                     push!(deps_with_missing_compat_entry, package)
-                    compat_entry_versionspec = nothing
-                    compat_entry_verbatim = nothing
+                    dep_to_current_compat_entry[package] = nothing
+                    dep_to_current_compat_entry_verbatim[package] = nothing
                 end
-                dep_to_current_compat_entry[package] = compat_entry_versionspec
-                dep_to_current_compat_entry_verbatim[package] = compat_entry_verbatim
-                dep_to_latest_version[package] = nothing
             end
         end
     else
