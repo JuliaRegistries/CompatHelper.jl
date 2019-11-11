@@ -58,7 +58,7 @@ function make_pr_for_new_version(precommit_hook::Function,
     current_compat_entry = dep_to_current_compat_entry[dep]
     current_compat_entry_verbatim = dep_to_current_compat_entry_verbatim[dep]
     latest_version = dep_to_latest_version[dep]
-    if !isnothing(current_compat_entry) && latest_version in current_compat_entry
+    if !isnothing(latest_version) && !isnothing(current_compat_entry) && latest_version in current_compat_entry
         @info("latest_version in current_compat_entry",
               current_compat_entry,
               latest_version,
