@@ -1,7 +1,5 @@
 block_labels = [ "DO NOT MERGE" ]
 
-delete_merged_branches = true
-
 status = [
     "codecov/patch",
     "codecov/project",
