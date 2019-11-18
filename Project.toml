@@ -1,7 +1,7 @@
 name = "CompatHelper"
 uuid = "aa819f21-2bde-4658-8897-bab36330d9b7"
 authors = ["Dilum Aluthge <dilum@aluthge.com>", "Brown Center for Biomedical Informatics"]
-version = "1.0.0-DEV"
+version = "1.0.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
