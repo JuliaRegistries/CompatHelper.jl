@@ -14,7 +14,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
-                                 pr_title_prefix::String)
+                                 pr_title_prefix::String,
+                                 registries::Vector{Pkg.Types.RegistrySpec})
     original_directory = pwd()
     always_assert(keep_existing_compat || drop_existing_compat)
     for dep in keys(dep_to_current_compat_entry)
@@ -31,7 +32,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                                 master_branch = master_branch,
                                 keep_existing_compat = keep_existing_compat,
                                 drop_existing_compat = drop_existing_compat,
-                                pr_title_prefix = pr_title_prefix)
+                                pr_title_prefix = pr_title_prefix,
+                                registries = registries)
     end
     cd(original_directory)
     return nothing
@@ -50,7 +52,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
-                                 pr_title_prefix::String)
+                                 pr_title_prefix::String,
+                                 registries::Vector{Pkg.Types.RegistrySpec})
     original_directory = pwd()
     always_assert(keep_existing_compat || drop_existing_compat)
     parenthetical_in_pr_title = keep_existing_compat && drop_existing_compat
@@ -90,7 +93,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                                     keep_or_drop = :brandnewentry,
                                     parenthetical_in_pr_title = false,
                                     master_branch = master_branch,
-                                    pr_title_prefix = pr_title_prefix)
+                                    pr_title_prefix = pr_title_prefix,
+                                    registries = registries)
         else
             if drop_existing_compat
                 drop_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
@@ -111,7 +115,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                                         keep_or_drop = :drop,
                                         parenthetical_in_pr_title = parenthetical_in_pr_title,
                                         master_branch = master_branch,
-                                        pr_title_prefix = pr_title_prefix)
+                                        pr_title_prefix = pr_title_prefix,
+                                        registries = registries)
             end
             if keep_existing_compat
                 keep_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
@@ -132,7 +137,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                                         keep_or_drop = :keep,
                                         parenthetical_in_pr_title = parenthetical_in_pr_title,
                                         master_branch = master_branch,
-                                        pr_title_prefix = pr_title_prefix)
+                                        pr_title_prefix = pr_title_prefix,
+                                        registries = registries)
             end
         end
     end
@@ -173,7 +179,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  keep_or_drop::Symbol,
                                  parenthetical_in_pr_title::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
-                                 pr_title_prefix::String)
+                                 pr_title_prefix::String,
+                                 registries::Vector{Pkg.Types.RegistrySpec})
     original_directory = pwd()
     name = dep.name
     always_assert(keep_or_drop == :keep || keep_or_drop == :drop || keep_or_drop == :brandnewentry)
@@ -259,7 +266,11 @@ function make_pr_for_new_version(precommit_hook::Function,
             run(`git add -A`)
         catch
         end
-        precommit_hook()
+        if hasmethod(precommit_hook, Tuple{}, (:registries,))
+            precommit_hook(; registries = registries)
+        else
+            precommit_hook()
+        end
         try
             run(`git add -A`)
         catch

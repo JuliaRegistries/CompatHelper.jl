@@ -48,6 +48,7 @@ function main(precommit_hook::Function = update_manifests,
                             keep_existing_compat = keep_existing_compat,
                             drop_existing_compat = drop_existing_compat,
                             master_branch = master_branch,
-                            pr_title_prefix = pr_title_prefix)
+                            pr_title_prefix = pr_title_prefix,
+                            registries = registries)
     return nothing
 end
