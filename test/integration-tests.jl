@@ -13,7 +13,7 @@ delete_stale_branches(repo_url_with_auth)
 with_master_branch(templates("master_1"), "master"; repo_url = repo_url_with_auth) do master_1
     withenv("GITHUB_REPOSITORY" => COMPATHELPER_INTEGRATION_TEST_REPO,
             "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
-        precommit_hook = () -> (; registries)
+        precommit_hook = () -> ()
         env = ENV
         ci_cfg = CompatHelper.GitHubActions(whoami)
         CompatHelper.main(precommit_hook, env, ci_cfg;
@@ -84,7 +84,9 @@ end
 with_master_branch(templates("master_5"), "master"; repo_url = repo_url_with_auth) do master_5
     withenv("GITHUB_REPOSITORY" => COMPATHELPER_INTEGRATION_TEST_REPO,
             "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
-        precommit_hook = () -> CompatHelper.update_manifests(; delete_old_manifest = true)
+        precommit_hook = (; registries) -> CompatHelper.update_manifests(;
+                                                                         delete_old_manifest = true,
+                                                                         registries = registries)
         env = ENV
         ci_cfg = CompatHelper.GitHubActions(whoami)
         CompatHelper.main(precommit_hook, env, ci_cfg;
