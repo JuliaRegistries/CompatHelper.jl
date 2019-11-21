@@ -51,7 +51,7 @@ function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Pkg.
     project = Pkg.TOML.parsefile(project_file)
     if haskey(project, "deps")
         deps = project["deps"]
-        compat = project["compat"]
+        compat = get(project, "compat", Dict{Any, Any}())
         stdlib_uuids = gather_stdlib_uuids()
         for d in deps
             name = d[1]
