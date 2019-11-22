@@ -253,6 +253,7 @@ function make_pr_for_new_version(precommit_hook::Function,
         run(`git checkout $(new_branch_name)`)
         project_file = joinpath(tmp_dir, "REPO", "Project.toml")
         project = Pkg.TOML.parsefile(project_file)
+        add_compat_section!(project)
         project["compat"][name] = new_compat_entry
         rm(project_file; force = true, recursive = true)
         open(project_file, "w") do io

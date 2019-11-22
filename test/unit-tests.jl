@@ -49,6 +49,12 @@ Test.@testset "utils.jl" begin
     Test.@test CompatHelper.generate_pr_title_parenthetical(:keep, false) == ""
     Test.@test CompatHelper.generate_pr_title_parenthetical(:drop, false) == ""
     Test.@test CompatHelper.generate_pr_title_parenthetical(:brandnewentry, false) == ""
+    project = Dict{Any, Any}()
+    Test.@test !haskey(project, "compat")
+    CompatHelper.add_compat_section!(project)
+    Test.@test haskey(project, "compat")
+    CompatHelper.add_compat_section!(project)
+    Test.@test haskey(project, "compat")
 end
 
 Test.@testset "version_numbers.jl" begin

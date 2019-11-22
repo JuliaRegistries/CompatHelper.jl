@@ -1,3 +1,10 @@
+function add_compat_section!(project::Dict)
+    if !haskey(project, "compat")
+        project["compat"] = Dict{Any, Any}()
+    end
+    return project
+end
+
 function get_random_string()
     return string(utc_to_string(now_localzone()), "-", rand(UInt32))::String
 end
