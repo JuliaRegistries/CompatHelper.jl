@@ -25,6 +25,9 @@ function get_all_pull_requests(repo::GitHub.Repo,
     return all_pull_requests
 end
 
+_repos_are_the_same(::GitHub.Repo, ::Nothing) = false
+_repos_are_the_same(::Nothing, ::GitHub.Repo) = false
+_repos_are_the_same(::Nothing, ::Nothing) = false
 function _repos_are_the_same(x::GitHub.Repo, y::GitHub.Repo)
     if x.name == y.name && x.full_name == y.full_name &&
                            x.owner == y.owner &&
