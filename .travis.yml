@@ -21,11 +21,6 @@ language: julia
 os:
   - linux
 
-matrix:
-  allow_failures:
-    - julia: nightly
-  fast_finish: true
-
 notifications:
   email: false
 
@@ -38,3 +33,13 @@ notifications:
 script: julia --code-coverage --inline=no -e 'using Pkg; Pkg.build(); Pkg.test(coverage=true)'
 
 after_success: julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+
+jobs:
+  include:
+    - stage: VersionVigilante
+      julia: "1.2"
+      script:
+        - set -e
+        - julia -e 'using Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/bcbi/VersionVigilante.jl"))'
+        - julia -e 'using VersionVigilante; VersionVigilante.main("https://github.com/bcbi/CompatHelper.jl")'
+      after_success: true
