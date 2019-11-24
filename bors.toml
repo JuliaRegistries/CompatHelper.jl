@@ -6,6 +6,7 @@ status = [
     "codecov/patch",
     "codecov/project",
     "Travis CI - Branch",
+    "VersionVigilante",
 ]
 
 timeout_sec = 36000

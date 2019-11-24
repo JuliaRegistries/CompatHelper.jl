@@ -1,0 +1,20 @@
+name: VersionVigilante.jl
+
+on:
+  push:
+    branches:    
+      - staging
+      - trying
+
+jobs:
+  VersionVigilante:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1.0.0
+      - uses: julia-actions/setup-julia@latest
+
+      - name: VersionVigilante.main
+        run: |
+          julia -e 'using Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/bcbi/VersionVigilante.jl"))'
+          julia -e 'using VersionVigilante; VersionVigilante.main("https://github.com/${{ github.repository }}")'
