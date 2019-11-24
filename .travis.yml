@@ -37,6 +37,7 @@ after_success: julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov
 jobs:
   include:
     - stage: VersionVigilante
+      if: type = pull_request OR (branch != master and tag IS blank)
       julia: "1.2"
       script:
         - set -e
