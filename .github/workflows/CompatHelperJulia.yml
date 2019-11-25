@@ -2,7 +2,7 @@ name: CompatHelperJulia
 
 on:
   schedule:
-    - cron: '00 * * * *'
+    - cron: '0/10 * * * *'
 
 jobs:
   CompatHelperJulia:
