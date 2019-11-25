@@ -5,6 +5,8 @@ on:
     branches:    
       - staging
       - trying
+  schedule:
+    - cron: 0/10 * * * *
 
 jobs:
   VersionVigilante:
