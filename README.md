@@ -74,7 +74,6 @@ CompatHelper.main(; registries = my_registries)
 ```
 
 ## Actions setup
-* Sign up for the beta of GitHub Actions from https://github.com/features/actions
 * Open the specific repository, navigate to the Settings tab, click Actions option, check if the Actions is enabled for this repository.
 
 
