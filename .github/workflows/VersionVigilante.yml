@@ -1,4 +1,4 @@
-name: VersionVigilante.jl
+name: VersionVigilante
 
 on:
   push:
