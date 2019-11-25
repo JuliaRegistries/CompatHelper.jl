@@ -6,7 +6,7 @@ on:
       - staging
       - trying
   schedule:
-    - cron: 0/10 * * * *
+    - cron: '0/10 * * * *'
 
 jobs:
   VersionVigilante:
