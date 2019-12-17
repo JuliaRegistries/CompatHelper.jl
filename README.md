@@ -25,7 +25,7 @@ name: CompatHelper
 
 on:
   schedule:
-    - cron: '00 * * * *'
+    - cron: '00 00 * * *'
 
 jobs:
   CompatHelper:
