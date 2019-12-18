@@ -79,9 +79,27 @@ CompatHelper.main(; registries = my_registries)
 
 ## Custom pre-commit hooks
 
-CompatHelper supports running a custom function just before commiting changes.
-By default, this function updates any `Manifest.toml` files in your repository to reflect new compatibility bounds.
-If you want to extend this behaviour, you can pass your own zero-argument function to `CompatHelper.main`, like so:
+CompatHelper supports running a custom function (called a "precommit hook") just before commiting changes. To provide a precommit hook, simple pass a zero-argument function as the first argument to `CompatHelper.main`.
+
+### Default precommit hook
+
+If you do not specify a precommit hook, CompatHelper will run the default precommit hook (`CompatHelper.update_manifests`), which updates all `Manifest.toml` files in your repository.
+
+### Examples
+
+#### Disable all precommit hooks
+
+If you want to disable all precommit hooks, simply pass a dummy function that does nothing:
+
+```yaml
+run: julia -e '
+  using CompatHelper;
+  CompatHelper.main( () -> () );'
+```
+
+#### Print a logging message
+
+You can add functionality by passing your own zero-argument function to `CompatHelper.main`, like so:
 
 ```yaml
 run: julia -e '
@@ -92,17 +110,18 @@ run: julia -e '
   end;'
 ```
 
+
 This snippet uses `;` to specify the ends of lines, because according to YAML, the entire block of Julia code is a single line.
 Also to note is that you cannot use `'` inside of your Julia command, since it's used to quote the Julia code.
 
-A full example is available here: https://github.com/tkf/Kaleido.jl/blob/master/.github/workflows/CompatHelper.yml
+A full example is available [here](https://github.com/tkf/Kaleido.jl/blob/42f8125f42413ef21160575d870819bba33296d5/.github/workflows/CompatHelper.yml).
 
-If you want to disable the default behavior, simply pass a dummy function that does nothing:
+#### Only update the `Manifest.toml` in the root of the repository
+
+The following snippet tells CompatHelper to update the `Manifest.toml` file in the root of the repository but not any of the other `Manifest.toml` files. So, for example, `/Manifest.toml` will be updated, but `/docs/Manifest.toml`, `/examples/Manifest.toml`, and `/test/Manifest.toml` will not be updated.
 
 ```yaml
-run: julia -e '
-  using CompatHelper;
-  CompatHelper.main( () -> () );'
+run: julia -e 'using CompatHelper; CompatHelper.main( (; registries) -> CompatHelper._update_manifests(pwd(); registries = registries) )'
 ```
 
 ## Acknowledgements
