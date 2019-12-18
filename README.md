@@ -83,7 +83,7 @@ CompatHelper supports running a custom function (called a "precommit hook") just
 
 ### Default precommit hook
 
-If you do not specify a precommit hook, the default precommit hook (`CompatHelper.update_manifests`) will be run. The default precommit hook updates all `Manifest.toml` files in your repository.
+If you do not specify a precommit hook, CompatHelper will run the default precommit hook (`CompatHelper.update_manifests`), which updates all `Manifest.toml` files in your repository.
 
 ### Examples
 
