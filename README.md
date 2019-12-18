@@ -118,7 +118,7 @@ A full example is available [here](https://github.com/tkf/Kaleido.jl/blob/42f812
 
 #### Only update the `Manifest.toml` in the root of the repository
 
-The following snippet tells CompatHelper to update the `Manifest.toml` file in the root of the repository but not any of the other `Manifest.toml` files. So, for example, `/Manifest.toml` will be updated, but `/docs/Manifest.toml` will not be updated.
+The following snippet tells CompatHelper to update the `Manifest.toml` file in the root of the repository but not any of the other `Manifest.toml` files. So, for example, `/Manifest.toml` will be updated, but `/docs/Manifest.toml`, `/examples/Manifest.toml`, and `/test/Manifest.toml` will not be updated.
 
 ```yaml
 run: julia -e 'using CompatHelper; CompatHelper.main( (; registries) -> CompatHelper._update_manifests(pwd(); registries = registries) )'
