@@ -29,16 +29,11 @@ on:
 
 jobs:
   CompatHelper:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        julia-version: [1.2.0]
-        julia-arch: [x86]
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
       - uses: julia-actions/setup-julia@latest
         with:
-          version: ${{ matrix.julia-version }}
+          version: 1.2
       - name: Pkg.add("CompatHelper")
         run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
       - name: CompatHelper.main()
