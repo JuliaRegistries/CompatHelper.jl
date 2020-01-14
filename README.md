@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: julia-actions/setup-julia@latest
         with:
-          version: 1.2
+          version: 1.3
       - name: Pkg.add("CompatHelper")
         run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
       - name: CompatHelper.main()
