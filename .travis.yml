@@ -13,7 +13,7 @@ env:
     - JULIA_DEBUG="all"
 
 julia:
-  - "1.1"
+  - "1.2"
   - "1"
   - "nightly"
 
