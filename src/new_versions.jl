@@ -213,7 +213,10 @@ function make_pr_for_new_version(precommit_hook::Function,
                              "with this new compat entry. ",
                              "It is your responsibility to make sure that ",
                              "your package tests pass before you merge this ",
-                             "pull request.")
+                             "pull request. ",
+                             "Note: Consider tagging a patch release immediately after ",
+                             "merging this PR, as downstream packages ",
+                             "may depend on this for tests to pass.")
     else
         new_pr_title = string("$(pr_title_prefix)",
                               "CompatHelper: bump compat for ",
