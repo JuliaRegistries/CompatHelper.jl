@@ -12,8 +12,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1.0.0
-      - uses: julia-actions/setup-julia@latest
-
       - name: VersionVigilante.main
         run: |
           julia -e 'using Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/bcbi/VersionVigilante.jl"))'
