@@ -14,6 +14,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
+                                 subdir::AbstractString,
                                  pr_title_prefix::String,
                                  registries::Vector{Pkg.Types.RegistrySpec})
     original_directory = pwd()
@@ -30,6 +31,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                 ci_cfg;
                                 auth = auth,
                                 master_branch = master_branch,
+                                subdir = subdir,
                                 keep_existing_compat = keep_existing_compat,
                                 drop_existing_compat = drop_existing_compat,
                                 pr_title_prefix = pr_title_prefix,
@@ -52,6 +54,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
+                                 subdir::AbstractString,
                                  pr_title_prefix::String,
                                  registries::Vector{Pkg.Types.RegistrySpec})
     original_directory = pwd()
@@ -93,6 +96,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                     keep_or_drop = :brandnewentry,
                                     parenthetical_in_pr_title = false,
                                     master_branch = master_branch,
+                                    subdir = subdir,
                                     pr_title_prefix = pr_title_prefix,
                                     registries = registries)
         else
@@ -115,6 +119,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                         keep_or_drop = :drop,
                                         parenthetical_in_pr_title = parenthetical_in_pr_title,
                                         master_branch = master_branch,
+                                        subdir = subdir,
                                         pr_title_prefix = pr_title_prefix,
                                         registries = registries)
             end
@@ -137,6 +142,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                         keep_or_drop = :keep,
                                         parenthetical_in_pr_title = parenthetical_in_pr_title,
                                         master_branch = master_branch,
+                                        subdir = subdir,
                                         pr_title_prefix = pr_title_prefix,
                                         registries = registries)
             end
@@ -179,6 +185,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  keep_or_drop::Symbol,
                                  parenthetical_in_pr_title::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
+                                 subdir::AbstractString,
                                  pr_title_prefix::String,
                                  registries::Vector{Pkg.Types.RegistrySpec})
     original_directory = pwd()
@@ -254,7 +261,7 @@ function make_pr_for_new_version(precommit_hook::Function,
         new_branch_name = "compathelper/new_version/$(get_random_string())"
         run(`git branch $(new_branch_name)`)
         run(`git checkout $(new_branch_name)`)
-        project_file = joinpath(tmp_dir, "REPO", "Project.toml")
+        project_file = joinpath(tmp_dir, "REPO", subdir, "Project.toml")
         project = Pkg.TOML.parsefile(project_file)
         add_compat_section!(project)
         project["compat"][name] = new_compat_entry

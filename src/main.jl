@@ -11,7 +11,8 @@ function main(precommit_hook::Function = update_manifests,
               keep_existing_compat::Bool = true,
               drop_existing_compat::Bool = false,
               master_branch::Union{DefaultBranch, AbstractString} = DefaultBranch(),
-              pr_title_prefix::String = "")
+              pr_title_prefix::String = "",
+              subdir::String = "")
     if !keep_existing_compat && !drop_existing_compat
         throw(ArgumentError("At least one of keep_existing_compat, drop_existing_compat must be true"))
     end
@@ -24,7 +25,8 @@ function main(precommit_hook::Function = update_manifests,
         dep_to_latest_version,
         deps_with_missing_compat_entry = get_project_deps(repo;
                                                           auth = auth,
-                                                          master_branch = master_branch)
+                                                          master_branch = master_branch,
+                                                          subdir = subdir)
     get_latest_version_from_registries!(dep_to_latest_version,
                                         registries)
     _all_open_prs = get_all_pull_requests(repo, "open"; auth = auth)
@@ -48,6 +50,7 @@ function main(precommit_hook::Function = update_manifests,
                             keep_existing_compat = keep_existing_compat,
                             drop_existing_compat = drop_existing_compat,
                             master_branch = master_branch,
+                            subdir = subdir,
                             pr_title_prefix = pr_title_prefix,
                             registries = registries)
     return nothing

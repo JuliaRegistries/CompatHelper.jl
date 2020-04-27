@@ -1,7 +1,7 @@
 import GitHub
 import Pkg
 
-function get_project_deps(repo::GitHub.Repo; auth::GitHub.Authorization, master_branch::Union{DefaultBranch, AbstractString})
+function get_project_deps(repo::GitHub.Repo; auth::GitHub.Authorization, master_branch::Union{DefaultBranch, AbstractString}, subdir::AbstractString)
     original_directory = pwd()
     tmp_dir = mktempdir()
     atexit(() -> rm(tmp_dir; force = true, recursive = true))
@@ -15,7 +15,7 @@ function get_project_deps(repo::GitHub.Repo; auth::GitHub.Authorization, master_
     default_branch = git_get_current_branch()
     master_branch_name = git_decide_master_branch(master_branch, default_branch)
     run(`git checkout $(master_branch_name)`)
-    project_file = joinpath(tmp_dir, "REPO", "Project.toml")
+    project_file = joinpath(tmp_dir, "REPO", subdir, "Project.toml")
     dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
                                  dep_to_latest_version,
                                  deps_with_missing_compat_entry = get_project_deps(project_file)
