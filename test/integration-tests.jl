@@ -106,7 +106,7 @@ with_master_branch(templates("master_6"), "master"; repo_url = repo_url_with_aut
         ci_cfg = CompatHelper.GitHubActions(whoami)
         CompatHelper.main(precommit_hook, env, ci_cfg;
                           pr_title_prefix = "[test-1c] ",
-                          master_branch = master_1,
+                          master_branch = master_6,
                           keep_existing_compat = true,
                           drop_existing_compat = true,
                           subdir = "subdir")
