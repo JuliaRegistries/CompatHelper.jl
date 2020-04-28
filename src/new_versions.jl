@@ -190,6 +190,11 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  registries::Vector{Pkg.Types.RegistrySpec})
     original_directory = pwd()
     name = dep.name
+    if subdir != ""
+        subdir_string = " for package $(splitpath(subdir)[end])"
+    else
+        subdir_string = ""
+    end
     always_assert(keep_or_drop == :keep || keep_or_drop == :drop || keep_or_drop == :brandnewentry)
     if keep_or_drop == :keep
         pr_body_keep_or_drop = string("This keeps the compat entries for ",
@@ -211,10 +216,12 @@ function make_pr_for_new_version(precommit_hook::Function,
         new_pr_title = string("$(pr_title_prefix)",
                               "CompatHelper: add new compat entry for ",
                               "\"$(name)\" at version ",
-                              "\"$(compat_entry_for_latest_version)\"")
+                              "\"$(compat_entry_for_latest_version)\"",
+                              "$subdir_string")
         new_pr_body = string("This pull request sets the compat ",
                              "entry for the `$(name)` package ",
-                             "to `$(new_compat_entry)`.\n\n",
+                             "to `$(new_compat_entry)`",
+                             "$subdir_string.\n\n",
                              "$(pr_body_keep_or_drop)",
                              "Note: I have not tested your package ",
                              "with this new compat entry. ",
@@ -229,12 +236,14 @@ function make_pr_for_new_version(precommit_hook::Function,
                               "CompatHelper: bump compat for ",
                               "\"$(name)\" to ",
                               "\"$(compat_entry_for_latest_version)\"",
+                              "$subdir_string",
                               "$(pr_title_parenthetical)")
         old_compat_entry_verbatim = convert(String, strip(dep_to_current_compat_entry_verbatim[dep]))
         new_pr_body = string("This pull request changes the compat ",
                              "entry for the `$(name)` package ",
                              "from `$(old_compat_entry_verbatim)` ",
-                             "to `$(new_compat_entry)`.\n\n",
+                             "to `$(new_compat_entry)`",
+                             "$subdir_string.\n\n",
                              "$(pr_body_keep_or_drop)",
                              "Note: I have not tested your package ",
                              "with this new compat entry. ",
