@@ -65,6 +65,14 @@ my_registries = [Pkg.RegistrySpec(name = "General",
 CompatHelper.main(; registries = my_registries)
 ```
 
+## Using subdirectories
+
+By default, CompatHelper expects your git repository to contain a single package, and that the `Project.toml` for that package exists in the top-level directory. You can indicate that you want CompatHelper to process one or many packages that exist in subdirectories of the git repository by passing the `subdirs` keyword to the main function. For example:
+```julia
+CompatHelper.main(; subdirs = ["Subdir1", "very/deeply/nested/Subdir2"])
+```
+Note that the convention for specifying a top-level directory in the `subdirs` keyword is `[""]`
+
 ## Actions setup
 * Open the specific repository, navigate to the Settings tab, click Actions option, check if the Actions is enabled for this repository.
 

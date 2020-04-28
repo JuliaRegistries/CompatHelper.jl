@@ -14,6 +14,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
+                                 subdir::AbstractString,
                                  pr_title_prefix::String,
                                  registries::Vector{Pkg.Types.RegistrySpec})
     original_directory = pwd()
@@ -30,6 +31,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                 ci_cfg;
                                 auth = auth,
                                 master_branch = master_branch,
+                                subdir = subdir,
                                 keep_existing_compat = keep_existing_compat,
                                 drop_existing_compat = drop_existing_compat,
                                 pr_title_prefix = pr_title_prefix,
@@ -52,6 +54,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
+                                 subdir::AbstractString,
                                  pr_title_prefix::String,
                                  registries::Vector{Pkg.Types.RegistrySpec})
     original_directory = pwd()
@@ -93,6 +96,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                     keep_or_drop = :brandnewentry,
                                     parenthetical_in_pr_title = false,
                                     master_branch = master_branch,
+                                    subdir = subdir,
                                     pr_title_prefix = pr_title_prefix,
                                     registries = registries)
         else
@@ -115,6 +119,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                         keep_or_drop = :drop,
                                         parenthetical_in_pr_title = parenthetical_in_pr_title,
                                         master_branch = master_branch,
+                                        subdir = subdir,
                                         pr_title_prefix = pr_title_prefix,
                                         registries = registries)
             end
@@ -137,6 +142,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                         keep_or_drop = :keep,
                                         parenthetical_in_pr_title = parenthetical_in_pr_title,
                                         master_branch = master_branch,
+                                        subdir = subdir,
                                         pr_title_prefix = pr_title_prefix,
                                         registries = registries)
             end
@@ -179,10 +185,16 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  keep_or_drop::Symbol,
                                  parenthetical_in_pr_title::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
+                                 subdir::AbstractString,
                                  pr_title_prefix::String,
                                  registries::Vector{Pkg.Types.RegistrySpec})
     original_directory = pwd()
     name = dep.name
+    if subdir != ""
+        subdir_string = " for package $(splitpath(subdir)[end])"
+    else
+        subdir_string = ""
+    end
     always_assert(keep_or_drop == :keep || keep_or_drop == :drop || keep_or_drop == :brandnewentry)
     if keep_or_drop == :keep
         pr_body_keep_or_drop = string("This keeps the compat entries for ",
@@ -204,10 +216,12 @@ function make_pr_for_new_version(precommit_hook::Function,
         new_pr_title = string("$(pr_title_prefix)",
                               "CompatHelper: add new compat entry for ",
                               "\"$(name)\" at version ",
-                              "\"$(compat_entry_for_latest_version)\"")
+                              "\"$(compat_entry_for_latest_version)\"",
+                              "$subdir_string")
         new_pr_body = string("This pull request sets the compat ",
                              "entry for the `$(name)` package ",
-                             "to `$(new_compat_entry)`.\n\n",
+                             "to `$(new_compat_entry)`",
+                             "$subdir_string.\n\n",
                              "$(pr_body_keep_or_drop)",
                              "Note: I have not tested your package ",
                              "with this new compat entry. ",
@@ -222,12 +236,14 @@ function make_pr_for_new_version(precommit_hook::Function,
                               "CompatHelper: bump compat for ",
                               "\"$(name)\" to ",
                               "\"$(compat_entry_for_latest_version)\"",
+                              "$subdir_string",
                               "$(pr_title_parenthetical)")
         old_compat_entry_verbatim = convert(String, strip(dep_to_current_compat_entry_verbatim[dep]))
         new_pr_body = string("This pull request changes the compat ",
                              "entry for the `$(name)` package ",
                              "from `$(old_compat_entry_verbatim)` ",
-                             "to `$(new_compat_entry)`.\n\n",
+                             "to `$(new_compat_entry)`",
+                             "$subdir_string.\n\n",
                              "$(pr_body_keep_or_drop)",
                              "Note: I have not tested your package ",
                              "with this new compat entry. ",
@@ -254,7 +270,7 @@ function make_pr_for_new_version(precommit_hook::Function,
         new_branch_name = "compathelper/new_version/$(get_random_string())"
         run(`git branch $(new_branch_name)`)
         run(`git checkout $(new_branch_name)`)
-        project_file = joinpath(tmp_dir, "REPO", "Project.toml")
+        project_file = joinpath(tmp_dir, "REPO", subdir, "Project.toml")
         project = Pkg.TOML.parsefile(project_file)
         add_compat_section!(project)
         project["compat"][name] = new_compat_entry

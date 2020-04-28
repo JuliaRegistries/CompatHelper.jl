@@ -97,6 +97,22 @@ with_master_branch(templates("master_5"), "master"; repo_url = repo_url_with_aut
     end
 end
 
+# Same as master_1 and master_5, but in sub-directories
+with_master_branch(templates("master_6"), "master"; repo_url = repo_url_with_auth) do master_6
+    withenv("GITHUB_REPOSITORY" => COMPATHELPER_INTEGRATION_TEST_REPO,
+            "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
+        precommit_hook = () -> ()
+        env = ENV
+        ci_cfg = CompatHelper.GitHubActions(whoami)
+        CompatHelper.main(precommit_hook, env, ci_cfg;
+                          pr_title_prefix = "[test-1c] ",
+                          master_branch = master_6,
+                          keep_existing_compat = true,
+                          drop_existing_compat = true,
+                          subdirs = ["subdir_1", "subdir_2"])
+    end
+end
+
 all_prs = CompatHelper.get_all_pull_requests(repo, "open";
                                              auth = auth,
                                              per_page = 3,
