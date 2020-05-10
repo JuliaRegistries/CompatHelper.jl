@@ -1,3 +1,13 @@
+original_directory = pwd()
+tmp_dir = mktempdir()
+atexit(() -> rm(tmp_dir; force = true, recursive = true))
+cd(tmp_dir)
+run(`ssh-keygen -N "" -f compathelper_key`)
+COMPATHELPER_PRIV = read("compathelper_key", String)
+ENV["COMPATHELPER_PRIV"] = COMPATHELPER_PRIV
+cd(original_directory)
+rm(tmp_dir; force = true, recursive = true)
+
 COMPATHELPER_INTEGRATION_TEST_REPO = ENV["COMPATHELPER_INTEGRATION_TEST_REPO"]::String
 TEST_USER_GITHUB_TOKEN = ENV["BCBI_TEST_USER_GITHUB_TOKEN"]::String
 auth = GitHub.authenticate(TEST_USER_GITHUB_TOKEN)
