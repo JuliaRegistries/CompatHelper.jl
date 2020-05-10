@@ -1,3 +1,4 @@
+import Base64
 import CompatHelper
 import Dates
 import GitHub

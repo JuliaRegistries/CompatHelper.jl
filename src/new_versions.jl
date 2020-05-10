@@ -255,9 +255,19 @@ function make_pr_for_new_version(precommit_hook::Function,
         @info("An open PR with the title already exists", new_pr_title)
     else
         url_with_auth = "https://x-access-token:$(auth.token)@github.com/$(repo.full_name).git"
+        url_for_ssh = "git@github.com:$(repo.full_name).git"
+
         tmp_dir = mktempdir()
         atexit(() -> rm(tmp_dir; force = true, recursive = true))
         cd(tmp_dir)
+
+        ssh_private_key_directory = mktempdir()
+        run(`chmod 700 $(ssh_private_key_directory)`)
+        atexit(() -> rm(ssh_private_key_directory; force = true, recursive = true))
+
+        ssh_private_key_filename = joinpath(ssh_private_key_directory, "privatekey")
+        atexit(() -> rm(ssh_private_key_filename; force = true, recursive = true))
+
         try
             run(`git clone $(url_with_auth) REPO`)
         catch
@@ -300,7 +310,7 @@ function make_pr_for_new_version(precommit_hook::Function,
         if commit_was_success
             @info("Commit was a success")
             try
-                run(`git push origin $(new_branch_name)`)
+                run(`git push -f origin $(new_branch_name)`)
             catch
             end
             create_new_pull_request(repo;
@@ -309,8 +319,36 @@ function make_pr_for_new_version(precommit_hook::Function,
                                     title = new_pr_title,
                                     body = new_pr_body,
                                     auth = auth,)
+
+            COMPATHELPER_PRIV_is_defined = haskey(ENV, "COMPATHELPER_PRIV")
+            @info("Environment variable `COMPATHELPER_PRIV` is defined: $(COMPATHELPER_PRIV_is_defined)")
+            if COMPATHELPER_PRIV_is_defined
+                COMPATHELPER_PRIV = ENV["COMPATHELPER_PRIV"]
+
+                rm(ssh_private_key_filename; force = true, recursive = true)
+                open(ssh_private_key_filename, "w") do io
+                    println(io, COMPATHELPER_PRIV)
+                end
+                run(`chmod 700 $(ssh_private_key_directory)`)
+                run(`chmod 600 $(ssh_private_key_filename)`)
+
+                GIT_SSH_COMMAND = "ssh -i $(ssh_private_key_filename)"
+
+                run(`git remote remove origin`)
+                run(`git remote add origin $(url_for_ssh)`)
+                run(`git reset --soft "HEAD~1"`)
+                git_make_commit(; commit_message = new_pr_title)
+                withenv("GIT_SSH_COMMAND" => GIT_SSH_COMMAND) do
+                    try
+                        run(`git push -f origin $(new_branch_name)`)
+                    catch
+                    end
+                end
+            end
         end
         cd(original_directory)
+        rm(ssh_private_key_filename; force = true, recursive = true)
+        rm(ssh_private_key_directory; force = true, recursive = true)
         rm(tmp_dir; force = true, recursive = true)
     end
     cd(original_directory)

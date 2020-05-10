@@ -7,7 +7,18 @@ CompatHelper is a Julia package that helps you keep your `[compat]` entries up-t
 
 Whenever one of your package's dependencies releases a new version, CompatHelper opens a pull request on your repository that modifies your `[compat]` entry to reflect the newly released version.
 
-## Installation
+## Table of Contents
+
+* [Installation: part 1 (required)](#installation-part-1-required)
+* [Installation: part 2: SSH deploy keys](#installation-part-2-ssh-deploy-keys)
+* [Overriding the default branch](#overriding-the-default-branch)
+* [Custom registries](#custom-registries)
+* [Using subdirectories](#using-subdirectories)
+* [Action setup](#actions-setup)
+* [Custom pre-commit hooks](#custom-pre-commit-hooks)
+* [Acknowledgements](#acknowledgements)
+
+## Installation: part 1 (required)
 
 The easiest way to use CompatHelper is to install it as a GitHub Action.
 
@@ -42,7 +53,62 @@ jobs:
 7. Name the file `CompatHelper.yml`. (The full path to the file should be `.github/workflows/CompatHelper.yml`.)
 8. In the top right-hand corner, click on the green "Start commit" button, and then click on the green "Commit new file" button.
 
-CompatHelper is now installed as a GitHub Action on your repository.
+CompatHelper is now installed as a GitHub Action on your repository. But wait: do you fall into any of the following categories:
+1. You use GitHub Actions to test your package using continuous integration (CI).
+2. You use GitHub Actions to build and deploy the documentation for your package.
+
+If you do NOT fall into any of those categories, then you are done! There is nothing more that you need to do.
+
+But if you do fall into one or more of those categories, then you also need to set up an SSH deploy key for CompatHelper to use. Read on:
+
+## Installation: part 2: SSH deploy keys
+
+The default CompatHelper setup has one flaw: the pull requests that CompatHelper opens will not trigger any other GitHub Actions.
+
+Consider the following situations:
+1. You use GitHub Actions to test your package using continuous integration (CI).
+2. You use GitHub Actions to build and deploy the documentation for your package.
+
+If any of those situations apply to you, then you will need to set up an SSH deploy key for CompatHelper. Once you have set up an SSH deploy key for CompatHelper, the pull requests that CompatHelper opens will trigger all of the usual GitHub Actions.
+
+It is easy to set up an SSH deploy key for CompatHelper. Here are the instructions:
+1. `ssh-keygen -N "" -f compathelper_key`
+2. `cat compathelper_key # This is the private key. Copy this to your clipboard.` 
+3. Go to the GitHub page for your package's repository, click on the **Settings** tab, then click on **Secrets**, and then click on **Add new secret**. Name the secret `COMPATHELPER_PRIV`. For the contents, paste in the private key that you copied in the previous step.
+4. `cat compathelper_key.pub # This is the private key. Copy this to your clipboard.`
+5. Go to the GitHub page for your package's repository, click on the **Settings** tab, then click on **Deploy keys**, and then click on **Add deploy key**. Name the deploy key `COMPATHELPER_PUB`. For the contents, paste in the public key that you copied in the previous step. Make sure that you give the key **write access**.
+6. `rm -f compathelper_key compathelper_key.pub`
+7. Edit the `.github/workflows/CompatHelper.yml` file and add the following line after the line that looks like `GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}`:
+```yaml
+          COMPATHELPER_PRIV: ${{ secrets.COMPATHELPER_PRIV }}
+```
+
+The final `.github/workflows/CompatHelper.yml` file should look like this:
+
+```yaml
+name: CompatHelper
+
+on:
+  schedule:
+    - cron: '00 00 * * *'
+  issues:
+    types: [opened, reopened]
+
+jobs:
+  CompatHelper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: julia-actions/setup-julia@latest
+        with:
+          version: 1.3
+      - name: Pkg.add("CompatHelper")
+        run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
+      - name: CompatHelper.main()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMPATHELPER_PRIV: ${{ secrets.COMPATHELPER_PRIV }}
+        run: julia -e 'using CompatHelper; CompatHelper.main()'
+```
 
 ## Overriding the default branch
 
