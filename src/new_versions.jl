@@ -11,6 +11,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  pr_titles::Vector{String},
                                  ci_cfg::CIService;
                                  auth::GitHub.Authorization,
+                                 env,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
@@ -30,6 +31,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                 pr_titles,
                                 ci_cfg;
                                 auth = auth,
+                                env = env,
                                 master_branch = master_branch,
                                 subdir = subdir,
                                 keep_existing_compat = keep_existing_compat,
@@ -51,6 +53,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  pr_titles::Vector{String},
                                  ci_cfg::CIService;
                                  auth::GitHub.Authorization,
+                                 env,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
@@ -93,6 +96,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                     pr_titles,
                                     ci_cfg;
                                     auth = auth,
+                                    env = env,
                                     keep_or_drop = :brandnewentry,
                                     parenthetical_in_pr_title = false,
                                     master_branch = master_branch,
@@ -116,6 +120,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                         pr_titles,
                                         ci_cfg;
                                         auth = auth,
+                                        env = env,
                                         keep_or_drop = :drop,
                                         parenthetical_in_pr_title = parenthetical_in_pr_title,
                                         master_branch = master_branch,
@@ -139,6 +144,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                         pr_titles,
                                         ci_cfg;
                                         auth = auth,
+                                        env = env,
                                         keep_or_drop = :keep,
                                         parenthetical_in_pr_title = parenthetical_in_pr_title,
                                         master_branch = master_branch,
@@ -182,6 +188,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                                  pr_titles::Vector{String},
                                  ci_cfg::CIService;
                                  auth::GitHub.Authorization,
+                                 env,
                                  keep_or_drop::Symbol,
                                  parenthetical_in_pr_title::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
@@ -320,10 +327,10 @@ function make_pr_for_new_version(precommit_hook::Function,
                                     body = new_pr_body,
                                     auth = auth,)
 
-            COMPATHELPER_PRIV_is_defined = haskey(ENV, "COMPATHELPER_PRIV")
-            @info("Environment variable `COMPATHELPER_PRIV` is defined: $(COMPATHELPER_PRIV_is_defined)")
+            COMPATHELPER_PRIV_is_defined = ( haskey(env, "COMPATHELPER_PRIV") ) && ( isa(env["COMPATHELPER_PRIV"], AbstractString) ) && ( length(strip(env["COMPATHELPER_PRIV"])) > 0 )
+            @info("Environment variable `COMPATHELPER_PRIV` is defined and is nonempty: $(COMPATHELPER_PRIV_is_defined)")
             if COMPATHELPER_PRIV_is_defined
-                COMPATHELPER_PRIV = ENV["COMPATHELPER_PRIV"]
+                COMPATHELPER_PRIV = env["COMPATHELPER_PRIV"]
 
                 rm(ssh_private_key_filename; force = true, recursive = true)
                 open(ssh_private_key_filename, "w") do io
