@@ -1,9 +1,10 @@
 name = "CompatHelper"
 uuid = "aa819f21-2bde-4658-8897-bab36330d9b7"
 authors = ["Dilum Aluthge <dilum@aluthge.com>", "Brown Center for Biomedical Informatics"]
-version = "1.7.0"
+version = "1.8.0"
 
 [deps]
+Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 GitHub = "bc5e4493-9b4d-5f90-b8aa-2b2bcaad7a26"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"

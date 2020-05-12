@@ -58,6 +58,10 @@ But if you do fall into one or more of those categories, then you also need to s
 
 ### 1.2. Set up the SSH deploy key (optional)
 
+*Note: if you already have an SSH deploy key set up, e.g. `DOCUMENTER_KEY`, you can reuse it. See the "Advanced notes" section below.*
+
+#### 1.2.1. Motivation
+
 The default CompatHelper setup has one flaw: the pull requests that CompatHelper opens will not trigger any other GitHub Actions.
 
 Consider the following situations:
@@ -66,13 +70,29 @@ Consider the following situations:
 
 If any of those situations apply to you, then you will need to set up an SSH deploy key for CompatHelper. Once you have set up an SSH deploy key for CompatHelper, the pull requests that CompatHelper opens will trigger all of the usual GitHub Actions.
 
+#### 1.2.2. Instructions for setting up the SSH deploy key
+
 It is easy to set up an SSH deploy key for CompatHelper. Here are the instructions:
 1. `ssh-keygen -N "" -f compathelper_key`
 2. `cat compathelper_key # This is the private key. Copy this to your clipboard.`
 3. Go to the GitHub page for your package's repository, click on the **Settings** tab, then click on **Secrets**, and then click on **Add new secret**. Name the secret `COMPATHELPER_PRIV`. For the contents, paste in the private key that you copied in the previous step.
-4. `cat compathelper_key.pub # This is the private key. Copy this to your clipboard.`
+4. `cat compathelper_key.pub # This is the public key. Copy this to your clipboard.`
 5. Go to the GitHub page for your package's repository, click on the **Settings** tab, then click on **Deploy keys**, and then click on **Add deploy key**. Name the deploy key `COMPATHELPER_PUB`. For the contents, paste in the public key that you copied in the previous step. Make sure that you give the key **write access**.
 6. `rm -f compathelper_key compathelper_key.pub`
+
+#### 1.2.2. Advanced notes
+
+When you supply the private key, you can either provide the raw private key itself (as we did above), or you can provide the Base64-encoded form of the private key.
+
+For example, if you already have a Base64-encoded private key saved as a secret, you can re-use it. If e.g. the secret is named `DOCUMENTER_KEY`, then simply replace the line that looks like this:
+```yaml
+COMPATHELPER_PRIV: ${{ secrets.COMPATHELPER_PRIV }}
+```
+
+with this line:
+```yaml
+COMPATHELPER_PRIV: ${{ secrets.DOCUMENTER_KEY }}
+```
 
 ## 2. Configuration options
 
