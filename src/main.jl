@@ -17,8 +17,8 @@ function main(precommit_hook::Function = update_manifests,
         throw(ArgumentError("At least one of keep_existing_compat, drop_existing_compat must be true"))
     end
 
-    COMPATHELPER_PRIV_is_defined = ( haskey(env, "COMPATHELPER_PRIV") ) && ( isa(env["COMPATHELPER_PRIV"], AbstractString) ) && ( length(strip(env["COMPATHELPER_PRIV"])) > 0 )
-    @info("Environment variable `COMPATHELPER_PRIV` is defined and is nonempty: $(COMPATHELPER_PRIV_is_defined)")
+    COMPATHELPER_PRIV_is_defined = compathelper_priv_is_defined(env)
+    @info("Environment variable `COMPATHELPER_PRIV` is defined, is nonempty, and is not the string `false`: $(COMPATHELPER_PRIV_is_defined)")
 
     GITHUB_TOKEN = github_token(ci_cfg; env = ENV)
     GITHUB_REPOSITORY = github_repository(ci_cfg; env = ENV)

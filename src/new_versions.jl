@@ -327,10 +327,11 @@ function make_pr_for_new_version(precommit_hook::Function,
                                     body = new_pr_body,
                                     auth = auth,)
 
-            COMPATHELPER_PRIV_is_defined = ( haskey(env, "COMPATHELPER_PRIV") ) && ( isa(env["COMPATHELPER_PRIV"], AbstractString) ) && ( length(strip(env["COMPATHELPER_PRIV"])) > 0 )
-            @info("Environment variable `COMPATHELPER_PRIV` is defined and is nonempty: $(COMPATHELPER_PRIV_is_defined)")
+            COMPATHELPER_PRIV_is_defined = compathelper_priv_is_defined(env)
+            @info("Environment variable `COMPATHELPER_PRIV` is defined, is nonempty, and is not the string `false`: $(COMPATHELPER_PRIV_is_defined)")
             if COMPATHELPER_PRIV_is_defined
-                COMPATHELPER_PRIV = env["COMPATHELPER_PRIV"]
+                COMPATHELPER_PRIV_contents = env["COMPATHELPER_PRIV"]
+                COMPATHELPER_PRIV = _decode_ssh_private_key(COMPATHELPER_PRIV_contents)
 
                 rm(ssh_private_key_filename; force = true, recursive = true)
                 open(ssh_private_key_filename, "w") do io
