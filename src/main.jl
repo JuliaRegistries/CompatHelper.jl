@@ -16,10 +16,15 @@ function main(precommit_hook::Function = update_manifests,
     if !keep_existing_compat && !drop_existing_compat
         throw(ArgumentError("At least one of keep_existing_compat, drop_existing_compat must be true"))
     end
+
+    COMPATHELPER_PRIV_is_defined = ( haskey(env, "COMPATHELPER_PRIV") ) && ( isa(env["COMPATHELPER_PRIV"], AbstractString) ) && ( length(strip(env["COMPATHELPER_PRIV"])) > 0 )
+    @info("Environment variable `COMPATHELPER_PRIV` is defined and is nonempty: $(COMPATHELPER_PRIV_is_defined)")
+
     GITHUB_TOKEN = github_token(ci_cfg; env = ENV)
     GITHUB_REPOSITORY = github_repository(ci_cfg; env = ENV)
     auth = GitHub.authenticate(env["GITHUB_TOKEN"])
     repo = GitHub.repo(env["GITHUB_REPOSITORY"]; auth = auth)
+
     _all_open_prs = get_all_pull_requests(repo, "open"; auth = auth)
     _nonforked_prs = exclude_pull_requests_from_forks(repo, _all_open_prs)
     my_username = get_my_username(ci_cfg; auth = auth, env = env)
@@ -28,6 +33,7 @@ function main(precommit_hook::Function = update_manifests,
     for i = 1:length(pr_list)
         pr_titles[i] = convert(String, strip(pr_list[i].title))::String
     end
+
     for subdir in subdirs
         dep_to_current_compat_entry,
             dep_to_current_compat_entry_verbatim,
@@ -49,6 +55,7 @@ function main(precommit_hook::Function = update_manifests,
                                 pr_titles,
                                 ci_cfg;
                                 auth = auth,
+                                env = env,
                                 keep_existing_compat = keep_existing_compat,
                                 drop_existing_compat = drop_existing_compat,
                                 master_branch = master_branch,
