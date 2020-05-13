@@ -53,13 +53,13 @@ CompatHelper is now installed as a GitHub Action on your repository. But wait: d
 1. You use GitHub Actions to test your package using continuous integration (CI).
 2. You use GitHub Actions to build and deploy the documentation for your package.
 
-If you do NOT fall into any of those categories, then you are done! There is nothing more that you need to do.
+If you do not fall into any of those categories, then you are done! There is nothing more that you need to do.
 
 But if you do fall into one or more of those categories, then you also need to set up an SSH deploy key for CompatHelper to use. Read on:
 
 ### 1.2. Set up the SSH deploy key (optional)
 
-*Note: if you already have an SSH deploy key set up, e.g. `DOCUMENTER_KEY`, you can reuse it. See the "Advanced notes" section below.*
+*Note: if you already have an SSH deploy key set up in a secret, e.g. `DOCUMENTER_KEY` or `FRANKLIN_PRIV`, you can reuse it. See the "Advanced notes" section below.*
 
 #### 1.2.1. Motivation
 
@@ -71,6 +71,8 @@ Consider the following situations:
 
 If any of those situations apply to you, then you will need to set up an SSH deploy key for CompatHelper. Once you have set up an SSH deploy key for CompatHelper, the pull requests that CompatHelper opens will trigger all of the usual GitHub Actions.
 
+If none of those situations apply to you, then you don't need to set up an SSH deploy key for CompatHelper. 
+
 #### 1.2.2. Instructions for setting up the SSH deploy key
 
 It is easy to set up an SSH deploy key for CompatHelper. Here are the instructions:
@@ -81,7 +83,7 @@ It is easy to set up an SSH deploy key for CompatHelper. Here are the instructio
 5. Go to the GitHub page for your package's repository, click on the **Settings** tab, then click on **Deploy keys**, and then click on **Add deploy key**. Name the deploy key `COMPATHELPER_PUB`. For the contents, paste in the public key that you copied in the previous step. Make sure that you give the key **write access**.
 6. `rm -f compathelper_key compathelper_key.pub`
 
-#### 1.2.2. Advanced notes
+#### 1.2.3. Advanced notes
 
 When you supply the private key, you can either provide the raw private key itself (as we did above), or you can provide the Base64-encoded form of the private key.
 
