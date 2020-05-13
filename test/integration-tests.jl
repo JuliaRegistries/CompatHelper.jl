@@ -1,12 +1,9 @@
-original_directory = pwd()
-tmp_dir = mktempdir()
-atexit(() -> rm(tmp_dir; force = true, recursive = true))
-cd(tmp_dir)
-run(`ssh-keygen -N "" -f compathelper_key`)
-COMPATHELPER_PRIV = read("compathelper_key", String)
-ENV["COMPATHELPER_PRIV"] = COMPATHELPER_PRIV
-cd(original_directory)
-rm(tmp_dir; force = true, recursive = true)
+# You should set up a Git repo with an example Julia package for the integration tests.
+# You should create a bot user GitHub account, and give the bot user GitHub account push access to the testing repo.
+# You should generate a personal access token (PAT) for the bot user GitHub account.
+# You should add the PAT as an encrypted Travis CI environment variable named `BCBI_TEST_USER_GITHUB_TOKEN`.
+# You should generate an SSH deploy key. Upload the public key as a deploy key for the testing repo.
+# You should make the private key an encrypted Travis CI environment variable named `COMPATHELPER_PRIV`. Probably you will want to Base64-encode it.
 
 COMPATHELPER_INTEGRATION_TEST_REPO = ENV["COMPATHELPER_INTEGRATION_TEST_REPO"]::String
 TEST_USER_GITHUB_TOKEN = ENV["BCBI_TEST_USER_GITHUB_TOKEN"]::String
