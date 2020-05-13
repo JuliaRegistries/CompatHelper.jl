@@ -21,7 +21,8 @@ CompatHelper is maintained by the Brown Center for Biomedical Informatics (BCBI)
   * [2.2. Custom registries](#22-custom-registries)
   * [2.3. Custom pre-commit hooks](#23-custom-pre-commit-hooks)
   * [2.4. Overriding the default branch](#24-overriding-the-default-branch)
-* [3. Acknowledgements](#3-acknowledgements)
+* [3. Troubleshooting](#3-troubleshooting)
+* [4. Acknowledgements](#4-acknowledgements)
 
 ## 1. Installation
 
@@ -171,6 +172,10 @@ By default, CompatHelper will open pull requests against your repository's defau
 CompatHelper.main(; master_branch = "my-custom-branch")
 ```
 
-## 3. Acknowledgements
+## 3. Troubleshooting
+
+If CompatHelper is failing despite everything being setup correctly following the previous instructions, try to delete the `Manifest.toml` file from the `src` folder (and from the `test` folder if any). See this [issue](https://github.com/bcbi/CompatHelper.jl/issues/201) for more details.
+
+## 4. Acknowledgements
 
 This work was supported in part by National Institutes of Health grants U54GM115677, R01LM011963, and R25MH116440. The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institutes of Health.
