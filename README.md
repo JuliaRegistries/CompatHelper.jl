@@ -164,8 +164,12 @@ A full example is available [here](https://github.com/tkf/Kaleido.jl/blob/42f812
 The following snippet tells CompatHelper to update the `Manifest.toml` file in the root of the repository but not any of the other `Manifest.toml` files. So, for example, `/Manifest.toml` will be updated, but `/docs/Manifest.toml`, `/examples/Manifest.toml`, and `/test/Manifest.toml` will not be updated.
 
 ```yaml
-run: julia -e 'using CompatHelper; CompatHelper.main( (; registries) -> CompatHelper._update_manifests(pwd(); registries = registries) )'
+run: julia -e 'using CompatHelper; CompatHelper.main( (; registries) -> CompatHelper._update_manifests(String[pwd()]; registries = registries, delete_old_manifests = true) )'
 ```
+
+If the keyword argument `delete_old_manifests` is set to true, as in the above example, then CompatHelper
+updates the Manifest.toml file by deleting the Manifest and running `Pkg.update()` in order to generate a new
+one. If `delete_old_manifests=false`, then CompatHelper runs `Pkg.update()` without first deleting the Manifest.
 
 ### 2.4. Overriding the default branch
 
