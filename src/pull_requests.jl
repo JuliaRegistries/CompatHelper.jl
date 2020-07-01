@@ -9,13 +9,13 @@ function get_all_pull_requests(repo::GitHub.Repo,
     myparams = Dict("state" => state,
                     "per_page" => per_page,
                     "page" => 1)
-    prs, page_data = GitHub.pull_requests(repo;
+    prs, page_data = gh_pull_requests(repo;
                                           auth=auth,
                                           params = myparams,
                                           page_limit = page_limit)
     append!(all_pull_requests, prs)
     while haskey(page_data, "next")
-        prs, page_data = GitHub.pull_requests(repo;
+        prs, page_data = gh_pull_requests(repo;
                                               auth=auth,
                                               page_limit = page_limit,
                                               start_page = page_data["next"])
@@ -79,6 +79,6 @@ function create_new_pull_request(repo::GitHub.Repo;
     params["head"] = head_branch
     params["base"] = base_branch
     params["body"] = body
-    result = GitHub.create_pull_request(repo; params = params, auth = auth)
+    result = gh_create_pull_request(repo; params = params, auth = auth)
     return result
 end
