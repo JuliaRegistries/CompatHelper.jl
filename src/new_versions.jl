@@ -261,8 +261,8 @@ function make_pr_for_new_version(precommit_hook::Function,
     if new_pr_title in pr_titles
         @info("An open PR with the title already exists", new_pr_title)
     else
-        url_with_auth = "https://x-access-token:$(auth.token)@github.com/$(repo.full_name).git"
-        url_for_ssh = "git@github.com:$(repo.full_name).git"
+        url_with_auth = "https://x-access-token:$(auth.token)@$(gh_host)/$(repo.full_name).git"
+        url_for_ssh = "git@$(gh_host):$(repo.full_name).git"
 
         tmp_dir = mktempdir()
         atexit(() -> rm(tmp_dir; force = true, recursive = true))

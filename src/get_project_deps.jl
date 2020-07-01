@@ -5,7 +5,7 @@ function get_project_deps(repo::GitHub.Repo; auth::GitHub.Authorization, master_
     original_directory = pwd()
     tmp_dir = mktempdir()
     atexit(() -> rm(tmp_dir; force = true, recursive = true))
-    url_with_auth = "https://x-access-token:$(auth.token)@github.com/$(repo.full_name).git"
+    url_with_auth = "https://x-access-token:$(auth.token)@$(gh_host)/$(repo.full_name).git"
     cd(tmp_dir)
     try
         run(`git clone $(url_with_auth) REPO`)
