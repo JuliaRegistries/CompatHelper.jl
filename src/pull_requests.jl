@@ -1,6 +1,7 @@
 import GitHub
 
-function get_all_pull_requests(repo::GitHub.Repo,
+function get_all_pull_requests(api::GitHub.GitHubAPI,
+                               repo::GitHub.Repo,
                                state::String;
                                auth::GitHub.Authorization,
                                per_page::Integer = 100,
@@ -9,13 +10,13 @@ function get_all_pull_requests(repo::GitHub.Repo,
     myparams = Dict("state" => state,
                     "per_page" => per_page,
                     "page" => 1)
-    prs, page_data = GitHub.pull_requests(repo;
+    prs, page_data = GitHub.pull_requests(api, repo;
                                           auth=auth,
                                           params = myparams,
                                           page_limit = page_limit)
     append!(all_pull_requests, prs)
     while haskey(page_data, "next")
-        prs, page_data = GitHub.pull_requests(repo;
+        prs, page_data = GitHub.pull_requests(api, repo;
                                               auth=auth,
                                               page_limit = page_limit,
                                               start_page = page_data["next"])
@@ -68,7 +69,8 @@ function only_my_pull_requests(pr_list::Vector{GitHub.PullRequest}; my_username:
     return my_pr_list
 end
 
-function create_new_pull_request(repo::GitHub.Repo;
+function create_new_pull_request(api::GitHub.GitHubAPI,
+                                 repo::GitHub.Repo;
                                  base_branch::String,
                                  head_branch::String,
                                  title::String,
@@ -79,6 +81,6 @@ function create_new_pull_request(repo::GitHub.Repo;
     params["head"] = head_branch
     params["base"] = base_branch
     params["body"] = body
-    result = GitHub.create_pull_request(repo; params = params, auth = auth)
+    result = GitHub.create_pull_request(api, repo; params = params, auth = auth)
     return result
 end

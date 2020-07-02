@@ -65,9 +65,20 @@ function _update_manifest(environment::AbstractString;
             Pkg.instantiate();
             Pkg.update();
             """
+        env = Dict("PATH" => ENV["PATH"],
+                   "JULIA_DEPOT_PATH" => tmp_dir
+        )
+        if haskey(ENV, "JULIA_PKG_SERVER")
+            env["JULIA_PKG_SERVER"] = ENV["JULIA_PKG_SERVER"]
+        end
+        if haskey(ENV, "HTTPS_PROXY")
+            env["HTTPS_PROXY"] = ENV["HTTPS_PROXY"]
+        end
+        if haskey(ENV, "HTTP_PROXY")
+            env["HTTP_PROXY"] = ENV["HTTP_PROXY"]
+        end
         cmd = Cmd(`$(Base.julia_cmd()) -e $(code)`;
-                  env = Dict("PATH" => ENV["PATH"],
-                             "JULIA_DEPOT_PATH" => tmp_dir))
+                  env = env)
         run(pipeline(cmd, stdout=stdout, stderr=stderr))
         return nothing
     end
