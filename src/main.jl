@@ -15,7 +15,8 @@ function main(precommit_hook::Function = update_manifests,
               master_branch::Union{DefaultBranch, AbstractString} = DefaultBranch(),
               pr_title_prefix::String = "",
               subdirs::AbstractVector{<:AbstractString} = [""],
-              api_url::String="https://api.github.com")
+              hostname_for_api::String="https://api.github.com",
+              hostname_for_clone::String="github.com")
     if !keep_existing_compat && !drop_existing_compat
         throw(ArgumentError("At least one of keep_existing_compat, drop_existing_compat must be true"))
     end
@@ -23,7 +24,8 @@ function main(precommit_hook::Function = update_manifests,
     COMPATHELPER_PRIV_is_defined = compathelper_priv_is_defined(env)
     @info("Environment variable `COMPATHELPER_PRIV` is defined, is nonempty, and is not the string `false`: $(COMPATHELPER_PRIV_is_defined)")
 
-    api = GitHub.GitHubWebAPI(HTTP.URI(api_url))
+    api = GitHub.GitHubWebAPI(HTTP.URI(hostname_for_api))
+    clone_hostname = HostnameForClones(hostname_for_clone)
     GITHUB_TOKEN = github_token(ci_cfg; env = ENV)
     GITHUB_REPOSITORY = github_repository(ci_cfg; env = ENV)
     auth = GitHub.authenticate(api, GITHUB_TOKEN)
@@ -42,7 +44,9 @@ function main(precommit_hook::Function = update_manifests,
         dep_to_current_compat_entry,
             dep_to_current_compat_entry_verbatim,
             dep_to_latest_version,
-            deps_with_missing_compat_entry = get_project_deps(api, repo;
+            deps_with_missing_compat_entry = get_project_deps(api,
+                                                              clone_hostname,
+                                                              repo;
                                                               auth = auth,
                                                               master_branch = master_branch,
                                                               subdir = subdir)
