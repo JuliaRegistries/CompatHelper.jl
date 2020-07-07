@@ -1,6 +1,6 @@
 import Pkg
-using HTTP
-using GitHub
+import HTTP
+import GitHub
 
 const default_registries = Pkg.Types.RegistrySpec[Pkg.RegistrySpec(name = "General",
                                                                    uuid = "23338594-aafe-5451-b93e-139f81909106",
