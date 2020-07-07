@@ -2,6 +2,7 @@ import GitHub
 import Pkg
 
 function make_pr_for_new_version(api::GitHub.GitHubAPI,
+                                 clone_hostname::HostnameForClones,
                                  precommit_hook::Function,
                                  repo::GitHub.Repo,
                                  dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
@@ -23,6 +24,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
     always_assert(keep_existing_compat || drop_existing_compat)
     for dep in keys(dep_to_current_compat_entry)
         make_pr_for_new_version(api,
+                                clone_hostname,
                                 precommit_hook,
                                 repo,
                                 dep,
@@ -46,6 +48,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
 end
 
 function make_pr_for_new_version(api::GitHub.GitHubAPI,
+                                 clone_hostname::HostnameForClones,
                                  precommit_hook::Function,
                                  repo::GitHub.Repo,
                                  dep::Package,
@@ -88,6 +91,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                                                         compat_entry_for_latest_version,
                                                         :brandnewentry)
             make_pr_for_new_version(api,
+                                    clone_hostname,
                                     precommit_hook,
                                     compat_entry_for_latest_version,
                                     brand_new_compat,
@@ -113,6 +117,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                                                        compat_entry_for_latest_version,
                                                        :drop)
                 make_pr_for_new_version(api,
+                                        clone_hostname,
                                         precommit_hook,
                                         compat_entry_for_latest_version,
                                         drop_compat,
@@ -138,6 +143,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                                                        compat_entry_for_latest_version,
                                                        :keep)
                 make_pr_for_new_version(api,
+                                        clone_hostname,
                                         precommit_hook,
                                         compat_entry_for_latest_version,
                                         keep_compat,
