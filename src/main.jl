@@ -24,10 +24,10 @@ function main(precommit_hook::Function = update_manifests,
     @info("Environment variable `COMPATHELPER_PRIV` is defined, is nonempty, and is not the string `false`: $(COMPATHELPER_PRIV_is_defined)")
 
     api = GitHub.GitHubWebAPI(HTTP.URI(api_url))
-    env["GITHUB_TOKEN"] = github_token(ci_cfg; env = env)
-    env["GITHUB_REPOSITORY"] = replace(github_repository(ci_cfg; env = env), ".git"=>"")   # small fix to normalize it
-    auth = GitHub.authenticate(api, env["GITHUB_TOKEN"])
-    repo = GitHub.repo(api, env["GITHUB_REPOSITORY"]; auth = auth)
+    GITHUB_TOKEN = github_token(ci_cfg; env = ENV)
+    GITHUB_REPOSITORY = github_repository(ci_cfg; env = ENV)
+    auth = GitHub.authenticate(api, GITHUB_TOKEN)
+    repo = GitHub.repo(api, GITHUB_REPOSITORY; auth = auth)
 
     _all_open_prs = get_all_pull_requests(api, repo, "open"; auth = auth)
     _nonforked_prs = exclude_pull_requests_from_forks(repo, _all_open_prs)
