@@ -31,7 +31,11 @@ function main(precommit_hook::Function = update_manifests,
     auth = GitHub.authenticate(api, GITHUB_TOKEN)
     repo = GitHub.repo(api, GITHUB_REPOSITORY; auth = auth)
 
-    _all_open_prs = get_all_pull_requests(api, repo, "open"; auth = auth)
+    _all_open_prs = get_all_pull_requests(api,
+                                          clone_hostname,
+                                          repo,
+                                          "open";
+                                          auth = auth)
     _nonforked_prs = exclude_pull_requests_from_forks(repo, _all_open_prs)
     my_username = get_my_username(ci_cfg; auth = auth, env = env)
     pr_list = only_my_pull_requests(_nonforked_prs; my_username = my_username)
@@ -54,6 +58,7 @@ function main(precommit_hook::Function = update_manifests,
                                             registries)
 
         make_pr_for_new_version(api,
+                                clone_hostname,
                                 precommit_hook,
                                 repo,
                                 dep_to_current_compat_entry,
