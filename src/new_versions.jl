@@ -1,7 +1,8 @@
 import GitHub
 import Pkg
 
-function make_pr_for_new_version(precommit_hook::Function,
+function make_pr_for_new_version(api::GitHub.GitHubAPI,
+                                 precommit_hook::Function,
                                  repo::GitHub.Repo,
                                  dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
                                  dep_to_current_compat_entry_verbatim::Dict{Package, Union{String, Nothing}},
@@ -21,7 +22,8 @@ function make_pr_for_new_version(precommit_hook::Function,
     original_directory = pwd()
     always_assert(keep_existing_compat || drop_existing_compat)
     for dep in keys(dep_to_current_compat_entry)
-        make_pr_for_new_version(precommit_hook,
+        make_pr_for_new_version(api,
+                                precommit_hook,
                                 repo,
                                 dep,
                                 dep_to_current_compat_entry,
@@ -43,7 +45,8 @@ function make_pr_for_new_version(precommit_hook::Function,
     return nothing
 end
 
-function make_pr_for_new_version(precommit_hook::Function,
+function make_pr_for_new_version(api::GitHub.GitHubAPI,
+                                 precommit_hook::Function,
                                  repo::GitHub.Repo,
                                  dep::Package,
                                  dep_to_current_compat_entry::Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}},
@@ -84,7 +87,8 @@ function make_pr_for_new_version(precommit_hook::Function,
             brand_new_compat = old_compat_to_new_compat(nothing,
                                                         compat_entry_for_latest_version,
                                                         :brandnewentry)
-            make_pr_for_new_version(precommit_hook,
+            make_pr_for_new_version(api,
+                                    precommit_hook,
                                     compat_entry_for_latest_version,
                                     brand_new_compat,
                                     repo,
@@ -108,7 +112,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                 drop_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
                                                        compat_entry_for_latest_version,
                                                        :drop)
-                make_pr_for_new_version(precommit_hook,
+                make_pr_for_new_version(api,
+                                        precommit_hook,
                                         compat_entry_for_latest_version,
                                         drop_compat,
                                         repo,
@@ -132,7 +137,8 @@ function make_pr_for_new_version(precommit_hook::Function,
                 keep_compat = old_compat_to_new_compat(current_compat_entry_verbatim,
                                                        compat_entry_for_latest_version,
                                                        :keep)
-                make_pr_for_new_version(precommit_hook,
+                make_pr_for_new_version(api,
+                                        precommit_hook,
                                         compat_entry_for_latest_version,
                                         keep_compat,
                                         repo,
@@ -176,7 +182,8 @@ end
     return "$(strip(new_compat))"
 end
 
-function make_pr_for_new_version(precommit_hook::Function,
+function make_pr_for_new_version(api::GitHub.GitHubAPI,
+                                 precommit_hook::Function,
                                  compat_entry_for_latest_version::String,
                                  new_compat_entry::String,
                                  repo::GitHub.Repo,
@@ -261,8 +268,8 @@ function make_pr_for_new_version(precommit_hook::Function,
     if new_pr_title in pr_titles
         @info("An open PR with the title already exists", new_pr_title)
     else
-        url_with_auth = "https://x-access-token:$(auth.token)@github.com/$(repo.full_name).git"
-        url_for_ssh = "git@github.com:$(repo.full_name).git"
+        url_with_auth = "https://x-access-token:$(auth.token)@$(api.endpoint.host)/$(repo.full_name).git"
+        url_for_ssh = "git@$(api.endpoint.host):$(repo.full_name).git"
 
         tmp_dir = mktempdir()
         atexit(() -> rm(tmp_dir; force = true, recursive = true))
@@ -320,7 +327,7 @@ function make_pr_for_new_version(precommit_hook::Function,
                 run(`git push -f origin $(new_branch_name)`)
             catch
             end
-            create_new_pull_request(repo;
+            create_new_pull_request(api, repo;
                                     base_branch = master_branch_name,
                                     head_branch = new_branch_name,
                                     title = new_pr_title,
