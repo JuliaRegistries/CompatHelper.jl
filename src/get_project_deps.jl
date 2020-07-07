@@ -1,11 +1,16 @@
 import GitHub
 import Pkg
 
-function get_project_deps(api::GitHub.GitHubAPI, repo::GitHub.Repo; auth::GitHub.Authorization, master_branch::Union{DefaultBranch, AbstractString}, subdir::AbstractString)
+function get_project_deps(api::GitHub.GitHubAPI,
+                          clone_hostname::HostnameForClones,
+                          repo::GitHub.Repo;
+                          auth::GitHub.Authorization,
+                          master_branch::Union{DefaultBranch, AbstractString},
+                          subdir::AbstractString)
     original_directory = pwd()
     tmp_dir = mktempdir()
     atexit(() -> rm(tmp_dir; force = true, recursive = true))
-    url_with_auth = "https://x-access-token:$(auth.token)@$(api.endpoint.host)/$(repo.full_name).git"
+    url_with_auth = "https://x-access-token:$(auth.token)@$(clone_hostname.hostname)/$(repo.full_name).git"
     cd(tmp_dir)
     try
         run(`git clone $(url_with_auth) REPO`)
