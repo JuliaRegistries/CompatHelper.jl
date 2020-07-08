@@ -189,6 +189,7 @@ end
 end
 
 function make_pr_for_new_version(api::GitHub.GitHubAPI,
+                                 clone_hostname::HostnameForClones,
                                  precommit_hook::Function,
                                  compat_entry_for_latest_version::String,
                                  new_compat_entry::String,
@@ -274,8 +275,8 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
     if new_pr_title in pr_titles
         @info("An open PR with the title already exists", new_pr_title)
     else
-        url_with_auth = "https://x-access-token:$(auth.token)@$(api.endpoint.host)/$(repo.full_name).git"
-        url_for_ssh = "git@$(api.endpoint.host):$(repo.full_name).git"
+        url_with_auth = "https://x-access-token:$(auth.token)@$(clone_hostname.hostname)/$(repo.full_name).git"
+        url_for_ssh = "git@$(clone_hostname.hostname):$(repo.full_name).git"
 
         tmp_dir = mktempdir()
         atexit(() -> rm(tmp_dir; force = true, recursive = true))
