@@ -21,6 +21,10 @@ struct GitHubActions <: CIService
     username::String
 end
 
+struct HostnameForClones
+    hostname::String
+end
+
 struct MajorMinorVersion
     major::Base.VInt
     minor::Base.VInt
