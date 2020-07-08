@@ -32,7 +32,6 @@ function main(precommit_hook::Function = update_manifests,
     repo = GitHub.repo(api, GITHUB_REPOSITORY; auth = auth)
 
     _all_open_prs = get_all_pull_requests(api,
-                                          clone_hostname,
                                           repo,
                                           "open";
                                           auth = auth)
