@@ -12,6 +12,7 @@ whoami = username(auth)
 repo_url_without_auth = "https://github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
 repo_url_with_auth = "https://$(whoami):$(TEST_USER_GITHUB_TOKEN)@github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
 repo = GitHub.repo(COMPATHELPER_INTEGRATION_TEST_REPO; auth = auth)
+api = GitHub.GitHubWebAPI(HTTP.URI("https://api.github.com"))
 Test.@test success(`git --version`)
 @info("Authenticated to GitHub as \"$(whoami)\"")
 
@@ -120,7 +121,7 @@ with_master_branch(templates("master_6"), "master"; repo_url = repo_url_with_aut
     end
 end
 
-all_prs = CompatHelper.get_all_pull_requests(repo, "open";
+all_prs = CompatHelper.get_all_pull_requests(api, repo, "open";
                                              auth = auth,
                                              per_page = 3,
                                              page_limit = 3)

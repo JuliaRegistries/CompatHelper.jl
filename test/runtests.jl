@@ -2,6 +2,7 @@ import Base64
 import CompatHelper
 import Dates
 import GitHub
+import HTTP
 import JSON
 import Pkg
 import Printf
