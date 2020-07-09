@@ -16,6 +16,7 @@ CompatHelper is maintained by the Brown Center for Biomedical Informatics (BCBI)
 * [1. Installation](#1-installation)
   * [1.1. Create the workflow file (required)](#11-create-the-workflow-file-required)
   * [1.2. Set up the SSH deploy key (optional)](#12-set-up-the-ssh-deploy-key-optional)
+  * [1.3. Usage in TeamCity](#13-teamcity)
 * [2. Configuration options](#2-configuration-options)
   * [2.1. Packages in subdirectories](#21-packages-in-subdirectories)
   * [2.2. Custom registries](#22-custom-registries)
@@ -60,6 +61,18 @@ But if you do fall into one or more of those categories, then you also need to s
 ### 1.2. Set up the SSH deploy key (optional)
 
 *Note: if you already have an SSH deploy key set up in a secret, e.g. `DOCUMENTER_KEY` or `FRANKLIN_PRIV`, you can reuse it. See the "Advanced notes" section below.*
+
+### 1.3. Usage in TeamCity
+
+Compat Helper also supports TeamCity as an CI, but it's not out of the box due to high configurability of TeamCity. 
+The most safe approach is to create TeamCity config explicitly and pass it, as follows:
+```julia
+using CompatHelper
+CompatHelper.main(CompatHelper.update_manifests,
+    ENV,
+    CompatHelper.TeamCity(<your bot github account username>, <your bot github email>)
+    )
+```
 
 #### 1.2.1. Motivation
 

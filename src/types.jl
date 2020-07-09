@@ -34,3 +34,8 @@ struct Package
     name::String
     uuid::UUIDs.UUID
 end
+
+struct TeamCity <: CIService
+    username::String
+    email::String
+end
