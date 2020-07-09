@@ -23,7 +23,7 @@ CompatHelper is maintained by the Brown Center for Biomedical Informatics (BCBI)
   * [2.3. Custom pre-commit hooks](#23-custom-pre-commit-hooks)
   * [2.4. Overriding the default branch](#24-overriding-the-default-branch)
 * [3. Troubleshooting](#3-troubleshooting)
-* [4. Self-hosting and other environments](#4-sefhosting)
+* [4. Self-hosting and other environments](#4-self-hosting-and-other-environments)
 * [5. Acknowledgements](#5-acknowledgements)
 
 ## 1. Installation
