@@ -204,6 +204,8 @@ CompatHelper.main(CompatHelper.update_manifests,
     CompatHelper.TeamCity(<your bot github account username>, <your bot github email>)
     )
 ```
+Because of high configurability of TeamCity it's advised to pass the TeamCity structure explicitly without usage of the
+`auto_detect_ci_service` function, which is suitable for some simpler setups.
 
 ## 5. Acknowledgements
 
