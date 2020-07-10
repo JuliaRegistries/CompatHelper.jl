@@ -22,7 +22,8 @@ CompatHelper is maintained by the Brown Center for Biomedical Informatics (BCBI)
   * [2.3. Custom pre-commit hooks](#23-custom-pre-commit-hooks)
   * [2.4. Overriding the default branch](#24-overriding-the-default-branch)
 * [3. Troubleshooting](#3-troubleshooting)
-* [4. Acknowledgements](#4-acknowledgements)
+* [4. Self-hosting and other environments](#4-self-hosting-and-other-environments)
+* [5. Acknowledgements](#5-acknowledgements)
 
 ## 1. Installation
 
@@ -182,6 +183,29 @@ CompatHelper.main(; master_branch = "my-custom-branch")
 
 If CompatHelper is failing despite everything being setup correctly following the previous instructions, try to delete the `Manifest.toml` file from the `src` folder (and from the `test` folder if any). See this [issue](https://github.com/bcbi/CompatHelper.jl/issues/201) for more details.
 
-## 4. Acknowledgements
+## 4. Self hosting and other environments
+
+It's possible to run CompatHelper on your infrastructure in case of GitHub Enterprise or other setups.
+
+Basically it should be all configurable by passing values to `CompatHelper.main()` function.
+To run it on GitHub Enterprise, e.g. on address `github.company.com` you can do
+```julia
+using CompatHelper
+CompatHelper.main(; hostname_for_api="https://github.company.com/api/v3",
+                    hostname_for_clone="github.company.com")
+```
+
+To run it on TeamCity instead of GitHub Actions, you need to specify the `ci_cfg` parameter, e.g. like this.
+```julia
+using CompatHelper
+CompatHelper.main(CompatHelper.update_manifests,
+    ENV,
+    CompatHelper.TeamCity(<your bot github account username>, <your bot github email>)
+    )
+```
+Because of high configurability of TeamCity it's advised to pass the TeamCity structure explicitly without usage of the
+`auto_detect_ci_service` function, which is suitable for some simpler setups.
+
+## 5. Acknowledgements
 
 This work was supported in part by National Institutes of Health grants U54GM115677, R01LM011963, and R25MH116440. The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institutes of Health.

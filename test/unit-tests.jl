@@ -18,6 +18,18 @@ Test.@testset "ci_service.jl" begin
     withenv("GITHUB_REPOSITORY" => nothing) do
         Test.@test_throws ErrorException CompatHelper.auto_detect_ci_service()
     end
+
+    ci_cfg = CompatHelper.TeamCity()
+    Test.@test ci_cfg.username == "github-actions[bot]"
+    Test.@test ci_cfg.email == "41898282+github-actions[bot]@users.noreply.github.com"
+
+    withenv("GITHUB_REPOSITORY" => "foo/bar") do
+        ci_cfg = CompatHelper.TeamCity("service_user", "service_user@company.com")
+        Test.@test CompatHelper.github_repository(ci_cfg) == "foo/bar"
+        Test.@test ci_cfg.username == "service_user"
+        Test.@test ci_cfg.email == "service_user@company.com"
+    end
+
 end
 
 Test.@testset "git.jl" begin

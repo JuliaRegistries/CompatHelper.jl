@@ -23,7 +23,7 @@ with_master_branch(templates("master_1"), "master"; repo_url = repo_url_with_aut
             "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
         precommit_hook = () -> ()
         env = ENV
-        ci_cfg = CompatHelper.GitHubActions(whoami)
+        ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
         CompatHelper.main(precommit_hook, env, ci_cfg;
                           pr_title_prefix = "[test-1c] ",
                           master_branch = master_1,
@@ -37,7 +37,7 @@ with_master_branch(templates("master_2"), "master"; repo_url = repo_url_with_aut
             "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
         precommit_hook = () -> ()
         env = ENV
-        ci_cfg = CompatHelper.GitHubActions(whoami)
+        ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
         CompatHelper.main(precommit_hook, env, ci_cfg;
                           pr_title_prefix = "[test-2c] ",
                           master_branch = master_2,
@@ -51,7 +51,7 @@ with_master_branch(templates("master_3"), "master"; repo_url = repo_url_with_aut
             "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
         precommit_hook = () -> ()
         env = ENV
-        ci_cfg = CompatHelper.GitHubActions(whoami)
+        ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
         CompatHelper.main(precommit_hook, env, ci_cfg;
                           pr_title_prefix = "[test-3a] ",
                           master_branch = master_3,
@@ -80,7 +80,7 @@ with_master_branch(templates("master_4"), "master"; repo_url = repo_url_with_aut
             "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
         precommit_hook = () -> ()
         env = ENV
-        ci_cfg = CompatHelper.GitHubActions(whoami)
+        ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
         CompatHelper.main(precommit_hook, env, ci_cfg;
                           pr_title_prefix = "[test-4c] ",
                           master_branch = master_4,
@@ -96,7 +96,7 @@ with_master_branch(templates("master_5"), "master"; repo_url = repo_url_with_aut
                                                                          delete_old_manifest = true,
                                                                          registries = registries)
         env = ENV
-        ci_cfg = CompatHelper.GitHubActions(whoami)
+        ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
         CompatHelper.main(precommit_hook, env, ci_cfg;
                           pr_title_prefix = "[test-5a] ",
                           master_branch = master_5,
@@ -111,7 +111,7 @@ with_master_branch(templates("master_6"), "master"; repo_url = repo_url_with_aut
             "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
         precommit_hook = () -> ()
         env = ENV
-        ci_cfg = CompatHelper.GitHubActions(whoami)
+        ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
         CompatHelper.main(precommit_hook, env, ci_cfg;
                           pr_title_prefix = "[test-1c] ",
                           master_branch = master_6,

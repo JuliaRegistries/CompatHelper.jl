@@ -19,6 +19,7 @@ end
 
 struct GitHubActions <: CIService
     username::String
+    email::String
 end
 
 struct HostnameForClones
@@ -33,4 +34,9 @@ end
 struct Package
     name::String
     uuid::UUIDs.UUID
+end
+
+struct TeamCity <: CIService
+    username::String
+    email::String
 end
