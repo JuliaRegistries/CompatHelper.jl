@@ -19,6 +19,7 @@ end
 
 struct GitHubActions <: CIService
     username::String
+    email::String
 end
 
 struct HostnameForClones
