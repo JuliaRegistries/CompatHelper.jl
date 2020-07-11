@@ -23,7 +23,7 @@ end
 
 function set_git_identity(ci_cfg::Union{GitHubActions, TeamCity})
     run(Cmd(String["git", "config", "user.name", strip(ci_cfg.username)]))
-    run(Cmd(String["git", "config", "user.name", strip(ci_cfg.email)]))
+    run(Cmd(String["git", "config", "user.email", strip(ci_cfg.email)]))
     return nothing
 end
 
