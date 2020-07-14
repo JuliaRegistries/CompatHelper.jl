@@ -6,6 +6,7 @@ include("main.jl")
 
 include("assert.jl")
 include("ci_service.jl")
+include("envdict.jl")
 include("get_latest_version_from_registries.jl")
 include("get_project_deps.jl")
 include("git.jl")
