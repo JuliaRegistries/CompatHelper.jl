@@ -26,8 +26,8 @@ function main(precommit_hook::Function = update_manifests,
 
     api = GitHub.GitHubWebAPI(HTTP.URI(hostname_for_api))
     clone_hostname = HostnameForClones(hostname_for_clone)
-    GITHUB_TOKEN = github_token(ci_cfg; env = ENV)
-    GITHUB_REPOSITORY = github_repository(ci_cfg; env = ENV)
+    GITHUB_TOKEN = github_token(ci_cfg; env = env)
+    GITHUB_REPOSITORY = github_repository(ci_cfg; env = env)
     auth = GitHub.authenticate(api, GITHUB_TOKEN)
     repo = GitHub.repo(api, GITHUB_REPOSITORY; auth = auth)
 

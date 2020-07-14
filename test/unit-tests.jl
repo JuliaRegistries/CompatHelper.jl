@@ -1,4 +1,5 @@
 import Base64
+import CompatHelper
 
 Test.@testset "assert.jl" begin
     Test.@test_nowarn CompatHelper.always_assert(true)
@@ -7,6 +8,11 @@ Test.@testset "assert.jl" begin
     Test.@test Test.@test_nowarn CompatHelper.always_assert(true) isa Nothing
     Test.@test Test.@test_nowarn CompatHelper.always_assert(true) == nothing
     Test.@test_throws CompatHelper.AlwaysAssertionError CompatHelper.always_assert(false)
+end
+Test.@testset "envdict.jl" begin
+    a = "/foo/bar/baz"
+    b = Dict("PATH" => "/foo", "HTTP_PROXY" => "/bar", "HTTPS_PROXY" => "/baz", "JULIA_PKG_SERVER" => "/foobar")
+    c = CompatHelper._generate_env_dict(b; JULIA_DEPOT_PATH = a)
 end
 
 Test.@testset "ci_service.jl" begin

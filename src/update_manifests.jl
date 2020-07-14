@@ -65,9 +65,10 @@ function _update_manifest(environment::AbstractString;
             Pkg.instantiate();
             Pkg.update();
             """
+        env = _generate_env_dict(ENV;
+                                 JULIA_DEPOT_PATH = tmp_dir)
         cmd = Cmd(`$(Base.julia_cmd()) -e $(code)`;
-                  env = Dict("PATH" => ENV["PATH"],
-                             "JULIA_DEPOT_PATH" => tmp_dir))
+                  env = env)
         run(pipeline(cmd, stdout=stdout, stderr=stderr))
         return nothing
     end
