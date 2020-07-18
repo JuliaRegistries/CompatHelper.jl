@@ -7,9 +7,7 @@ CompatHelper is a Julia package that helps you keep your `[compat]` entries up-t
 
 Whenever one of your package's dependencies releases a new version, CompatHelper opens a pull request on your repository that modifies your `[compat]` entry to reflect the newly released version.
 
-CompatHelper is maintained by the Brown Center for Biomedical Informatics (BCBI) at Brown University in Providence, Rhode Island.
-* GitHub: https://github.com/bcbi
-* Website: https://brown.edu/go/bcbi
+CompatHelper was created by the Brown Center for Biomedical Informatics (BCBI) at Brown University in Providence, Rhode Island.
 
 ## Table of Contents
 
