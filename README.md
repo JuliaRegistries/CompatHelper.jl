@@ -32,11 +32,10 @@ CompatHelper is maintained by the Brown Center for Biomedical Informatics (BCBI)
 Create a file at `.github/workflows/CompatHelper.yml` with the following contents:
 ```yaml
 name: CompatHelper
-
 on:
   schedule:
     - cron: '00 00 * * *'
-
+  workflow_dispatch:
 jobs:
   CompatHelper:
     runs-on: ubuntu-latest
