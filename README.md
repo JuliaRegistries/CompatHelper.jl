@@ -1,15 +1,11 @@
 # CompatHelper
 
-[![Build Status](https://travis-ci.com/bcbi/CompatHelper.jl.svg?branch=master)](https://travis-ci.com/bcbi/CompatHelper.jl)
-[![Codecov](https://codecov.io/gh/bcbi/CompatHelper.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/bcbi/CompatHelper.jl)
+[![Build Status](https://travis-ci.com/JuliaRegistries/CompatHelper.jl.svg?branch=master)](https://travis-ci.com/JuliaRegistries/CompatHelper.jl)
+[![Codecov](https://codecov.io/gh/JuliaRegistries/CompatHelper.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaRegistries/CompatHelper.jl)
 
 CompatHelper is a Julia package that helps you keep your `[compat]` entries up-to-date.
 
 Whenever one of your package's dependencies releases a new version, CompatHelper opens a pull request on your repository that modifies your `[compat]` entry to reflect the newly released version.
-
-CompatHelper is maintained by the Brown Center for Biomedical Informatics (BCBI) at Brown University in Providence, Rhode Island.
-* GitHub: https://github.com/bcbi
-* Website: https://brown.edu/go/bcbi
 
 ## Table of Contents
 
@@ -206,5 +202,7 @@ Because of high configurability of TeamCity it's advised to pass the TeamCity st
 `auto_detect_ci_service` function, which is suitable for some simpler setups.
 
 ## 5. Acknowledgements
+
+CompatHelper was originally created by the [Brown Center for Biomedical Informatics](https://github.com/bcbi) at Brown University.
 
 This work was supported in part by National Institutes of Health grants U54GM115677, R01LM011963, and R25MH116440. The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institutes of Health.
