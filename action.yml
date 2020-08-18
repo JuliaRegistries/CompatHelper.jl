@@ -1,0 +1,17 @@
+name: 'CompatHelper.jl'
+description: "Automatically update the [compat] entries for your Julia package's dependencies"
+author: 'Dilum Aluthge <dilum@aluthge.com>, Brown Center for Biomedical Informatics, and contributors'
+
+branding:
+  icon: 'package'
+  color: 'blue'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Pkg.add("CompatHelper")
+      run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
+      shell: bash
+    - name: CompatHelper.main()
+      run: julia -e 'using CompatHelper; CompatHelper.main()'
+      shell: bash
