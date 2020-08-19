@@ -6,7 +6,8 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
     original_directory = pwd()
     num_registries = length(registry_list)
     registry_temp_dirs = Vector{String}(undef, num_registries)
-    for (i, registry) enumerate(registry_list)
+    registry_urls = nothing
+    for (i, registry) in enumerate(registry_list)
         tmp_dir = mktempdir()
         atexit(() -> rm(tmp_dir; force = true, recursive = true))
         registry_temp_dirs[i] = tmp_dir
@@ -14,19 +15,43 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
         url = registry.url
         uuid = registry.uuid
         registry_path = joinpath(tmp_dir, name)
-        # copied from https://github.com/JuliaLang/Pkg.jl/blob/v1.4.2/src/Types.jl#L921
-        if (url = pkg_server_registry_url(uuid)) !== nothing
-            # download from Pkg server
-            try
-                download_verify_unpack(url, nothing, registry_path, ignore_existence = true)
-            catch err
-                nothing
+        @static if VERSION >= v"1.5.0"
+            # copied from https://github.com/JuliaLang/Pkg.jl/blob/release-1.5/src/Types.jl#L981
+            reg_url, registry_urls = pkg_server_registry_url(reg.uuid, registry_urls)
+            if reg_url !== nothing
+                try
+                    Pkg.Types.download_verify_unpack(reg_url, nothing, registry_path, ignore_existence = true)
+                    @info("Downloaded registry $reg_url from package server.")
+                catch err
+                    nothing
+                end
+            elseif url !== nothing # clone from url
+                cd(tmp_dir)
+                run(`git clone $(url) $(name)`)
+                cd(previous_directory)
             end
-        elseif reg.url !== nothing # clone from url
-            LibGit2.with(GitTools.clone(ctx, url, registry_path; header = "registry from $(repr(url))")) do repo
+        elseif v"1.4.0" <= VERSION < v"1.5.0"
+            # copied from https://github.com/JuliaLang/Pkg.jl/blob/v1.4.2/src/Types.jl#L921
+            if (reg_url = Pkg.Types.pkg_server_registry_url(uuid)) !== nothing
+                # download from Pkg server
+                try
+                    Pkg.Types.download_verify_unpack(reg_url, nothing, registry_path, ignore_existence = true)
+                    @info("Downloaded registry $reg_url from package server.")
+                catch err
+                    nothing
+                end
+            elseif url !== nothing # clone from url
+                cd(tmp_dir)
+                run(`git clone $(url) $(name)`)
+                cd(previous_directory)
+            else
+                error("Could not download registry, nor pkg server not git download works.")
             end
         else
-            error("Could not download registry, nor pkg server not git download works.")
+            # original way of obtaining registry
+            cd(tmp_dir)
+            run(`git clone $(url) $(name)`)
+            cd(previous_directory)
         end
     end
     for (registry_temp_dir, registry) in zip(registry_temp_dirs, registry_list)
