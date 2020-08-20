@@ -317,7 +317,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
             run(`git add -A`)
         catch
         end
-        if hasmethod(precommit_hook, Tuple{}, (:registries,))
+        if hasmethod(precommit_hook, Tuple{AbstractString}, (:registries,))
             precommit_hook(; registries = registries)
         else
             precommit_hook()
