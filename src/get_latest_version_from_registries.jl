@@ -36,24 +36,19 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
             @static if VERSION >= v"1.5.0"
                 # copied from https://github.com/JuliaLang/Pkg.jl/blob/release-1.5/src/Types.jl#L981
                 reg_url, registry_urls = pkg_server_registry_url(uuid, registry_urls)
-                if reg_url !== nothing
-                    download_or_clone(tmp_dir, previous_director, reg_url, registry_path, url, name)
-                elseif url !== nothing # clone from url
-                    git_clone(tmp_dir, previous_director, url, name)
-                else
-                    error("Could not download registry, nor pkg server not git download works.")
-                end
             elseif v"1.4.0" <= VERSION < v"1.5.0"
                 # copied from https://github.com/JuliaLang/Pkg.jl/blob/v1.4.2/src/Types.jl#L921
-                if (reg_url = Pkg.Types.pkg_server_registry_url(uuid)) !== nothing
-                    download_or_clone(tmp_dir, previous_director, reg_url, registry_path, url, name)
-                elseif url !== nothing # clone from url
-                    git_clone(tmp_dir, previous_director, url, name)
-                else
-                    error("Could not download registry, nor pkg server not git download works.")
-                end
+                reg_url = Pkg.Types.pkg_server_registry_url(uuid)
             else
+                reg_url = nothing
+            end
+
+            if reg_url !== nothing
+                download_or_clone(tmp_dir, previous_director, reg_url, registry_path, url, name)
+            elseif url !== nothing # clone from url
                 git_clone(tmp_dir, previous_director, url, name)
+            else
+                error("Could not download registry, nor pkg server not git download works.")
             end
         else
             git_clone(tmp_dir, previous_director, url, name)
