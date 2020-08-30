@@ -18,7 +18,7 @@ end
 
 function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                                              registry_list::Vector{Pkg.Types.RegistrySpec};
-                                             use_pkg_server::Book=false)
+                                             use_pkg_server::Bool=false)
     original_directory = pwd()
     num_registries = length(registry_list)
     registry_temp_dirs = Vector{String}(undef, num_registries)
