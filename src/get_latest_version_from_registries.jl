@@ -44,14 +44,14 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
             end
 
             if reg_url !== nothing
-                download_or_clone(tmp_dir, previous_director, reg_url, registry_path, url, name)
+                download_or_clone(tmp_dir, previous_directory, reg_url, registry_path, url, name)
             elseif url !== nothing # clone from url
-                git_clone(tmp_dir, previous_director, url, name)
+                git_clone(tmp_dir, previous_directory, url, name)
             else
                 error("Could not download registry, nor pkg server not git download works.")
             end
         else
-            git_clone(tmp_dir, previous_director, url, name)
+            git_clone(tmp_dir, previous_directory, url, name)
         end
     end
     for (registry_temp_dir, registry) in zip(registry_temp_dirs, registry_list)
