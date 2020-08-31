@@ -1,7 +1,7 @@
 import Pkg
 import UUIDs
 
-function git_clone(tmp_dir, previous_director, url, name)
+function git_clone(tmp_dir, previous_directory, url, name)
     cd(tmp_dir)
     run(`git clone $(url) $(name)`)
     cd(previous_directory)
