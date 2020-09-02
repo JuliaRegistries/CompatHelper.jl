@@ -82,7 +82,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
               latest_version,
               name,
               dep)
-    elseif bump_compat_containing_equality_specifier &&
+    elseif !bump_compat_containing_equality_specifier &&
             !isnothing(current_compat_entry_verbatim) &&
             contains(current_compat_entry_verbatim, '=') &&
             !contains(current_compat_entry_verbatim, '>') &&
