@@ -24,10 +24,26 @@ function generate_pr_title_parenthetical(keep_or_drop::Symbol,
     end
 end
 
+# Fix issues where we can't delete directories because we don't have write permissions to it.
+function prepare_for_deletion(path)
+    try chmod(path, 0o755)
+    catch; end
+    for (root, dirs, files) in walkdir(path)
+        for dir in dirs
+            try chmod(joinpath(root, dir), 0o755)
+            catch; end
+        end
+    end
+end
+
 function with_tmp_dir(f::Function)
     tmp_dir = mktempdir()
-    atexit(() -> rm(tmp_dir; force = true, recursive = true))
+    atexit() do
+        prepare_for_deletion(tmp_dir)
+        rm(tmp_dir; force = true, recursive = true)
+    end
     result = f(tmp_dir)
+    prepare_for_deletion(tmp_dir)
     rm(tmp_dir; force = true, recursive = true)
     return result
 end
