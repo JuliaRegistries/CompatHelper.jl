@@ -16,7 +16,8 @@ function main(precommit_hook::Function = update_manifests,
               pr_title_prefix::String = "",
               subdirs::AbstractVector{<:AbstractString} = [""],
               hostname_for_api::String="https://api.github.com",
-              hostname_for_clone::String="github.com")
+              hostname_for_clone::String="github.com",
+              use_pkg_server::Bool=false)
     if !keep_existing_compat && !drop_existing_compat
         throw(ArgumentError("At least one of keep_existing_compat, drop_existing_compat must be true"))
     end
@@ -54,7 +55,8 @@ function main(precommit_hook::Function = update_manifests,
                                                               master_branch = master_branch,
                                                               subdir = subdir)
         get_latest_version_from_registries!(dep_to_latest_version,
-                                            registries)
+                                            registries,
+                                            use_pkg_server = use_pkg_server)
 
         make_pr_for_new_version(api,
                                 clone_hostname,
