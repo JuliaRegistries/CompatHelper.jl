@@ -35,7 +35,7 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
             registry_path = joinpath(tmp_dir, name)
             @static if VERSION >= v"1.5.0"
                 # copied from https://github.com/JuliaLang/Pkg.jl/blob/release-1.5/src/Types.jl#L981
-                reg_url, registry_urls = pkg_server_registry_url(uuid, registry_urls)
+                reg_url, registry_urls = Pkg.Types.pkg_server_registry_url(uuid, registry_urls)
             elseif v"1.4.0" <= VERSION < v"1.5.0"
                 # copied from https://github.com/JuliaLang/Pkg.jl/blob/v1.4.2/src/Types.jl#L921
                 reg_url = Pkg.Types.pkg_server_registry_url(uuid)
