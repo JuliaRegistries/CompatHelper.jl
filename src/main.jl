@@ -17,7 +17,7 @@ function main(precommit_hook::Function = update_manifests,
               subdirs::AbstractVector{<:AbstractString} = [""],
               hostname_for_api::String="https://api.github.com",
               hostname_for_clone::String="github.com",
-              use_pkg_server::Bool=false)
+              use_pkg_server::Bool=true)
     if !keep_existing_compat && !drop_existing_compat
         throw(ArgumentError("At least one of keep_existing_compat, drop_existing_compat must be true"))
     end
