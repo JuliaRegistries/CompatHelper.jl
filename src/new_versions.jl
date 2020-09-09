@@ -16,6 +16,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                                  env,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
+                                 bump_compat_containing_equality_specifier::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
                                  subdir::AbstractString,
                                  pr_title_prefix::String,
@@ -40,6 +41,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                                 subdir = subdir,
                                 keep_existing_compat = keep_existing_compat,
                                 drop_existing_compat = drop_existing_compat,
+                                bump_compat_containing_equality_specifier = bump_compat_containing_equality_specifier,
                                 pr_title_prefix = pr_title_prefix,
                                 registries = registries)
     end
@@ -62,6 +64,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                                  env,
                                  keep_existing_compat::Bool,
                                  drop_existing_compat::Bool,
+                                 bump_compat_containing_equality_specifier::Bool,
                                  master_branch::Union{DefaultBranch, AbstractString},
                                  subdir::AbstractString,
                                  pr_title_prefix::String,
@@ -79,6 +82,18 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
               latest_version,
               name,
               dep)
+    elseif !bump_compat_containing_equality_specifier &&
+            !isnothing(current_compat_entry_verbatim) &&
+            contains(current_compat_entry_verbatim, '=') &&
+            !contains(current_compat_entry_verbatim, '>') &&
+            !contains(current_compat_entry_verbatim, '<')
+        # To check for an equality specifier (but not an inequality specifier) we look for an equals sign without any
+        # symbols used for an inequality specifier that would also include an equals sign. Namely, greater than and
+        # less than. Other specifiers containing symbols like ≥ shouldn't parse as containing an equals sign.
+        @info("skipping compat entry because it contains an equality specifier",
+            current_compat_entry_verbatim,
+            name,
+            dep)
     else
         if isnothing(latest_version)
             @error("The dependency was not found in any of the registries", name, dep)
