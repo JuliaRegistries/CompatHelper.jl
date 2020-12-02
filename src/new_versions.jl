@@ -266,7 +266,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                              "pull request. ",
                              "Running your tests with the julia-command line ",
                              "option `--depwarn=yes` will alert you to deprecations in your ",
-                             "dependecies.\n",
+                             "dependencies.\n",
                              "Note: Consider tagging a patch release immediately after ",
                              "merging this PR, as downstream packages ",
                              "may depend on this for tests to pass.")
