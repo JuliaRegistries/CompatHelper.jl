@@ -39,8 +39,10 @@ end
 function with_tmp_dir(f::Function)
     tmp_dir = mktempdir()
     atexit() do
-        prepare_for_deletion(tmp_dir)
-        rm(tmp_dir; force = true, recursive = true)
+        if isdir(tmp_dir)
+            prepare_for_deletion(tmp_dir)
+            rm(tmp_dir; force = true, recursive = true)
+        end
     end
     result = f(tmp_dir)
     prepare_for_deletion(tmp_dir)
