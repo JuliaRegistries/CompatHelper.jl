@@ -1,5 +1,5 @@
 function update_manifests(path::AbstractString = pwd();
-                          registries::Vector{Pkg.Types.RegistrySpec} = default_registries,
+                          registries::Vector{Pkg.RegistrySpec} = default_registries,
                           delete_old_manifest::Bool = false)
     environments_to_update = Vector{String}(undef, 0)
     for (root, dirs, files) in walkdir(path)
@@ -18,7 +18,7 @@ function update_manifests(path::AbstractString = pwd();
 end
 
 function _update_manifests(environments::AbstractVector{<:AbstractString};
-                           registries::Vector{Pkg.Types.RegistrySpec},
+                           registries::Vector{Pkg.RegistrySpec},
                            delete_old_manifest::Bool)
     for environment in environments
         _update_manifest(environment;
@@ -34,7 +34,7 @@ function _has_project(environment::AbstractString)
 end
 
 function _update_manifest(environment::AbstractString;
-                          registries::Vector{Pkg.Types.RegistrySpec},
+                          registries::Vector{Pkg.RegistrySpec},
                           delete_old_manifest::Bool)
     @info("Updating environment: $(environment)")
     if _has_project(environment) && delete_old_manifest
@@ -49,14 +49,14 @@ function _update_manifest(environment::AbstractString;
         code = """
             using Pkg;
             using UUIDs;
-            Pkg.Types.RegistrySpec(name::Union{Nothing, String},
-                                   uuid::Union{Nothing, UUID},
-                                   url::Union{Nothing, String},
-                                   path::Union{Nothing, String}) = Pkg.Types.RegistrySpec(;
-                                                                                          name = name,
-                                                                                          uuid = uuid,
-                                                                                          url = url,
-                                                                                          path = path)
+            Pkg.RegistrySpec(name::Union{Nothing, String},
+                             uuid::Union{Nothing, UUID},
+                             url::Union{Nothing, String},
+                             path::Union{Nothing, String}) = Pkg.RegistrySpec(;
+                                                                              name = name,
+                                                                              uuid = uuid,
+                                                                              url = url,
+                                                                              path = path)
             registries = $(registries);
             for registry in registries;
                 Pkg.Registry.add(registry);
