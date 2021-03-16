@@ -20,7 +20,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                                  master_branch::Union{DefaultBranch, AbstractString},
                                  subdir::AbstractString,
                                  pr_title_prefix::String,
-                                 registries::Vector{Pkg.Types.RegistrySpec})
+                                 registries::Vector{Pkg.RegistrySpec})
     original_directory = pwd()
     always_assert(keep_existing_compat || drop_existing_compat)
     for dep in keys(dep_to_current_compat_entry)
@@ -68,7 +68,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                                  master_branch::Union{DefaultBranch, AbstractString},
                                  subdir::AbstractString,
                                  pr_title_prefix::String,
-                                 registries::Vector{Pkg.Types.RegistrySpec})
+                                 registries::Vector{Pkg.RegistrySpec})
     original_directory = pwd()
     always_assert(keep_existing_compat || drop_existing_compat)
     parenthetical_in_pr_title = keep_existing_compat && drop_existing_compat
@@ -223,7 +223,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                                  master_branch::Union{DefaultBranch, AbstractString},
                                  subdir::AbstractString,
                                  pr_title_prefix::String,
-                                 registries::Vector{Pkg.Types.RegistrySpec})
+                                 registries::Vector{Pkg.RegistrySpec})
     original_directory = pwd()
     name = dep.name
     if subdir != ""

@@ -17,7 +17,7 @@ function download_or_clone(tmp_dir, previous_director, reg_url, registry_path, u
 end
 
 function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
-                                             registry_list::Vector{Pkg.Types.RegistrySpec};
+                                             registry_list::Vector{Pkg.RegistrySpec};
                                              use_pkg_server::Bool=false)
     original_directory = pwd()
     num_registries = length(registry_list)
