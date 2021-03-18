@@ -9,7 +9,6 @@ function get_project_deps(api::GitHub.GitHubAPI,
                           subdir::AbstractString)
     original_directory = pwd()
     tmp_dir = mktempdir()
-    atexit(() -> rm(tmp_dir; force = true, recursive = true))
     url_with_auth = "https://x-access-token:$(auth.token)@$(clone_hostname.hostname)/$(repo.full_name).git"
     cd(tmp_dir)
     try
@@ -25,7 +24,6 @@ function get_project_deps(api::GitHub.GitHubAPI,
                                  dep_to_latest_version,
                                  deps_with_missing_compat_entry = get_project_deps(project_file)
     cd(original_directory)
-    rm(tmp_dir; force = true, recursive = true)
     result = dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
                                           dep_to_latest_version,
                                           deps_with_missing_compat_entry

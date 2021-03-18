@@ -191,7 +191,7 @@ end
 
 function with_cloned_repo(f, repo_url)
     original_working_directory = pwd()
-    result = with_temp_dir() do dir
+    result = mktempdir() do dir
         git_repo_dir = joinpath(dir, "REPO")
         cd(dir)
         try
@@ -224,16 +224,5 @@ function with_master_branch(f::Function,
                                parent_branch;
                                repo_url = repo_url)
     result = f(b)
-    return result
-end
-
-function with_temp_dir(f)
-    original_working_directory = pwd()
-    tmp_dir = mktempdir()
-    atexit(() -> rm(tmp_dir; force = true, recursive = true))
-    cd(tmp_dir)
-    result = f(tmp_dir)
-    cd(original_working_directory)
-    rm(tmp_dir; force = true, recursive = true)
     return result
 end

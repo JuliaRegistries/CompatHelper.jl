@@ -25,7 +25,6 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
     registry_urls = nothing
     for (i, registry) in enumerate(registry_list)
         tmp_dir = mktempdir()
-        atexit(() -> rm(tmp_dir; force = true, recursive = true))
         registry_temp_dirs[i] = tmp_dir
         name = registry.name
         url = registry.url
@@ -79,8 +78,5 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
         cd(previous_directory)
     end
     cd(original_directory)
-    for tmp_dir in registry_temp_dirs
-        rm(tmp_dir; force = true, recursive = true)
-    end
     return dep_to_latest_version
 end

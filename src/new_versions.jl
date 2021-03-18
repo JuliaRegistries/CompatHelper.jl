@@ -294,15 +294,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
         url_for_ssh = "git@$(clone_hostname.hostname):$(repo.full_name).git"
 
         tmp_dir = mktempdir()
-        atexit(() -> rm(tmp_dir; force = true, recursive = true))
         cd(tmp_dir)
-
-        ssh_private_key_directory = mktempdir()
-        run(`chmod 700 $(ssh_private_key_directory)`)
-        atexit(() -> rm(ssh_private_key_directory; force = true, recursive = true))
-
-        ssh_private_key_filename = joinpath(ssh_private_key_directory, "privatekey")
-        atexit(() -> rm(ssh_private_key_filename; force = true, recursive = true))
 
         try
             run(`git clone $(url_with_auth) REPO`)
@@ -362,11 +354,12 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                 COMPATHELPER_PRIV_contents = env["COMPATHELPER_PRIV"]
                 COMPATHELPER_PRIV = _decode_ssh_private_key(COMPATHELPER_PRIV_contents)
 
-                rm(ssh_private_key_filename; force = true, recursive = true)
-                open(ssh_private_key_filename, "w") do io
-                    println(io, COMPATHELPER_PRIV)
-                end
+                ssh_private_key_directory = mktempdir()
                 run(`chmod 700 $(ssh_private_key_directory)`)
+
+                ssh_private_key_filename, io = mktemp(ssh_private_key_directory)
+                println(io, COMPATHELPER_PRIV)
+                close(io)
                 run(`chmod 600 $(ssh_private_key_filename)`)
 
                 GIT_SSH_COMMAND = "ssh -i $(ssh_private_key_filename)"
@@ -383,10 +376,6 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                 end
             end
         end
-        cd(original_directory)
-        rm(ssh_private_key_filename; force = true, recursive = true)
-        rm(ssh_private_key_directory; force = true, recursive = true)
-        rm(tmp_dir; force = true, recursive = true)
     end
     cd(original_directory)
     return nothing
