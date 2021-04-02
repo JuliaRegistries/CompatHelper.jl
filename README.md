@@ -1,11 +1,24 @@
 # CompatHelper
 
-[![Build Status](https://travis-ci.com/JuliaRegistries/CompatHelper.jl.svg?branch=master)](https://travis-ci.com/JuliaRegistries/CompatHelper.jl)
-[![Codecov](https://codecov.io/gh/JuliaRegistries/CompatHelper.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaRegistries/CompatHelper.jl)
+[![Continuous Integration (Unit Tests)][ci-unit-img]][ci-unit-url]
+[![Continuous Integration (Integration Tests)][ci-integration-img]][ci-integration-url]
+[![Code Coverage][codecov-img]][codecov-url]
+[![Bors][bors-img]][bors-url]
+
+[ci-unit-img]: https://github.com/JuliaRegistries/CompatHelper.jl/workflows/CI%20(unit%20tests)/badge.svg?branch=master "Continuous Integration (Unit Tests)"
+[ci-unit-url]: https://github.com/JuliaRegistries/CompatHelper.jl/actions?query=workflow%3A%22CI+%28unit+tests%29%22
+[ci-integration-img]: https://github.com/JuliaRegistries/CompatHelper.jl/workflows/CI%20(integration%20tests)/badge.svg?branch=master "Continuous Integration (Integration Tests)"
+[ci-integration-url]: https://github.com/JuliaRegistries/CompatHelper.jl/actions?query=workflow%3A%22CI+%28integration+tests%29%22
+[codecov-img]: https://codecov.io/gh/JuliaRegistries/CompatHelper.jl/branch/master/graph/badge.svg "Code Coverage"
+[codecov-url]: https://codecov.io/gh/JuliaRegistries/CompatHelper.jl/branch/master
+[bors-img]: https://bors.tech/images/badge_small.svg "Bors"
+[bors-url]: https://app.bors.tech/repositories/26668
 
 CompatHelper is a Julia package that helps you keep your `[compat]` entries up-to-date.
 
-Whenever one of your package's dependencies releases a new version, CompatHelper opens a pull request on your repository that modifies your `[compat]` entry to reflect the newly released version.
+Whenever one of your package's dependencies releases a new breaking version, CompatHelper opens a pull request on your repository that modifies your `[compat]` entry to reflect the newly released version.
+
+We would like to eventually add Julia support to [Dependabot](https://dependabot.com), at which point we will deprecate CompatHelper in favor of Dependabot. If you would like to help with adding Julia support to Dependabot, join us in the `#dependabot` channel on the [Julia Language Slack](https://julialang.org/slack/).
 
 ## Table of Contents
 

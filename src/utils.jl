@@ -26,14 +26,19 @@ end
 
 # Fix issues where we can't delete directories because we don't have write permissions to it.
 function prepare_for_deletion(path)
-    try chmod(path, 0o755)
-    catch; end
+    try
+        chmod(path, 0o755)
+    catch
+    end
     for (root, dirs, files) in walkdir(path)
         for dir in dirs
-            try chmod(joinpath(root, dir), 0o755)
-            catch; end
+            try
+                chmod(joinpath(root, dir), 0o755)
+            catch
+            end
         end
     end
+    return nothing
 end
 
 function with_tmp_dir(f::Function)

@@ -3,14 +3,14 @@ block_labels = [ "DO NOT MERGE" ]
 delete_merged_branches = true
 
 status = [
-    "codecov/patch",
-    # "codecov/project",
-    "Travis CI - Branch",
-    "VersionVigilante",
+    "Integration/Julia 1/ubuntu-latest/x64",
+    "Unit/Julia 1.5.0/ubuntu-latest/x64",
+    "Unit/Julia 1.5/ubuntu-latest/x64",
+    "Unit/Julia 1/ubuntu-latest/x64",
+    "Unit/Julia nightly/ubuntu-latest/x64",
+    "codecov/project/minimum",
+    # "codecov/project", # TODO: uncomment this line
+    # "codecov/patch",   # TODO: uncomment this line
 ]
 
-timeout_sec = 36000
-
-[committer]
-name = "BCBI Bot"
-email = "bcbi-git@brown.edu"
+timeout_sec = 1800

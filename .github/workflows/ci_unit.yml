@@ -1,0 +1,47 @@
+name: CI (unit tests)
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+      - staging
+      - trying
+    tags: '*'
+jobs:
+  unit:
+    name: Unit/Julia ${{ matrix.version }}/${{ matrix.os }}/${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - x64
+        os:
+          - ubuntu-latest
+        version:
+          - '1.5.0'
+          - '1.5'
+          - '1'
+          - 'nightly'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.version }}
+          arch: ${{ matrix.arch }}
+      - uses: actions/cache@v1
+        env:
+          cache-name: cache-artifacts
+        with:
+          path: ~/.julia/artifacts
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-test-${{ env.cache-name }}-
+            ${{ runner.os }}-test-
+            ${{ runner.os }}-
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: julia-actions/julia-runtest@v1
+        env:
+          COMPATHELPER_RUN_INTEGRATION_TESTS: "false"

@@ -1,7 +1,7 @@
 name = "CompatHelper"
 uuid = "aa819f21-2bde-4658-8897-bab36330d9b7"
-authors = ["Dilum Aluthge <dilum@aluthge.com>", "Brown Center for Biomedical Informatics"]
-version = "1.16.4"
+authors = ["Dilum Aluthge", "Brown Center for Biomedical Informatics", "contributors"]
+version = "1.17.0-DEV"
 
 [deps]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -15,11 +15,11 @@ TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [compat]
-GitHub = "5.1.6"
-HTTP = "0.8.16, 0.9"
+GitHub = "5.4"
+HTTP = "0.9"
 JSON = "0.21"
-TimeZones = "0.10, 0.11, 1.0"
-julia = "1.2"
+TimeZones = "1"
+julia = "1.5"
 
 [extras]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -27,8 +27,9 @@ Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 GitHub = "bc5e4493-9b4d-5f90-b8aa-2b2bcaad7a26"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 
 [targets]
-test = ["Base64", "Dates", "GitHub", "Pkg", "Printf", "Test", "TimeZones"]
+test = ["Base64", "Dates", "GitHub", "Pkg", "Printf", "Random", "Test", "TimeZones"]
