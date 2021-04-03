@@ -151,6 +151,32 @@ with_master_branch(templates("master_6"), "master"; repo_url = repo_url_with_aut
     end
 end
 
+with_master_branch(templates("master_7"), "master"; repo_url = repo_url_with_auth) do master_7
+    withenv("GITHUB_REPOSITORY" => COMPATHELPER_INTEGRATION_TEST_REPO,
+            "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN) do
+        precommit_hook = (; registries) -> CompatHelper.update_manifests(;
+                                                                         delete_old_manifest = true,
+                                                                         registries = registries)
+        env = ENV
+        ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
+        sleep(30)
+        CompatHelper.main(precommit_hook, env, ci_cfg;
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-7a] ",
+                          master_branch = master_7,
+                          keep_existing_compat = false,
+                          drop_existing_compat = true,
+                          bump_compat_containing_equality_specifier = false)
+        sleep(30)
+        CompatHelper.main(precommit_hook, env, ci_cfg;
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-7b] ",
+                          master_branch = master_7,
+                          keep_existing_compat = false,
+                          drop_existing_compat = true,
+                          bump_compat_containing_equality_specifier = true)
+        sleep(5)
+    end
+end
+
 sleep(5)
 
 all_prs = CompatHelper.get_all_pull_requests(api, repo, "open";

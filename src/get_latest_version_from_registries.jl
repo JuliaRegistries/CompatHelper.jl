@@ -2,9 +2,10 @@ import Pkg
 import UUIDs
 
 function git_clone(tmp_dir, previous_directory, url, name)
-    cd(tmp_dir)
-    run(`git clone $(url) $(name)`)
-    cd(previous_directory)
+    cd(tmp_dir) do
+        run(`git clone $(url) $(name)`)
+    end
+    return nothing
 end
 
 function download_or_clone(tmp_dir, previous_director, reg_url, registry_path, url, name)
@@ -14,6 +15,40 @@ function download_or_clone(tmp_dir, previous_director, reg_url, registry_path, u
         # in case of fail, fallback to clone
         git_clone(tmp_dir, previous_director, url, name)
     end
+    return nothing
+end
+
+function _pkg_server_registry_url(uuid, registry_urls)
+    # if Base.VERSION >= v"1.7.0" # TODO: uncomment this line once Julia 1.7.0 has been released
+    if Base.VERSION >= v"1.7.0-"  # TODO: delete this line once Julia 1.7.0 has been released
+        reg_url, registry_urls = Pkg.Registry.pkg_server_registry_url(uuid, registry_urls)
+    else
+        reg_url, registry_urls = Pkg.Types.pkg_server_registry_url(uuid, registry_urls)
+    end
+    return reg_url, registry_urls
+end
+
+function _get_registry(;
+                       use_pkg_server,
+                       uuid,
+                       registry_urls,
+                       tmp_dir,
+                       name,
+                       previous_directory,
+                       url)
+    if use_pkg_server
+        reg_url, registry_urls = _pkg_server_registry_url(uuid, registry_urls)
+        registry_path = joinpath(tmp_dir, name)
+        if reg_url !== nothing
+            download_or_clone(tmp_dir, previous_directory, reg_url, registry_path, url, name)
+        else # clone from url
+            always_assert(url !== nothing)
+            git_clone(tmp_dir, previous_directory, url, name)
+        end
+    else
+        git_clone(tmp_dir, previous_directory, url, name)
+    end
+    return registry_urls
 end
 
 function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
@@ -31,23 +66,15 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
         url = registry.url
         uuid = registry.uuid
         previous_directory = pwd()
-        if use_pkg_server
-            # if Base.VERSION >= v"1.7.0" # TODO: uncomment this line once Julia 1.7.0 has been released
-            if Base.VERSION >= v"1.7.0-"  # TODO: delete this line once Julia 1.7.0 has been released
-                reg_url, registry_urls = Pkg.Registry.pkg_server_registry_url(uuid, registry_urls)
-            else
-                reg_url, registry_urls = Pkg.Types.pkg_server_registry_url(uuid, registry_urls)
-            end
-            registry_path = joinpath(tmp_dir, name)
-            if reg_url !== nothing
-                download_or_clone(tmp_dir, previous_directory, reg_url, registry_path, url, name)
-            else # clone from url
-                always_assert(url !== nothing)
-                git_clone(tmp_dir, previous_directory, url, name)
-            end
-        else
-            git_clone(tmp_dir, previous_directory, url, name)
-        end
+        registry_urls = _get_registry(;
+            use_pkg_server,
+            uuid,
+            registry_urls,
+            tmp_dir,
+            name,
+            previous_directory,
+            url,
+        )
     end
     for (registry_temp_dir, registry) in zip(registry_temp_dirs, registry_list)
         previous_directory = pwd()
