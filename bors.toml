@@ -8,9 +8,9 @@ status = [
     "Unit/Julia 1.5/ubuntu-latest/x64",
     "Unit/Julia 1/ubuntu-latest/x64",
     "Unit/Julia nightly/ubuntu-latest/x64",
-    "codecov/project/minimum",
-    # "codecov/project", # TODO: uncomment this line
     # "codecov/patch",   # TODO: uncomment this line
+    # "codecov/project", # TODO: uncomment this line
+    "codecov/project/minimum",
 ]
 
 timeout_sec = 1800
