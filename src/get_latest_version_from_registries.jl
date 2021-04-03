@@ -33,7 +33,7 @@ function _get_registry(;
         registry_path = joinpath(tmp_dir, name)
         if reg_url !== nothing
             download_or_clone(tmp_dir, previous_directory, reg_url, registry_path, url, name)
-        else # clone from url
+        else
             always_assert(url != nothing)
             git_clone(tmp_dir, previous_directory, url, name)
         end
