@@ -263,8 +263,8 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                              "with this new compat entry. ",
                              "It is your responsibility to make sure that ",
                              "your package tests pass before you merge this ",
-                             "pull request. ",
-                             "Note: Consider tagging a patch release immediately after ",
+                             "pull request.\n\n",
+                             "Note: Consider registering a new release of your package immediately after ",
                              "merging this PR, as downstream packages ",
                              "may depend on this for tests to pass.")
     else
