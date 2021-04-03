@@ -18,15 +18,7 @@ function download_or_clone(tmp_dir, previous_director, reg_url, registry_path, u
     return nothing
 end
 
-function _pkg_server_registry_url(uuid, registry_urls)
-    # if Base.VERSION >= v"1.7.0" # TODO: uncomment this line once Julia 1.7.0 has been released
-    if Base.VERSION >= v"1.7.0-"  # TODO: delete this line once Julia 1.7.0 has been released
-        reg_url, registry_urls = Pkg.Registry.pkg_server_registry_url(uuid, registry_urls)
-    else
-        reg_url, registry_urls = Pkg.Types.pkg_server_registry_url(uuid, registry_urls)
-    end
-    return reg_url, registry_urls
-end
+const _pkg_server_registry_url = Base.VERSION >= v"1.7.0-" ? Pkg.Registry.pkg_server_registry_url : Pkg.Types.pkg_server_registry_url
 
 function _get_registry(;
                        use_pkg_server,
@@ -42,7 +34,7 @@ function _get_registry(;
         if reg_url !== nothing
             download_or_clone(tmp_dir, previous_directory, reg_url, registry_path, url, name)
         else # clone from url
-            always_assert(url !== nothing)
+            always_assert(url != nothing)
             git_clone(tmp_dir, previous_directory, url, name)
         end
     else
