@@ -123,3 +123,48 @@ Test.@testset "version_numbers.jl" begin
     Test.@test CompatHelper._remove_trailing_zeros(v"0.0.33") == "0.0.33"
     Test.@test_throws DomainError CompatHelper._remove_trailing_zeros(v"0.0.0")
 end
+
+Test.@testset "get_latest_version_from_registries.jl" begin
+    Test.@testset "_pkg_server_registry_url" begin
+        CompatHelper._pkg_server_registry_url(Base.UUID("23338594-aafe-5451-b93e-139f81909106"), nothing)
+    end
+    Test.@testset "_get_registry" begin
+        for use_pkg_server in [true, false]
+            for JULIA_PKG_SERVER in ["pkg.julialang.org", ""]
+                uuid = Base.UUID("23338594-aafe-5451-b93e-139f81909106")
+                name = "General"
+                url = "https://github.com/JuliaRegistries/General.git"
+                registry_urls = nothing
+                tmp_dir = mktempdir()
+                previous_directory = mktempdir()
+                CompatHelper._get_registry(;
+                    use_pkg_server,
+                    uuid,
+                    registry_urls,
+                    tmp_dir,
+                    name,
+                    previous_directory,
+                    url,
+                )
+            end
+        end
+    end
+    Test.@testset "download_or_clone" begin
+        let
+            tmp_dir = mktempdir()
+            previous_director = mktempdir()
+            reg_url = "https://example.com/does/not/exists"
+            registry_path = joinpath(mktempdir(), "2")
+            url = "https://github.com/JuliaRegistries/General.git"
+            name = "General"
+            CompatHelper.download_or_clone(
+                tmp_dir,
+                previous_director,
+                reg_url,
+                registry_path,
+                url,
+                name,
+            )
+        end
+    end
+end
