@@ -4,4 +4,4 @@ coverage:
       default:
         target: auto
       minimum:
-        target: "95%"
+        target: "100%"
