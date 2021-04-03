@@ -7,16 +7,31 @@
 
 COMPATHELPER_INTEGRATION_TEST_REPO = ENV["COMPATHELPER_INTEGRATION_TEST_REPO"]::String
 TEST_USER_GITHUB_TOKEN = ENV["BCBI_TEST_USER_GITHUB_TOKEN"]::String
+sleep(5)
 auth = GitHub.authenticate(TEST_USER_GITHUB_TOKEN)
+sleep(5)
 whoami = username(auth)
 repo_url_without_auth = "https://github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
 repo_url_with_auth = "https://$(whoami):$(TEST_USER_GITHUB_TOKEN)@github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
+sleep(5)
 repo = GitHub.repo(COMPATHELPER_INTEGRATION_TEST_REPO; auth = auth)
+sleep(5)
 api = GitHub.GitHubWebAPI(HTTP.URI("https://api.github.com"))
+sleep(5)
 Test.@test success(`git --version`)
 @info("Authenticated to GitHub as \"$(whoami)\"")
 
-delete_stale_branches(repo_url_with_auth)
+sleep(5)
+
+_delete_branches_older_than = Dates.Hour(3)
+delete_old_pull_request_branches(
+    repo_url_with_auth,
+    _delete_branches_older_than
+)
+
+sleep(5)
+
+const GLOBAL_PR_TITLE_PREFIX = Random.randstring(8)
 
 with_master_branch(templates("master_1"), "master"; repo_url = repo_url_with_auth) do master_1
     withenv("GITHUB_REPOSITORY" => COMPATHELPER_INTEGRATION_TEST_REPO,
@@ -24,11 +39,13 @@ with_master_branch(templates("master_1"), "master"; repo_url = repo_url_with_aut
         precommit_hook = () -> ()
         env = ENV
         ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
+        sleep(30)
         CompatHelper.main(precommit_hook, env, ci_cfg;
-                          pr_title_prefix = "[test-1c] ",
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-1c] ",
                           master_branch = master_1,
                           keep_existing_compat = true,
                           drop_existing_compat = true)
+        sleep(5)
     end
 end
 
@@ -38,11 +55,13 @@ with_master_branch(templates("master_2"), "master"; repo_url = repo_url_with_aut
         precommit_hook = () -> ()
         env = ENV
         ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
+        sleep(30)
         CompatHelper.main(precommit_hook, env, ci_cfg;
-                          pr_title_prefix = "[test-2c] ",
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-2c] ",
                           master_branch = master_2,
                           keep_existing_compat = true,
                           drop_existing_compat = true)
+        sleep(5)
     end
 end
 
@@ -52,26 +71,31 @@ with_master_branch(templates("master_3"), "master"; repo_url = repo_url_with_aut
         precommit_hook = () -> ()
         env = ENV
         ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
+        sleep(30)
         CompatHelper.main(precommit_hook, env, ci_cfg;
-                          pr_title_prefix = "[test-3a] ",
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-3a] ",
                           master_branch = master_3,
                           keep_existing_compat = false,
                           drop_existing_compat = true)
+        sleep(30)
         CompatHelper.main(precommit_hook, env, ci_cfg;
-                          pr_title_prefix = "[test-3b] ",
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-3b] ",
                           master_branch = master_3,
                           keep_existing_compat = true,
                           drop_existing_compat = false)
+        sleep(30)
         CompatHelper.main(precommit_hook, env, ci_cfg;
-                          pr_title_prefix = "[test-3c] ",
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-3c] ",
                           master_branch = master_3,
                           keep_existing_compat = true,
                           drop_existing_compat = true)
+        sleep(30)
         CompatHelper.main(precommit_hook, env, ci_cfg;
-                          pr_title_prefix = "[test-3c] ",
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-3c] ",
                           master_branch = master_3,
                           keep_existing_compat = true,
                           drop_existing_compat = true)
+        sleep(5)
     end
 end
 
@@ -81,11 +105,13 @@ with_master_branch(templates("master_4"), "master"; repo_url = repo_url_with_aut
         precommit_hook = () -> ()
         env = ENV
         ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
+        sleep(30)
         CompatHelper.main(precommit_hook, env, ci_cfg;
-                          pr_title_prefix = "[test-4c] ",
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-4c] ",
                           master_branch = master_4,
                           keep_existing_compat = true,
                           drop_existing_compat = true)
+        sleep(5)
     end
 end
 
@@ -97,11 +123,13 @@ with_master_branch(templates("master_5"), "master"; repo_url = repo_url_with_aut
                                                                          registries = registries)
         env = ENV
         ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
+        sleep(30)
         CompatHelper.main(precommit_hook, env, ci_cfg;
-                          pr_title_prefix = "[test-5a] ",
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-5a] ",
                           master_branch = master_5,
                           keep_existing_compat = false,
                           drop_existing_compat = true)
+        sleep(5)
     end
 end
 
@@ -112,16 +140,22 @@ with_master_branch(templates("master_6"), "master"; repo_url = repo_url_with_aut
         precommit_hook = () -> ()
         env = ENV
         ci_cfg = CompatHelper.GitHubActions(whoami, "41898282+github-actions[bot]@users.noreply.github.com")
+        sleep(30)
         CompatHelper.main(precommit_hook, env, ci_cfg;
-                          pr_title_prefix = "[test-1c] ",
+                          pr_title_prefix = "$(GLOBAL_PR_TITLE_PREFIX) [test-1c] ",
                           master_branch = master_6,
                           keep_existing_compat = true,
                           drop_existing_compat = true,
                           subdirs = ["subdir_1", "subdir_2"])
+        sleep(5)
     end
 end
+
+sleep(5)
 
 all_prs = CompatHelper.get_all_pull_requests(api, repo, "open";
                                              auth = auth,
                                              per_page = 3,
                                              page_limit = 3)
+
+sleep(5)

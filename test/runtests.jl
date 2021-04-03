@@ -6,6 +6,7 @@ import HTTP
 import JSON
 import Pkg
 import Printf
+import Random
 import Test
 import TimeZones
 
@@ -20,7 +21,7 @@ const registries_2 = Pkg.RegistrySpec[Pkg.RegistrySpec(name = "General",
                                                        uuid = "ccbd2cc2-2954-11e9-1ccf-f3e7900901ca",
                                                        url = "https://github.com/BioJulia/BioJuliaRegistry.git")]
 
-include("testutils.jl")
+include("integration-test-utilities.jl")
 
 Test.@testset "CompatHelper.jl" begin
     Test.@testset "CompatHelper.jl unit tests" begin
