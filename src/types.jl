@@ -1,5 +1,3 @@
-import UUIDs
-
 # Abstract types
 
 abstract type CIService end

@@ -4,8 +4,8 @@ delete_merged_branches = true
 
 status = [
     "Integration/Julia 1/ubuntu-latest/x64",
-    "Unit/Julia 1.5.0/ubuntu-latest/x64",
-    "Unit/Julia 1.5/ubuntu-latest/x64",
+    "Unit/Julia 1.6.0/ubuntu-latest/x64",
+    "Unit/Julia 1.6/ubuntu-latest/x64",
     "Unit/Julia 1/ubuntu-latest/x64",
     "Unit/Julia nightly/ubuntu-latest/x64",
     "codecov/patch",

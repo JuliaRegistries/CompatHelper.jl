@@ -1,5 +1,3 @@
-import GitHub
-
 function get_all_pull_requests(api::GitHub.GitHubAPI,
                                repo::GitHub.Repo,
                                state::String;

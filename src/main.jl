@@ -1,7 +1,3 @@
-import Pkg
-import HTTP
-import GitHub
-
 const default_registries = Pkg.RegistrySpec[Pkg.RegistrySpec(name = "General",
                                                              uuid = "23338594-aafe-5451-b93e-139f81909106",
                                                              url = "https://github.com/JuliaRegistries/General.git")]

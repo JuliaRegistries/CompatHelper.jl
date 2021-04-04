@@ -1,5 +1,15 @@
 module CompatHelper
 
+import Base64
+import Dates
+import GitHub
+import HTTP
+import Pkg
+import Printf
+import TOML
+import TimeZones
+import UUIDs
+
 include("types.jl")
 
 include("main.jl")

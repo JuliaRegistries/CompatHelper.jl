@@ -1,5 +1,3 @@
-import Base64
-
 @inline function _is_raw_ssh_private_key(content::AbstractString)
     result = ( occursin("-", content) ) && ( occursin(" ", content) ) &&
                                            ( occursin("BEGIN ", content) ) &&
