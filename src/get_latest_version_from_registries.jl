@@ -1,7 +1,10 @@
 import Pkg
 import UUIDs
 
-function git_clone(tmp_dir, previous_directory, url, name)
+function git_clone(tmp_dir::AbstractString,
+                   previous_directory::AbstractString,
+                   url::AbstractString,
+                   name::AbstractString)
     cd(tmp_dir) do
         run(`git clone $(url) $(name)`)
     end
@@ -34,7 +37,7 @@ function _get_registry(;
         if reg_url !== nothing
             download_or_clone(tmp_dir, previous_directory, reg_url, registry_path, url, name)
         else
-            url == nothing && throw(ErrorException("could not download registry"))
+            url::AbstractString
             git_clone(tmp_dir, previous_directory, url, name)
         end
     else
