@@ -290,16 +290,12 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
         url_with_auth = "https://x-access-token:$(auth.token)@$(clone_hostname.hostname)/$(repo.full_name).git"
         url_for_ssh = "git@$(clone_hostname.hostname):$(repo.full_name).git"
 
-        tmp_dir = mktempdir()
-        atexit(() -> rm(tmp_dir; force = true, recursive = true))
+        tmp_dir = mktempdir(; cleanup = true)
         cd(tmp_dir)
 
-        ssh_private_key_directory = mktempdir()
+        ssh_private_key_directory = mktempdir(; cleanup = true)
         run(`chmod 700 $(ssh_private_key_directory)`)
-        atexit(() -> rm(ssh_private_key_directory; force = true, recursive = true))
-
         ssh_private_key_filename = joinpath(ssh_private_key_directory, "privatekey")
-        atexit(() -> rm(ssh_private_key_filename; force = true, recursive = true))
 
         try
             run(`git clone $(url_with_auth) REPO`)

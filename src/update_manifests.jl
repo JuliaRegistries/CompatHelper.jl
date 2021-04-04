@@ -45,32 +45,34 @@ function _update_manifest(environment::AbstractString;
         rm(joinpath(environment, "JuliaManifest.toml");
            force = true, recursive = true)
     end
-    with_tmp_dir() do tmp_dir
-        code = """
-            using Pkg;
-            using UUIDs;
-            Pkg.RegistrySpec(name::Union{Nothing, String},
-                             uuid::Union{Nothing, UUID},
-                             url::Union{Nothing, String},
-                             path::Union{Nothing, String}) = Pkg.RegistrySpec(;
-                                                                              name = name,
-                                                                              uuid = uuid,
-                                                                              url = url,
-                                                                              path = path)
-            registries = $(registries);
-            for registry in registries;
-                Pkg.Registry.add(registry);
-            end;
-            Pkg.activate("$(environment)"; shared = false);
-            Pkg.instantiate();
-            Pkg.update();
-            """
-        env = _generate_env_dict(ENV;
-                                 JULIA_DEPOT_PATH = tmp_dir)
-        cmd = Cmd(`$(Base.julia_cmd()) -e $(code)`;
-                  env = env)
-        run(pipeline(cmd, stdout=stdout, stderr=stderr))
-        return nothing
+    mktempdir() do tmp_dir
+        cd(tmp_dir) do
+            code = """
+                using Pkg;
+                using UUIDs;
+                Pkg.RegistrySpec(name::Union{Nothing, String},
+                                 uuid::Union{Nothing, UUID},
+                                 url::Union{Nothing, String},
+                                 path::Union{Nothing, String}) = Pkg.RegistrySpec(;
+                                                                                  name = name,
+                                                                                  uuid = uuid,
+                                                                                  url = url,
+                                                                                  path = path)
+                registries = $(registries);
+                for registry in registries;
+                    Pkg.Registry.add(registry);
+                end;
+                Pkg.activate("$(environment)"; shared = false);
+                Pkg.instantiate();
+                Pkg.update();
+                """
+            env = _generate_env_dict(ENV;
+                                     JULIA_DEPOT_PATH = tmp_dir)
+            cmd = Cmd(`$(Base.julia_cmd()) -e $(code)`;
+                      env = env)
+            run(pipeline(cmd, stdout=stdout, stderr=stderr))
+            return nothing
+        end
     end
     return nothing
 end

@@ -5,8 +5,7 @@ function get_project_deps(api::GitHub.GitHubAPI,
                           master_branch::Union{DefaultBranch, AbstractString},
                           subdir::AbstractString)
     original_directory = pwd()
-    tmp_dir = mktempdir()
-    atexit(() -> rm(tmp_dir; force = true, recursive = true))
+    tmp_dir = mktempdir(; cleanup = true)
     url_with_auth = "https://x-access-token:$(auth.token)@$(clone_hostname.hostname)/$(repo.full_name).git"
     cd(tmp_dir)
     try
