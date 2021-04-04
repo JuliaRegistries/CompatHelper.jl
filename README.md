@@ -43,21 +43,33 @@ Create a file at `.github/workflows/CompatHelper.yml` with the following content
 name: CompatHelper
 on:
   schedule:
-    - cron: '00 00 * * *'
+    - cron: 0 0 * * *
   workflow_dispatch:
 jobs:
   CompatHelper:
     runs-on: ubuntu-latest
     steps:
-      - name: Pkg.add("CompatHelper")
-        run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
-      - name: CompatHelper.main()
+      - name: "Install CompatHelper"
+        run: |
+          import Pkg
+          name = "CompatHelper"
+          uuid = "aa819f21-2bde-4658-8897-bab36330d9b7"
+          version = "1"
+          Pkg.add(; name, uuid, version)
+        shell: julia --color=yes {0}
+      - name: "Run CompatHelper"
+        run: |
+          import CompatHelper
+          CompatHelper.main()
+        shell: julia --color=yes {0}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMPATHELPER_PRIV: ${{ secrets.DOCUMENTER_KEY }}      # if you already have a `DOCUMENTER_KEY`
           # COMPATHELPER_PRIV: ${{ secrets.COMPATHELPER_PRIV }} # if you don't already have a `DOCUMENTER_KEY`
-        run: julia -e 'using CompatHelper; CompatHelper.main()'
 ```
+
+Note: Julia is available by default in the GitHub Actions virtual environments.
+Therefore, you do not need to manually install Julia.
 
 CompatHelper is now installed as a GitHub Action on your repository. But wait: do you fall into any of the following categories:
 1. You use GitHub Actions to test your package using continuous integration (CI).
@@ -81,7 +93,7 @@ Consider the following situations:
 
 If any of those situations apply to you, then you will need to set up an SSH deploy key for CompatHelper. Once you have set up an SSH deploy key for CompatHelper, the pull requests that CompatHelper opens will trigger all of the usual GitHub Actions.
 
-If none of those situations apply to you, then you don't need to set up an SSH deploy key for CompatHelper. 
+If none of those situations apply to you, then you don't need to set up an SSH deploy key for CompatHelper.
 
 #### 1.2.2. Instructions for setting up the SSH deploy key
 
@@ -208,7 +220,7 @@ email = "email address"
 
 CompatHelper.main(CompatHelper.update_manifests,
                   ENV,
-                  CompatHelper.GitHubActions(username, email); 
+                  CompatHelper.GitHubActions(username, email);
                   hostname_for_api = "https://github.company.com/api/v3",
                   hostname_for_clone = "github.company.com")
 ```
