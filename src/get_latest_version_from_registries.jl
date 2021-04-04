@@ -37,7 +37,6 @@ function _get_registry(;
         if reg_url !== nothing
             download_or_clone(tmp_dir, previous_directory, reg_url, registry_path, url, name)
         else
-            url::AbstractString
             git_clone(tmp_dir, previous_directory, url, name)
         end
     else
