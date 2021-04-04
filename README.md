@@ -54,7 +54,8 @@ jobs:
       - name: CompatHelper.main()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMPATHELPER_PRIV: ${{ secrets.COMPATHELPER_PRIV }}  # optional
+          COMPATHELPER_PRIV: ${{ secrets.DOCUMENTER_KEY }}      # if you already have a `DOCUMENTER_KEY`
+          # COMPATHELPER_PRIV: ${{ secrets.COMPATHELPER_PRIV }} # if you don't already have a `DOCUMENTER_KEY`
         run: julia -e 'using CompatHelper; CompatHelper.main()'
 ```
 
