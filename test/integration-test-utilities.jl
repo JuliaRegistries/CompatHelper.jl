@@ -103,30 +103,15 @@ function list_all_origin_branches(git_repo_dir)
 end
 
 function with_cloned_repo(f, repo_url)
-    original_working_directory = pwd()
-    result = with_temp_dir() do dir
-        git_repo_dir = joinpath(dir, "REPO")
-        cd(dir)
-        try
+    return mktempdir() do tmp_dir
+        return cd(tmp_dir) do
+            git_repo_dir = joinpath(tmp_dir, "REPO")
             run(`git clone $(repo_url) REPO`)
-        catch
+            return cd(git_repo_dir) do
+                return f(git_repo_dir)
+            end
         end
-        cd(git_repo_dir)
-        return f(git_repo_dir)
     end
-    cd(original_working_directory)
-    return result
-end
-
-function with_temp_dir(f)
-    original_working_directory = pwd()
-    tmp_dir = mktempdir()
-    atexit(() -> rm(tmp_dir; force = true, recursive = true))
-    cd(tmp_dir)
-    result = f(tmp_dir)
-    cd(original_working_directory)
-    rm(tmp_dir; force = true, recursive = true)
-    return result
 end
 
 function empty_git_repo(git_repo_dir::AbstractString)

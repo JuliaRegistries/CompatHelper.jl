@@ -135,8 +135,8 @@ Test.@testset "get_latest_version_from_registries.jl" begin
                 name = "General"
                 url = "https://github.com/JuliaRegistries/General.git"
                 registry_urls = nothing
-                tmp_dir = mktempdir()
-                previous_directory = mktempdir()
+                tmp_dir = mktempdir(; cleanup = true)
+                previous_directory = mktempdir(; cleanup = true)
                 CompatHelper._get_registry(;
                     use_pkg_server,
                     uuid,
@@ -151,15 +151,15 @@ Test.@testset "get_latest_version_from_registries.jl" begin
     end
     Test.@testset "download_or_clone" begin
         let
-            tmp_dir = mktempdir()
-            previous_director = mktempdir()
+            tmp_dir = mktempdir(; cleanup = true)
+            previous_directory = mktempdir(; cleanup = true)
             reg_url = "https://example.com/does/not/exists"
-            registry_path = joinpath(mktempdir(), "2")
+            registry_path = joinpath(mktempdir(; cleanup = true), "2")
             url = "https://github.com/JuliaRegistries/General.git"
             name = "General"
             CompatHelper.download_or_clone(
                 tmp_dir,
-                previous_director,
+                previous_directory,
                 reg_url,
                 registry_path,
                 url,

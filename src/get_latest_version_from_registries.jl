@@ -50,8 +50,7 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
     registry_temp_dirs = Vector{String}(undef, num_registries)
     registry_urls = nothing
     for (i, registry) in enumerate(registry_list)
-        tmp_dir = mktempdir()
-        atexit(() -> rm(tmp_dir; force = true, recursive = true))
+        tmp_dir = mktempdir(; cleanup = true)
         registry_temp_dirs[i] = tmp_dir
         name = registry.name
         url = registry.url
