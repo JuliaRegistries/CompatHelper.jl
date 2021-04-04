@@ -1,6 +1,3 @@
-import Pkg
-import UUIDs
-
 function git_clone(tmp_dir::AbstractString,
                    previous_directory::AbstractString,
                    url::AbstractString,
@@ -75,7 +72,7 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
         name = registry.name
         registry_path = joinpath(registry_temp_dir, name)
         cd(registry_path)
-        registry_parsed = Pkg.TOML.parsefile(joinpath(registry_path, "Registry.toml"))
+        registry_parsed = TOML.parsefile(joinpath(registry_path, "Registry.toml"))
         packages = registry_parsed["packages"]
         for p in packages
             name = p[2]["name"]
@@ -83,7 +80,7 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
             package = Package(name, uuid)
             path = p[2]["path"]
             if package in keys(dep_to_latest_version)
-                versions = VersionNumber.(collect(keys(Pkg.TOML.parsefile(joinpath(registry_path, path, "Versions.toml")))))
+                versions = VersionNumber.(collect(keys(TOML.parsefile(joinpath(registry_path, path, "Versions.toml")))))
                 old_value = dep_to_latest_version[package]
                 if isnothing(old_value)
                     dep_to_latest_version[package] = maximum(versions)

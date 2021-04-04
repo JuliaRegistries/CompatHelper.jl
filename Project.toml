@@ -1,7 +1,7 @@
 name = "CompatHelper"
 uuid = "aa819f21-2bde-4658-8897-bab36330d9b7"
 authors = ["Dilum Aluthge", "Brown Center for Biomedical Informatics", "contributors"]
-version = "1.17.0"
+version = "1.18.0"
 
 [deps]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -11,6 +11,7 @@ HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
@@ -19,7 +20,7 @@ GitHub = "5.4"
 HTTP = "0.9"
 JSON = "0.21"
 TimeZones = "1"
-julia = "1.5"
+julia = "1.6"
 
 [extras]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"

@@ -1,6 +1,3 @@
-import GitHub
-import Pkg
-
 function make_pr_for_new_version(api::GitHub.GitHubAPI,
                                  clone_hostname::HostnameForClones,
                                  precommit_hook::Function,
@@ -317,15 +314,15 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
         run(`git branch $(new_branch_name)`)
         run(`git checkout $(new_branch_name)`)
         project_file = joinpath(tmp_dir, "REPO", subdir, "Project.toml")
-        project = Pkg.TOML.parsefile(project_file)
+        project = TOML.parsefile(project_file)
         add_compat_section!(project)
         project["compat"][name] = new_compat_entry
         rm(project_file; force = true, recursive = true)
         open(project_file, "w") do io
-            Pkg.TOML.print(io,
-                           project;
-                           sorted = true,
-                           by = key -> (Pkg.Types.project_key_order(key), key))
+            TOML.print(io,
+                       project;
+                       sorted = true,
+                       by = key -> (Pkg.Types.project_key_order(key), key))
         end
         set_git_identity(ci_cfg)
         try

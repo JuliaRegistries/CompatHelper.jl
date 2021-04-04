@@ -1,6 +1,3 @@
-import GitHub
-import Pkg
-
 function get_project_deps(api::GitHub.GitHubAPI,
                           clone_hostname::HostnameForClones,
                           repo::GitHub.Repo;
@@ -53,7 +50,7 @@ function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Pkg.
                            dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                            deps_with_missing_compat_entry::Set{Package},
                            project_file::String)
-    project = Pkg.TOML.parsefile(project_file)
+    project = TOML.parsefile(project_file)
     if haskey(project, "deps")
         deps = project["deps"]
         add_compat_section!(project)
