@@ -23,7 +23,7 @@ Test.@test success(`git --version`)
 
 sleep(5)
 
-_delete_branches_older_than = Dates.Hour(0)
+_delete_branches_older_than = Dates.Hour(3)
 delete_old_pull_request_branches(
     repo_url_with_auth,
     _delete_branches_older_than
