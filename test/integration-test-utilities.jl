@@ -7,21 +7,51 @@ import Printf
 import Test
 import TimeZones
 
-const timestamp_regex = r"integration\/(\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d-\d\d\d)\/"
+const timestamp_regex = r"\/(\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d-\d\d\d)[\/\-]"
 
 function delete_old_pull_request_branches(AUTOMERGE_INTEGRATION_TEST_REPO, older_than)
     with_cloned_repo(AUTOMERGE_INTEGRATION_TEST_REPO) do git_repo_dir
-        cd(git_repo_dir)
-        all_origin_branches = list_all_origin_branches(git_repo_dir)::Vector{String}
-        for branch_name in all_origin_branches
-            if occursin(timestamp_regex, branch_name)
-                commit = strip(read(`git rev-parse origin/$(branch_name)`, String))
-                age = get_age_of_commit(commit)
-                if age >= older_than
+        cd(git_repo_dir) do
+            all_origin_branches = list_all_origin_branches(git_repo_dir)::Vector{String}
+            branches_to_delete = String[]
+            for branch_name in all_origin_branches
+                if occursin(timestamp_regex, branch_name)
+                    commit = strip(read(`git rev-parse origin/$(branch_name)`, String))
+                    age = get_age_of_commit(commit)
+                    if age >= older_than
+                        push!(branches_to_delete, branch_name)
+                    end
+                end
+            end
+            unique!(branches_to_delete)
+            m = 50
+            for _ in 1:(ceil(Int, length(branches_to_delete)/m) + 1)
+                k = min(m, length(branches_to_delete))
+                current_branches = branches_to_delete[1:k]
+                branches_to_delete = branches_to_delete[(k+1):end]
+                if !isempty(current_branches)
                     try
-                        run(`git push origin --delete $(branch_name)`)
+                        run(`git push origin --delete $(current_branches)`)
                     catch ex
-                        @info "Encountered an error while trying to delete branch" exception=(ex, catch_backtrace()) branch_name
+                        @info "Encountered an error while trying to delete multiple branches" exception=(ex, catch_backtrace()) current_branches
+                    end
+                end
+            end
+        end
+    end
+    with_cloned_repo(AUTOMERGE_INTEGRATION_TEST_REPO) do git_repo_dir
+        cd(git_repo_dir) do
+            all_origin_branches = list_all_origin_branches(git_repo_dir)::Vector{String}
+            for branch_name in all_origin_branches
+                if occursin(timestamp_regex, branch_name)
+                    commit = strip(read(`git rev-parse origin/$(branch_name)`, String))
+                    age = get_age_of_commit(commit)
+                    if age >= older_than
+                        try
+                            run(`git push origin --delete $(branch_name)`)
+                        catch ex
+                            @info "Encountered an error while trying to delete branch" exception=(ex, catch_backtrace()) branch_name
+                        end
                     end
                 end
             end
