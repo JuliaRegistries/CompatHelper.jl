@@ -31,9 +31,9 @@ function delete_old_pull_request_branches(AUTOMERGE_INTEGRATION_TEST_REPO, older
                 branches_to_delete = branches_to_delete[(k+1):end]
                 if !isempty(current_branches)
                     try
-                        run(`git push origin --delete $(branches_to_delete)`)
+                        run(`git push origin --delete $(current_branches)`)
                     catch ex
-                        @info "Encountered an error while trying to delete branch" exception=(ex, catch_backtrace()) branch_name
+                        @info "Encountered an error while trying to delete multiple branches" exception=(ex, catch_backtrace()) current_branches
                     end
                 end
             end
