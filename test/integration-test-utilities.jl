@@ -7,7 +7,7 @@ import Printf
 import Test
 import TimeZones
 
-const timestamp_regex = r"integration\/(\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d-\d\d\d)\/"
+const timestamp_regex = r"\/(\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d-\d\d\d)[\/\-]"
 
 function delete_old_pull_request_branches(AUTOMERGE_INTEGRATION_TEST_REPO, older_than)
     with_cloned_repo(AUTOMERGE_INTEGRATION_TEST_REPO) do git_repo_dir
