@@ -1,12 +1,3 @@
-import CompatHelper
-import Dates
-import GitHub
-import JSON
-import Printf
-import Printf
-import Test
-import TimeZones
-
 const timestamp_regex = r"\/(\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d-\d\d\d)[\/\-]"
 
 function delete_old_pull_request_branches(AUTOMERGE_INTEGRATION_TEST_REPO, older_than)

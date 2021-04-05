@@ -1,6 +1,3 @@
-import Base64
-import CompatHelper
-
 Test.@testset "assert.jl" begin
     Test.@test_nowarn CompatHelper.always_assert(true)
     Test.@test CompatHelper.always_assert(true) isa Nothing
