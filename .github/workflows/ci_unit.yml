@@ -9,6 +9,7 @@ on:
       - staging
       - trying
     tags: '*'
+  workflow_dispatch:
 jobs:
   unit:
     name: Unit/Julia ${{ matrix.version }}/${{ matrix.os }}/${{ matrix.arch }}
@@ -45,3 +46,43 @@ jobs:
       - uses: julia-actions/julia-runtest@v1
         env:
           COMPATHELPER_RUN_INTEGRATION_TESTS: "false"
+  documentation:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: '1'
+      - run: |
+          julia --project=docs -e '
+            using Pkg
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.instantiate()'
+        env:
+          JULIA_PKG_SERVER: ''
+      - run: julia --project=docs docs/make.jl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+  doctests:
+    name: Doctests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: '1'
+      - run: |
+          julia --project=docs -e '
+            using Pkg
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.instantiate()'
+        env:
+          JULIA_PKG_SERVER: ''
+      - run: |
+          julia --project=docs -e '
+            using Documenter: DocMeta, doctest
+            using CompatHelper
+            DocMeta.setdocmeta!(CompatHelper, :DocTestSetup, :(using CompatHelper); recursive=true)
+            doctest(CompatHelper)'
