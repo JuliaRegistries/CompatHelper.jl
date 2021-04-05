@@ -1,5 +1,7 @@
-import Base64
 import CompatHelper
+import Test
+
+import Base64
 import Dates
 import GitHub
 import HTTP
@@ -7,7 +9,6 @@ import JSON
 import Pkg
 import Printf
 import Random
-import Test
 import TimeZones
 
 const registries_1 = Pkg.RegistrySpec[Pkg.RegistrySpec(name = "General",
