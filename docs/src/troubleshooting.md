@@ -4,7 +4,7 @@ CurrentModule = CompatHelper
 
 # Troubleshooting
 
-Here are some tips for troubleshooting CompatHelper
+Here are some tips for troubleshooting CompatHelper.
 
 ## CompatHelper workflow file
 
