@@ -2,8 +2,7 @@ const default_registries = Pkg.RegistrySpec[Pkg.RegistrySpec(name = "General",
                                                              uuid = "23338594-aafe-5451-b93e-139f81909106",
                                                              url = "https://github.com/JuliaRegistries/General.git")]
 
-function main(precommit_hook::Function = update_manifests,
-              env::AbstractDict = ENV,
+function main(env::AbstractDict = ENV,
               ci_cfg::CIService = auto_detect_ci_service(; env = env);
               registries::Vector{Pkg.RegistrySpec} = default_registries,
               keep_existing_compat::Bool = true,
@@ -57,7 +56,6 @@ function main(precommit_hook::Function = update_manifests,
 
         make_pr_for_new_version(api,
                                 clone_hostname,
-                                precommit_hook,
                                 repo,
                                 dep_to_current_compat_entry,
                                 dep_to_current_compat_entry_verbatim,
