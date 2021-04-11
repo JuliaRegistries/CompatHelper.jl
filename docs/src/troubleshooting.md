@@ -10,8 +10,7 @@ Here are some tips for troubleshooting CompatHelper.
 
 The first step is to update your CompatHelper workflow file, which is usually
 located  in your repository at `.github/workflows/CompatHelper.yml.` Make sure
-that this file exactly matches the contents of the file located at
-https://github.com/JuliaRegistries/CompatHelper.jl/blob/master/.github/workflows/CompatHelper.yml
+that this file exactly matches the contents of the file located at [https://github.com/JuliaRegistries/CompatHelper.jl/blob/master/.github/workflows/CompatHelper.yml](https://github.com/JuliaRegistries/CompatHelper.jl/blob/master/.github/workflows/CompatHelper.yml).
 
 ## Manifest files
 
