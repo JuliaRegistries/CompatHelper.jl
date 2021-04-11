@@ -25,7 +25,6 @@ include("pull_requests.jl")
 include("ssh_keys.jl")
 include("stdlib.jl")
 include("timestamps.jl")
-include("update_manifests.jl")
 include("utils.jl")
 include("version_numbers.jl")
 
