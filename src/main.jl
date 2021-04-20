@@ -19,7 +19,11 @@ function main(env::AbstractDict = ENV,
     end
 
     COMPATHELPER_PRIV_is_defined = compathelper_priv_is_defined(env)
-    @info("Environment variable `COMPATHELPER_PRIV` is defined, is nonempty, and is not the string `false`: $(COMPATHELPER_PRIV_is_defined)")
+    if COMPATHELPER_PRIV_is_defined # we found the SSH deploy key
+        @info("CompatHelper found your SSH deploy key in the `COMPATHELPER_PRIV` environment variable.")
+    else # we did not find the SSH deploy key
+        @info("CompatHelper did not find a valid SSH deploy key in the `COMPATHELPER_PRIV` environment variable.")
+    end
 
     api = GitHub.GitHubWebAPI(HTTP.URI(hostname_for_api))
     clone_hostname = HostnameForClones(hostname_for_clone)
