@@ -32,5 +32,5 @@ end
     x3 = !isempty(value)
     x4 = value != "false"
     result = x1 && x2 && x3 && x4
-    return COMPATHELPER_PRIV_is_defined
+    return result
 end
