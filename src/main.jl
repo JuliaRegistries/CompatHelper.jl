@@ -18,13 +18,15 @@ function main(env::AbstractDict = ENV,
         throw(ArgumentError("At least one of keep_existing_compat, drop_existing_compat must be true"))
     end
 
-    if compathelper_priv_is_defined(env) # we found the SSH deploy key
+    if compathelper_priv_is_defined(env)
         let
             _decode_ssh_private_key(env["COMPATHELPER_PRIV"])
             nothing
         end
+        # we found the SSH deploy key
         @info("CompatHelper found your SSH deploy key in the `COMPATHELPER_PRIV` environment variable.")
-    else # we did not find the SSH deploy key
+    else
+        # we did not find the SSH deploy key
         @info("CompatHelper did not find a valid SSH deploy key in the `COMPATHELPER_PRIV` environment variable.")
     end
 
