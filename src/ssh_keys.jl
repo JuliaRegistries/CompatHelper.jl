@@ -1,9 +1,10 @@
 @inline function _is_raw_ssh_private_key(content::AbstractString)
-    result = ( occursin("-", content) ) && ( occursin(" ", content) ) &&
-                                           ( occursin("BEGIN ", content) ) &&
-                                           ( occursin("END ", content) ) &&
-                                           ( occursin(" PRIVATE KEY", content) )
-
+    x1 = occursin("-", content)
+    x2 = occursin(" ", content)
+    x3 = occursin("BEGIN ", content)
+    x4 = occursin("END ", content)
+    x5 = occursin(" PRIVATE KEY", content)
+    result = x1 && x2 && x3 && x4 && x5
     return result
 end
 
@@ -25,8 +26,11 @@ end
 
 
 @inline function compathelper_priv_is_defined(env)
-    COMPATHELPER_PRIV_is_defined = ( haskey(env, "COMPATHELPER_PRIV") ) && ( isa(env["COMPATHELPER_PRIV"], AbstractString) ) &&
-                                                                           ( length(strip(env["COMPATHELPER_PRIV"])) > 0 ) &&
-                                                                           ( !occursin("false", strip(env["COMPATHELPER_PRIV"])) )
-    return COMPATHELPER_PRIV_is_defined
+    value = strip(get(env, "COMPATHELPER_PRIV", ""))
+    x1 = haskey(env, "COMPATHELPER_PRIV")
+    x2 = value isa AbstractString
+    x3 = !isempty(value)
+    x4 = value != "false"
+    result = x1 && x2 && x3 && x4
+    return result
 end
