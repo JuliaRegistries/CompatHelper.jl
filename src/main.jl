@@ -19,7 +19,7 @@ function main(env::AbstractDict = ENV,
     end
 
     if compathelper_priv_is_defined(env)
-        let
+        let _ = nothing
             _decode_ssh_private_key(env["COMPATHELPER_PRIV"])
             nothing
         end
