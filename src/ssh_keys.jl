@@ -18,7 +18,13 @@ end
     decoded_result_string = String(decoded_result_array)
     @info("The Base64-decoding completed successfully.")
     if !_is_raw_ssh_private_key(decoded_result_string)
-        throw(BadSSHPrivateKeyError("Private key is not in the correct format. It must be an OpenSSH private key. You should use the OpenSSH `ssh-keygen` command to generate the private key."))
+        msg = string(
+            "Private key is not in the correct format. ",
+            "It must be a private key in PEM format. ",
+            "You should use the OpenSSH `ssh-keygen` command to generate the private key. ",
+            "You should pass the `-m PEM` option to ensure that the private key is in PEM format.",
+        )
+        throw(BadSSHPrivateKeyError(msg))
     end
     @info("This was a Base64-encoded SSH private key. I Base64-decoded it, and now I have the raw SSH private key.")
     return decoded_result_string
