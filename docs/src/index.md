@@ -57,18 +57,18 @@ If none of those situations apply to you, then you don't need to set up an SSH d
 ### Instructions for setting up the SSH deploy key
 
 It is easy to set up an SSH deploy key for CompatHelper. Here are the instructions:
-1. `ssh-keygen -N "" -f compathelper_key`
-2. `cat compathelper_key # This is the private key. Copy this to your clipboard.`
-3. Go to the GitHub page for your package's repository, click on the **Settings** tab, then click on **Secrets**, and then click on **New repository secret**. Name the secret `COMPATHELPER_PRIV`. For the contents, paste in the private key that you copied in the previous step.
+1. `ssh-keygen -m PEM -N "" -f compathelper_key`
+2. `cat compathelper_key # This is the private key in PEM format. Copy this to your clipboard.`
+3. Go to the GitHub page for your package's repository, click on the **Settings** tab, then click on **Secrets**, and then click on **New repository secret**. Name the secret `COMPATHELPER_PRIV`. For the contents, paste in the PEM-formatted private key that you copied in the previous step.
 4. `cat compathelper_key.pub # This is the public key. Copy this to your clipboard.`
 5. Go to the GitHub page for your package's repository, click on the **Settings** tab, then click on **Deploy keys**, and then click on **Add deploy key**. Name the deploy key `COMPATHELPER_PUB`. For the contents, paste in the public key that you copied in the previous step. Make sure that you give the key **write access**.
 6. `rm -f compathelper_key compathelper_key.pub`
 
 ### Advanced notes
 
-When you supply the private key, you can either provide the raw private key itself (as we did above), or you can provide the Base64-encoded form of the private key.
+When you supply the private key, you can either provide the raw PEM-formatted private key itself (as we did above), or you can provide the Base64-encoded form of the PEM-formatted private key.
 
-For example, if you already have a Base64-encoded private key saved as a secret, you can re-use it. If e.g. the secret is named `DOCUMENTER_KEY`, then simply replace the line that looks like this:
+For example, if you already have a Base64-encoded PEM-formatted private key saved as a secret, you can re-use it. If e.g. the secret is named `DOCUMENTER_KEY`, then simply replace the line that looks like this:
 ```yaml
 COMPATHELPER_PRIV: ${{ secrets.COMPATHELPER_PRIV }}
 ```
