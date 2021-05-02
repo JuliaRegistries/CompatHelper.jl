@@ -8,7 +8,7 @@ CompatHelper is a Julia package that helps you keep your `[compat]` entries up-t
 
 Whenever one of your package's dependencies releases a new breaking version, CompatHelper opens a pull request on your repository that modifies your `[compat]` entry to reflect the newly released version.
 
-We would like to eventually add Julia support to [Dependabot](https://dependabot.com), at which point we will deprecate CompatHelper in favor of Dependabot. If you would like to help with adding Julia support to Dependabot, join us in the `#dependabot` channel on the [Julia Language Slack](https://julialang.org/slack/).
+We would like to eventually add Julia support to [Dependabot](https://dependabot.com). If you would like to help with adding Julia support to Dependabot, join us in the `#dependabot` channel on the [Julia Language Slack](https://julialang.org/slack/).
 
 ## Installation, step 1: Create the workflow file
 
