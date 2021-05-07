@@ -16,7 +16,6 @@ function get_project_deps(
     run(`git checkout $(master_branch_name)`)
 
     project_file = joinpath(tmp_dir, "REPO", subdir, "Project.toml")
-
     dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim, dep_to_latest_version, deps_with_missing_compat_entry = get_project_deps(project_file)
 
     cd(original_directory)

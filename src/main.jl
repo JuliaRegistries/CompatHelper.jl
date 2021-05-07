@@ -57,7 +57,6 @@ function main(
         dep_to_current_compat_entry,
             dep_to_current_compat_entry_verbatim,
             dep_to_latest_version,
-
             deps_with_missing_compat_entry = get_project_deps(api, clone_hostname, repo; auth=auth, master_branch=master_branch, subdir=subdir)
 
         get_latest_version_from_registries!(dep_to_latest_version, registries, use_pkg_server=use_pkg_server)
