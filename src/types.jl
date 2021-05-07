@@ -1,8 +1,5 @@
-# Abstract types
-
 abstract type CIService end
-
-# Structs
+struct DefaultBranch end
 
 struct AlwaysAssertionError <: Exception
     msg::String
@@ -12,10 +9,12 @@ struct BadSSHPrivateKeyError <: Exception
     msg::String
 end
 
-struct DefaultBranch
+struct GitHubActions <: CIService
+    username::String
+    email::String
 end
 
-struct GitHubActions <: CIService
+struct TeamCity <: CIService
     username::String
     email::String
 end
@@ -32,9 +31,4 @@ end
 struct Package
     name::String
     uuid::UUIDs.UUID
-end
-
-struct TeamCity <: CIService
-    username::String
-    email::String
 end

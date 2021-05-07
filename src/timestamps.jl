@@ -9,6 +9,6 @@ function utc_to_string(zdt::TimeZones.ZonedDateTime)
     minute = Dates.Minute(zdt_as_utc.utc_datetime).value
     second = Dates.Second(zdt_as_utc.utc_datetime).value
     millisecond = Dates.Millisecond(zdt_as_utc.utc_datetime).value
-    result = Printf.@sprintf "%04d-%02d-%02d-%02d-%02d-%02d-%03d" year month day hour minute second millisecond
-    return result
+
+    return Printf.@sprintf "%04d-%02d-%02d-%02d-%02d-%02d-%03d" year month day hour minute second millisecond
 end

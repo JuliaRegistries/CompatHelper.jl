@@ -1,10 +1,15 @@
-function git_clone(tmp_dir::AbstractString,
-                   previous_directory::AbstractString,
-                   url::AbstractString,
-                   name::AbstractString)
+const _PKG_SERVER_REGISTRY_URL = Base.VERSION >= v"1.7.0-" ? Pkg.Registry.pkg_server_registry_url : Pkg.Types.pkg_server_registry_url
+
+function git_clone(
+    tmp_dir::AbstractString,
+    previous_directory::AbstractString,
+    url::AbstractString,
+    name::AbstractString
+)
     cd(tmp_dir) do
         run(`git clone $(url) $(name)`)
     end
+
     return nothing
 end
 
@@ -15,22 +20,23 @@ function download_or_clone(tmp_dir, previous_director, reg_url, registry_path, u
         # in case of fail, fallback to clone
         git_clone(tmp_dir, previous_director, url, name)
     end
+
     return nothing
 end
 
-const _pkg_server_registry_url = Base.VERSION >= v"1.7.0-" ? Pkg.Registry.pkg_server_registry_url : Pkg.Types.pkg_server_registry_url
-
 function _get_registry(;
-                       use_pkg_server,
-                       uuid,
-                       registry_urls,
-                       tmp_dir,
-                       name,
-                       previous_directory,
-                       url)
+    use_pkg_server,
+    uuid,
+    registry_urls,
+    tmp_dir,
+    name,
+    previous_directory,
+    url
+)
     if use_pkg_server
-        reg_url, registry_urls = _pkg_server_registry_url(uuid, registry_urls)
+        reg_url, registry_urls = _PKG_SERVER_REGISTRY_URL(uuid, registry_urls)
         registry_path = joinpath(tmp_dir, name)
+
         if reg_url !== nothing
             download_or_clone(tmp_dir, previous_directory, reg_url, registry_path, url, name)
         else
@@ -39,16 +45,20 @@ function _get_registry(;
     else
         git_clone(tmp_dir, previous_directory, url, name)
     end
+
     return registry_urls
 end
 
-function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
-                                             registry_list::Vector{Pkg.RegistrySpec};
-                                             use_pkg_server::Bool=false)
+function get_latest_version_from_registries!(
+    dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
+    registry_list::Vector{Pkg.RegistrySpec};
+    use_pkg_server::Bool=false
+)
     original_directory = pwd()
     num_registries = length(registry_list)
     registry_temp_dirs = Vector{String}(undef, num_registries)
     registry_urls = nothing
+    
     for (i, registry) in enumerate(registry_list)
         tmp_dir = mktempdir(; cleanup = true)
         registry_temp_dirs[i] = tmp_dir
@@ -66,6 +76,7 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
             url,
         )
     end
+
     for (registry_temp_dir, registry) in zip(registry_temp_dirs, registry_list)
         previous_directory = pwd()
         name = registry.name
@@ -73,11 +84,13 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
         cd(registry_path)
         registry_parsed = TOML.parsefile(joinpath(registry_path, "Registry.toml"))
         packages = registry_parsed["packages"]
+
         for p in packages
             name = p[2]["name"]
             uuid = UUIDs.UUID(p[1])
             package = Package(name, uuid)
             path = p[2]["path"]
+
             if package in keys(dep_to_latest_version)
                 versions = VersionNumber.(collect(keys(TOML.parsefile(joinpath(registry_path, path, "Versions.toml")))))
                 old_value = dep_to_latest_version[package]
@@ -90,9 +103,12 @@ function get_latest_version_from_registries!(dep_to_latest_version::Dict{Package
         end
         cd(previous_directory)
     end
+
     cd(original_directory)
+
     for tmp_dir in registry_temp_dirs
         rm(tmp_dir; force = true, recursive = true)
     end
+
     return dep_to_latest_version
 end

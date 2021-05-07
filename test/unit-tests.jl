@@ -135,8 +135,8 @@ Test.@testset "version_numbers.jl" begin
 end
 
 Test.@testset "get_latest_version_from_registries.jl" begin
-    Test.@testset "_pkg_server_registry_url" begin
-        CompatHelper._pkg_server_registry_url(Base.UUID("23338594-aafe-5451-b93e-139f81909106"), nothing)
+    Test.@testset "_PKG_SERVER_REGISTRY_URL" begin
+        CompatHelper._PKG_SERVER_REGISTRY_URL(Base.UUID("23338594-aafe-5451-b93e-139f81909106"), nothing)
     end
     Test.@testset "_get_registry" begin
         for use_pkg_server in [true, false]

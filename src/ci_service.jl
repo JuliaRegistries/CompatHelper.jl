@@ -14,12 +14,12 @@ function TeamCity()
     return result
 end
 
-function get_my_username(ci_cfg::Union{GitHubActions, TeamCity};
-                         auth = nothing,
-                         env::AbstractDict = ENV)
+function get_my_username(
+    ci_cfg::Union{GitHubActions, TeamCity};
+    auth=nothing, env::AbstractDict=ENV
+)
     return ci_cfg.username
 end
-
 
 function set_git_identity(ci_cfg::Union{GitHubActions, TeamCity})
     run(Cmd(String["git", "config", "user.name", strip(ci_cfg.username)]))
@@ -27,7 +27,7 @@ function set_git_identity(ci_cfg::Union{GitHubActions, TeamCity})
     return nothing
 end
 
-function auto_detect_ci_service(; env::AbstractDict = ENV)
+function auto_detect_ci_service(; env::AbstractDict=ENV)
     if haskey(env, "GITHUB_REPOSITORY")
         return GitHubActions()
     else
@@ -35,14 +35,16 @@ function auto_detect_ci_service(; env::AbstractDict = ENV)
     end
 end
 
-function github_repository(ci_cfg::Union{GitHubActions, TeamCity};
-                           env::AbstractDict = ENV)
-    result = env["GITHUB_REPOSITORY"]::String
-    return result
+function github_repository(
+    ci_cfg::Union{GitHubActions, TeamCity};
+    env::AbstractDict=ENV
+)
+    return env["GITHUB_REPOSITORY"]::String
 end
 
-function github_token(ci_cfg::Union{GitHubActions, TeamCity};
-                      env::AbstractDict = ENV)
-    result = env["GITHUB_TOKEN"]::String
-    return result
+function github_token(
+    ci_cfg::Union{GitHubActions, TeamCity};
+    env::AbstractDict=ENV
+)
+    return env["GITHUB_TOKEN"]::String
 end

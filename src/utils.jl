@@ -1,3 +1,5 @@
+get_random_string() = string(utc_to_string(now_localzone()), "-", rand(UInt32))
+
 function add_compat_section!(project::Dict)
     if !haskey(project, "compat")
         project["compat"] = Dict{Any, Any}()
@@ -5,12 +7,10 @@ function add_compat_section!(project::Dict)
     return project
 end
 
-function get_random_string()
-    return string(utc_to_string(now_localzone()), "-", rand(UInt32))::String
-end
-
-function generate_pr_title_parenthetical(keep_or_drop::Symbol,
-                                         parenthetical_in_pr_title::Bool)::String
+function generate_pr_title_parenthetical(
+    keep_or_drop::Symbol,
+    parenthetical_in_pr_title::Bool
+)
     if parenthetical_in_pr_title
         if keep_or_drop == :keep
             return " (keep existing compat)"

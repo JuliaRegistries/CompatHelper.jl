@@ -1,14 +1,14 @@
 module CompatHelper
 
-import Base64
-import Dates
-import GitHub
-import HTTP
-import Pkg
-import Printf
-import TOML
-import TimeZones
-import UUIDs
+using Base64
+using Dates
+using GitHub
+using Pkg
+using Printf
+using TOML
+using TimeZones
+using UUIDs
+
 
 include("types.jl")
 
