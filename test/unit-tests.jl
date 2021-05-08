@@ -1,3 +1,15 @@
+Test.@testset "`version =` line in the workflow file" begin
+    root_directory = dirname(dirname(@__FILE__))
+    project_file = joinpath(root_directory, "Project.toml")
+    version = Base.VersionNumber(TOML.parsefile(project_file)["version"])
+    major_version = version.major
+    Test.@test major_version >= 1
+    workflow_dir = joinpath(root_directory, ".github", "workflows")
+    workflow_filename = joinpath(workflow_dir, "CompatHelper.yml")
+    workflow_filecontents = read(workflow_filename, String)
+    Test.@test occursin(Regex("\\sversion = \"$(major_version)\"\n"), workflow_filecontents)
+end
+
 Test.@testset "assert.jl" begin
     Test.@test_nowarn CompatHelper.always_assert(true)
     Test.@test CompatHelper.always_assert(true) isa Nothing
@@ -6,6 +18,7 @@ Test.@testset "assert.jl" begin
     Test.@test Test.@test_nowarn CompatHelper.always_assert(true) == nothing
     Test.@test_throws CompatHelper.AlwaysAssertionError CompatHelper.always_assert(false)
 end
+
 Test.@testset "envdict.jl" begin
     a = "/foo/bar/baz"
     b = Dict("PATH" => "/foo", "HTTP_PROXY" => "/bar", "HTTPS_PROXY" => "/baz", "JULIA_PKG_SERVER" => "/foobar")
