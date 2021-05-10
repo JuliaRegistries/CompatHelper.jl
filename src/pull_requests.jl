@@ -8,16 +8,26 @@ function get_all_pull_requests(api::GitHub.GitHubAPI,
     myparams = Dict("state" => state,
                     "per_page" => per_page,
                     "page" => 1)
-    prs, page_data = GitHub.pull_requests(api, repo;
-                                          auth=auth,
-                                          params = myparams,
-                                          page_limit = page_limit)
+    prs, page_data = my_retry() do
+        GitHub.pull_requests(
+          api,
+          repo;
+          auth,
+          params = myparams,
+          page_limit,
+        )
+    end  
     append!(all_pull_requests, prs)
     while haskey(page_data, "next")
-        prs, page_data = GitHub.pull_requests(api, repo;
-                                              auth=auth,
-                                              page_limit = page_limit,
-                                              start_page = page_data["next"])
+        prs, page_data = my_retry() do
+            GitHub.pull_requests(
+                api,
+                repo;
+                auth,
+                page_limit,
+                start_page = page_data["next"],
+            )
+        end
         append!(all_pull_requests, prs)
     end
     unique!(all_pull_requests)
@@ -79,6 +89,11 @@ function create_new_pull_request(api::GitHub.GitHubAPI,
     params["head"] = head_branch
     params["base"] = base_branch
     params["body"] = body
-    result = GitHub.create_pull_request(api, repo; params = params, auth = auth)
-    return result
+    f = () -> GitHub.create_pull_request(
+        api,
+        repo;
+        params,
+        auth,
+    )
+    return my_retry(f)
 end

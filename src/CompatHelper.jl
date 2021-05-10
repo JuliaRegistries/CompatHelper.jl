@@ -14,6 +14,7 @@ include("types.jl")
 
 include("main.jl")
 
+include("api_rate_limiting.jl")
 include("assert.jl")
 include("ci_service.jl")
 include("envdict.jl")

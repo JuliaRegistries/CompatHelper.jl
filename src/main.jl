@@ -11,9 +11,10 @@ function main(env::AbstractDict = ENV,
               master_branch::Union{DefaultBranch, AbstractString} = DefaultBranch(),
               pr_title_prefix::String = "",
               subdirs::AbstractVector{<:AbstractString} = [""],
-              hostname_for_api::String="https://api.github.com",
-              hostname_for_clone::String="github.com",
-              use_pkg_server::Bool=true)
+              hostname_for_api::String = "https://api.github.com",
+              hostname_for_clone::String = "github.com",
+              use_pkg_server::Bool = true,
+              include_jll::Bool = false)
     if !keep_existing_compat && !drop_existing_compat
         throw(ArgumentError("At least one of keep_existing_compat, drop_existing_compat must be true"))
     end
@@ -34,8 +35,8 @@ function main(env::AbstractDict = ENV,
     clone_hostname = HostnameForClones(hostname_for_clone)
     GITHUB_TOKEN = github_token(ci_cfg; env = env)
     GITHUB_REPOSITORY = github_repository(ci_cfg; env = env)
-    auth = GitHub.authenticate(api, GITHUB_TOKEN)
-    repo = GitHub.repo(api, GITHUB_REPOSITORY; auth = auth)
+    auth = my_retry(() -> GitHub.authenticate(api, GITHUB_TOKEN))
+    repo = my_retry(() -> GitHub.repo(api, GITHUB_REPOSITORY; auth = auth))
 
     _all_open_prs = get_all_pull_requests(api,
                                           repo,
@@ -56,9 +57,10 @@ function main(env::AbstractDict = ENV,
             deps_with_missing_compat_entry = get_project_deps(api,
                                                               clone_hostname,
                                                               repo;
-                                                              auth = auth,
-                                                              master_branch = master_branch,
-                                                              subdir = subdir)
+                                                              auth,
+                                                              master_branch,
+                                                              subdir,
+                                                              include_jll)
         get_latest_version_from_registries!(dep_to_latest_version,
                                             registries,
                                             use_pkg_server = use_pkg_server)

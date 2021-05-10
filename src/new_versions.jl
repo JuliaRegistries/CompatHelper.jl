@@ -290,10 +290,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
         run(`chmod 700 $(ssh_private_key_directory)`)
         ssh_private_key_filename = joinpath(ssh_private_key_directory, "privatekey")
 
-        try
-            run(`git clone $(url_with_auth) REPO`)
-        catch
-        end
+        my_retry(() -> run(`git clone $(url_with_auth) REPO`))
         cd(joinpath(tmp_dir, "REPO"))
         default_branch = git_get_current_branch()
         master_branch_name = git_decide_master_branch(master_branch,
@@ -314,24 +311,19 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                        by = key -> (Pkg.Types.project_key_order(key), key))
         end
         set_git_identity(ci_cfg)
-        try
-            run(`git add -A`)
-        catch
-        end
+        my_retry(() -> run(`git add -A`))
         @info("Attempting to commit...")
         commit_was_success = git_make_commit(; commit_message = new_pr_title)
         if commit_was_success
             @info("Commit was a success")
-            try
-                run(`git push -f origin $(new_branch_name)`)
-            catch
-            end
+            my_retry(() -> run(`git push -f origin $(new_branch_name)`) )
             create_new_pull_request(api, repo;
-                                    base_branch = master_branch_name,
-                                    head_branch = new_branch_name,
-                                    title = new_pr_title,
-                                    body = new_pr_body,
-                                    auth = auth,)
+                base_branch = master_branch_name,
+                head_branch = new_branch_name,
+                title = new_pr_title,
+                body = new_pr_body,
+                auth,
+            )
 
             COMPATHELPER_PRIV_is_defined = compathelper_priv_is_defined(env)
             @info("Environment variable `COMPATHELPER_PRIV` is defined, is nonempty, and is not the string `false`: $(COMPATHELPER_PRIV_is_defined)")
@@ -353,10 +345,7 @@ function make_pr_for_new_version(api::GitHub.GitHubAPI,
                 run(`git reset --soft "HEAD~1"`)
                 git_make_commit(; commit_message = new_pr_title)
                 withenv("GIT_SSH_COMMAND" => GIT_SSH_COMMAND) do
-                    try
-                        run(`git push -f origin $(new_branch_name)`)
-                    catch
-                    end
+                    my_retry(() -> run(`git push -f origin $(new_branch_name)`))
                 end
             end
         end
