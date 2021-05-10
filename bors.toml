@@ -6,6 +6,7 @@ status = [
     "Doctests",
     "Documentation",
     "Integration/Julia 1/ubuntu-latest/x64",
+    "Integration/Julia nightly/ubuntu-latest/x64",
     "Unit/Julia 1.6.0/ubuntu-latest/x64",
     "Unit/Julia 1.6/ubuntu-latest/x64",
     "Unit/Julia 1/ubuntu-latest/x64",
