@@ -146,18 +146,9 @@ function generate_branch(name::AbstractString,
             cp(src, dst; force = true)
         end
         cd(git_repo_dir)
-        try
-            run(`git add -A`)
-        catch
-        end
-        try
-            run(`git commit -m "Automatic commit - CompatHelper integration tests"`)
-        catch
-        end
-        try
-            run(`git push origin $(b)`)
-        catch
-        end
+        CompatHelper.my_retry(() -> run(`git add -A`))
+        CompatHelper.my_retry(() -> run(`git commit -m "Automatic commit - CompatHelper integration tests"`))
+        CompatHelper.my_retry(() -> run(`git push origin $(b)`))
         cd(original_working_directory)
         rm(git_repo_dir; force = true, recursive = true)
     end

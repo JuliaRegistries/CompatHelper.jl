@@ -8,7 +8,7 @@
 COMPATHELPER_INTEGRATION_TEST_REPO = ENV["COMPATHELPER_INTEGRATION_TEST_REPO"]::String
 TEST_USER_GITHUB_TOKEN = ENV["BCBI_TEST_USER_GITHUB_TOKEN"]::String
 sleep(5)
-auth = GitHub.authenticate(TEST_USER_GITHUB_TOKEN)
+auth = CompatHelper.my_retry(() -> GitHub.authenticate(TEST_USER_GITHUB_TOKEN))
 sleep(5)
 whoami = username(auth)
 repo_url_without_auth = "https://github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"

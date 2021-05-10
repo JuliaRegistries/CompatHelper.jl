@@ -3,15 +3,13 @@ function get_project_deps(api::GitHub.GitHubAPI,
                           repo::GitHub.Repo;
                           auth::GitHub.Authorization,
                           master_branch::Union{DefaultBranch, AbstractString},
-                          subdir::AbstractString)
+                          subdir::AbstractString,
+                          include_jll::Bool)
     original_directory = pwd()
     tmp_dir = mktempdir(; cleanup = true)
     url_with_auth = "https://x-access-token:$(auth.token)@$(clone_hostname.hostname)/$(repo.full_name).git"
     cd(tmp_dir)
-    try
-        run(`git clone $(url_with_auth) REPO`)
-    catch
-    end
+    my_retry(() -> run(`git clone $(url_with_auth) REPO`))
     cd(joinpath(tmp_dir, "REPO"))
     default_branch = git_get_current_branch()
     master_branch_name = git_decide_master_branch(master_branch, default_branch)
@@ -19,7 +17,7 @@ function get_project_deps(api::GitHub.GitHubAPI,
     project_file = joinpath(tmp_dir, "REPO", subdir, "Project.toml")
     dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
                                  dep_to_latest_version,
-                                 deps_with_missing_compat_entry = get_project_deps(project_file)
+                                 deps_with_missing_compat_entry = get_project_deps(project_file; include_jll)
     cd(original_directory)
     rm(tmp_dir; force = true, recursive = true)
     result = dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
@@ -28,7 +26,7 @@ function get_project_deps(api::GitHub.GitHubAPI,
     return result
 end
 
-function get_project_deps(project_file::String)
+function get_project_deps(project_file::String; include_jll::Bool)
     dep_to_current_compat_entry = Dict{Package, Union{Pkg.Types.VersionSpec, Nothing}}()
     dep_to_current_compat_entry_verbatim = Dict{Package, Union{String, Nothing}}()
     dep_to_latest_version = Dict{Package, Union{VersionNumber, Nothing}}()
@@ -37,7 +35,8 @@ function get_project_deps(project_file::String)
                       dep_to_current_compat_entry_verbatim,
                       dep_to_latest_version,
                       deps_with_missing_compat_entry,
-                      project_file)
+                      project_file;
+                      include_jll)
     result = dep_to_current_compat_entry, dep_to_current_compat_entry_verbatim,
                                           dep_to_latest_version,
                                           deps_with_missing_compat_entry
@@ -48,7 +47,8 @@ function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Pkg.
                            dep_to_current_compat_entry_verbatim::Dict{Package, Union{String, Nothing}},
                            dep_to_latest_version::Dict{Package, Union{VersionNumber, Nothing}},
                            deps_with_missing_compat_entry::Set{Package},
-                           project_file::String)
+                           project_file::String;
+                           include_jll::Bool)
     project = TOML.parsefile(project_file)
     if haskey(project, "deps")
         deps = project["deps"]
@@ -60,7 +60,7 @@ function get_project_deps!(dep_to_current_compat_entry::Dict{Package, Union{Pkg.
             uuid = UUIDs.UUID(d[2])
             if uuid in stdlib_uuids
                 @debug("Skipping stdlib: $(uuid)")
-            elseif endswith(lowercase(strip(name)), lowercase(strip("_jll")))
+            elseif (endswith(lowercase(strip(name)), lowercase(strip("_jll")))) && (!include_jll)
                 @debug("Skipping JLL package: $(name)")
             else
                 package = Package(name, uuid)
