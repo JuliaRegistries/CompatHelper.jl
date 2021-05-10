@@ -3,6 +3,7 @@ module CompatHelper
 using Base64
 using Dates
 using GitHub
+using HTTP
 using Pkg
 using Printf
 using TOML
