@@ -1,6 +1,14 @@
 using CompatHelper
+using GitForge
+using GitForge: GitHub, GitLab
+using Mocking
 using Test
 
+
+Mocking.activate()
+
+include("patches.jl")
+
 @testset "CompatHelper.jl" begin
-    @test CompatHelper.hello(1) == 2 # TODO: delete this line once we have deleted the `CompatHelper.hello` function
+    include("pull_requests.jl")
 end
