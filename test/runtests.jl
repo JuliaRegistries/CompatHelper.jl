@@ -1,3 +1,4 @@
+using Aqua
 using CompatHelper
 using GitForge
 using GitForge: GitHub, GitLab
@@ -7,6 +8,7 @@ using TOML
 
 
 Mocking.activate()
+Aqua.test_all(CompatHelper; ambiguities=false)
 
 include("patches.jl")
 
