@@ -1,13 +1,11 @@
 # CompatHelper.jl
 
-[![Documentation][docs-img]][docs-url]
-[![Code Coverage][codecov-img]][codecov-url]
-[![Bors][bors-img]][bors-url]
-
-| Test Set          | Status                                                                                  |
+| Category          | Status                                                                                  |
 | ----------------- | --------------------------------------------------------------------------------------- |
 | Unit Tests        | [![Continuous Integration (Unit Tests)][ci-unit-img]][ci-unit-url]                      |
 | Integration Tests | [![Continuous Integration (Integration Tests)][ci-integration-img]][ci-integration-url] |
+| Documentation     | [![Documentation][docs-img]][docs-url]                                                  |
+| Code Coverage     | [![Code Coverage][codecov-img]][codecov-url]                                            |
 
 [docs-img]: https://img.shields.io/badge/-documentation-blue.svg "Documentation"
 [docs-url]: https://JuliaRegistries.github.io/CompatHelper.jl/dev/
