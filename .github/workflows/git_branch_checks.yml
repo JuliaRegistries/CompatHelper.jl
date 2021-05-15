@@ -22,7 +22,7 @@ jobs:
       - run: git config --global user.email "nobody@example.com"
       - run: git config --global user.name "GitHub Actions"
       - run: git fetch --all
-      - name: Test that HEAD is up to date with all commits from master
+      - name: Test that there are no merge conflicts when merging master into HEAD
         run: |
           import Test
 
@@ -57,7 +57,7 @@ jobs:
           process, output_stdout, output_stderr = get_process_output(cmd)
 
           Test.@testset begin
-              Test.@test output_stderr == "Already up to date.\n"
+              Test.@test (output_stderr == "Already up to date.\n") || (output_stderr == "Automatic merge went well; stopped before committing as requested\n")
               Test.@test success(process)
           end
         shell: julia --color=yes {0}
