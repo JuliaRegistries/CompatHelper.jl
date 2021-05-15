@@ -57,13 +57,7 @@ jobs:
           process, output_stdout, output_stderr = get_process_output(cmd)
 
           Test.@testset begin
-              if !isempty(output_stdout)
-                  output = output_stdout
-              else
-                  output = output_stderr
-              end
-              @info "" output_stdout output_stderr output
-              Test.@test (output == "Already up to date.\n") || (output == "Automatic merge went well; stopped before committing as requested\n")
+              Test.@test (output_stdout == "Already up to date.\n") || (output_stderr == "Automatic merge went well; stopped before committing as requested\n")
               Test.@test success(process)
           end
         shell: julia --color=yes {0}
@@ -120,13 +114,7 @@ jobs:
           process, output_stdout, output_stderr = get_process_output(cmd)
 
           Test.@testset begin
-              if !isempty(output_stdout)
-                  output = output_stdout
-              else
-                  output = output_stderr
-              end
-              @info "" output_stdout output_stderr output
-              Test.@test (output == "Already up to date.\n") || (output == "Automatic merge went well; stopped before committing as requested\n")
+              Test.@test (output_stdout == "Already up to date.\n") || (output_stderr == "Automatic merge went well; stopped before committing as requested\n")
               Test.@test success(process)
           end
         shell: julia --color=yes {0}
