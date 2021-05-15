@@ -57,6 +57,7 @@ jobs:
           process, output_stdout, output_stderr = get_process_output(cmd)
 
           Test.@testset begin
+              @info "" output_stderr
               Test.@test (output_stderr == "Already up to date.\n") || (output_stderr == "Automatic merge went well; stopped before committing as requested\n")
               Test.@test success(process)
           end
