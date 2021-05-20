@@ -1,9 +1,18 @@
 module CompatHelper
 
+using Base64
 using GitForge
 using GitForge: GitHub, GitLab
 using Mocking
 
+
+const PRIVATE_COMPAT_HELPER = "COMPATHELPER_PRIV"
+
+include(joinpath("utilities", "ci.jl"))
+include(joinpath("utilities", "ssh.jl"))
+include(joinpath("utilities", "utilities.jl"))
+
+include("exceptions.jl")
 include("pull_requests.jl")
 
 end # module
