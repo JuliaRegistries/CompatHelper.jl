@@ -20,11 +20,6 @@ git_clone(url::AbstractString, local_path::AbstractString) = run(`git clone $(ur
 git_checkout(branch::AbstractString) = run(`git checkout $(branch)`)
 
 
-"""
-    add_compat_section(project::AbstractDict)
-
-Add a k/v "compat"=>Dict{Any, Any}() if one does not exist.
-"""
 function add_compat_section!(project::AbstractDict)
     if !haskey(project, "compat")
         project["compat"] = Dict{Any, Any}()
@@ -34,14 +29,6 @@ function add_compat_section!(project::AbstractDict)
 end
 
 
-"""
-    get_project_deps(
-        api::GitHub.GitHubAPI, clone_hostname::AbstractString, repo::GitHub.Repo;
-        subdir::AbstractString="", include_jll::Bool=false
-    )
-
-Get a `Set{CompatEntry}` for all dependencies of `repo`.
-"""
 function get_project_deps(
     api::GitHub.GitHubAPI, clone_hostname::AbstractString, repo::GitHub.Repo;
     subdir::AbstractString="", include_jll::Bool=false
@@ -60,12 +47,6 @@ function get_project_deps(
 end
 
 
-"""
-    get_project_deps(project_file::AbstractString; include_jll::Bool=false)
-
-Get a Set{CompatEntry} for all dependencies in the Compat section of the project_file.
-Exclude any STDLIB packages and JLL dependencies (unless specified).
-"""
 function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
     project_deps = Set{CompatEntry}()
     project = TOML.parsefile(project_file)
