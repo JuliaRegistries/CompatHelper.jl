@@ -75,8 +75,6 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
                 push!(project_deps, compat_entry)
             end
         end
-    else
-        @info("This project has no dependencies.")
     end
 
     return project_deps
