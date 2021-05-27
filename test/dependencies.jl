@@ -13,9 +13,11 @@ end
     mktempdir() do f
         cd(f)
         run(`git init`)
+        # Need to create a commit before hand, see below
+        # https://stackoverflow.com/a/63480330/1327636
         run(`touch foobar.txt`)
         run(`git add .`)
-        run(`git commit -m "Foobar"`)
+        run(`git -c user.name='Foobar' -c user.email='foo@bar.org' commit -m "Message"`)
         CompatHelper.git_checkout(master)
         result = String(read((`git branch --show-current`)))
 
