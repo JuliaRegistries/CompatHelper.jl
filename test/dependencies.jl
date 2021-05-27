@@ -17,7 +17,7 @@ end
         # https://stackoverflow.com/a/63480330/1327636
         run(`touch foobar.txt`)
         run(`git add .`)
-        run(`git -c user.name='Foobar' -c user.email='foo@bar.org' commit -m "Message"`)
+        run(`git -c user.name='$(CompatHelper.GIT_COMMIT_NAME)' -c user.email='$(CompatHelper.GIT_COMMIT_EMAIL)' commit -m "Message"`)
         CompatHelper.git_checkout(master)
         result = String(read((`git branch --show-current`)))
 

@@ -14,6 +14,8 @@ mutable struct CompatEntry
 end
 
 const LOCAL_REPO_NAME = "REPO"
+const GIT_COMMIT_NAME = "CompatHelper Julia"
+const GIT_COMMIT_EMAIL = "compathelper_noreply@julialang.org"
 
 git_clone(url::AbstractString, local_path::AbstractString) = run(`git clone $(url) $(local_path)`)
 git_checkout(branch::AbstractString) = run(`git checkout $(branch)`)
