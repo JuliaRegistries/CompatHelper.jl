@@ -6,7 +6,7 @@ using GitForge: GitHub, GitLab
 using Mocking
 
 
-const PRIVATE_COMPAT_HELPER = "COMPATHELPER_PRIV"
+const PRVIATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
 
 include(joinpath("utilities", "ci.jl"))
 include(joinpath("utilities", "ssh.jl"))

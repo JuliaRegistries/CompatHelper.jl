@@ -1,2 +1,2 @@
-private_compat_helper(; env::AbstractDict=ENV) = haskey(env, PRIVATE_COMPAT_HELPER) && env[PRIVATE_COMPAT_HELPER] != "false"
+has_ssh_private_key(; env::AbstractDict=ENV) = haskey(env, PRVIATE_SSH_ENVVAR) && env[PRVIATE_SSH_ENVVAR] != "false"
 lower(str::AbstractString) = lowercase(strip(str))
