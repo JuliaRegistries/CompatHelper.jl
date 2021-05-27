@@ -1,7 +1,7 @@
 @testset "has_ssh_private_key" begin
     @testset "not-false" begin
         withenv(
-            CompatHelper.PRVIATE_SSH_ENVVAR => "foobar"
+            CompatHelper.PRIVATE_SSH_ENVVAR => "foobar"
         ) do
             @test CompatHelper.has_ssh_private_key()
         end
@@ -9,14 +9,17 @@
 
     @testset "false" begin
         withenv(
-            CompatHelper.PRVIATE_SSH_ENVVAR => "false"
+            CompatHelper.PRIVATE_SSH_ENVVAR => "false"
         ) do
             @test !(CompatHelper.has_ssh_private_key())
         end
     end
 
     @testset "dne" begin
-        withenv() do
+        withenv(
+            CompatHelper.PRIVATE_SSH_ENVVAR => "true"
+        ) do
+            delete!(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
             @test !(CompatHelper.has_ssh_private_key())
         end
     end

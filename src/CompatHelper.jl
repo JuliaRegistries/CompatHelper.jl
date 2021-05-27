@@ -9,7 +9,7 @@ using TOML
 using UUIDs
 
 
-const PRVIATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
+const PRIVATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
 
 include(joinpath("utilities", "ci.jl"))
 include(joinpath("utilities", "ssh.jl"))
