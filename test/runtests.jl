@@ -24,6 +24,8 @@ include("patches.jl")
     @test occursin(Regex("\\sversion = \"$(major_version)\"\n"), workflow_filecontents)
 end
 
+
 @testset "CompatHelper.jl" begin
+    include("dependencies.jl")
     include("pull_requests.jl")
 end
