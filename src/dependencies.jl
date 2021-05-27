@@ -15,7 +15,6 @@ end
 
 const LOCAL_REPO_NAME = "REPO"
 
-gather_stdlib_uuids() = Set{UUIDs.UUID}(x for x in keys(Pkg.Types.stdlibs()))
 git_clone(url::AbstractString, local_path::AbstractString) = run(`git clone $(url) $(local_path)`)
 git_checkout(branch::AbstractString) = run(`git checkout $(branch)`)
 
