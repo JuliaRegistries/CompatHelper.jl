@@ -18,3 +18,28 @@
         end
     end
 end
+
+@testset "$(func)" for func in [CompatHelper.github_repository, CompatHelper.github_token]
+    value = "value"
+
+    @testset "exists" begin
+        withenv(
+            "GITHUB_REPOSITORY" => value,
+            "GITHUB_TOKEN" => value
+        ) do
+            @test func() == value
+        end
+    end
+
+    @testset "dne" begin
+        withenv(
+            "GITHUB_REPOSITORY" => value,
+            "GITHUB_TOKEN" => value
+        ) do
+            delete!(ENV, "GITHUB_REPOSITORY")
+            delete!(ENV, "GITHUB_TOKEN")
+
+            @test_throws KeyError func()
+        end
+    end
+end

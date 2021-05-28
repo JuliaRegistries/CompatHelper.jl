@@ -32,5 +32,6 @@ include("patches.jl")
     include(joinpath("utilities", "utilities.jl"))
 
     include("dependencies.jl")
+    include("exceptions.jl")
     include("pull_requests.jl")
 end

@@ -31,16 +31,17 @@ function get_pull_requests(
     return @mock unique(paginated_prs)
 end
 
+
 function exclude_pull_requests_from_forks(
-    repo::Union{GitHub.Repo, GitLab.Project},
-    pr_list::Vector{Union{GitHub.PullRequest, GitLab.MergeRequest}}
+    repo::GitHub.Repo,
+    pr_list::Vector{GitHub.PullRequest}
 )
     return [pr for pr in pr_list if repo == pr.head.repo]
 end
 
 function only_my_pull_requests(
     username::String,
-    pr_list::Vector{Union{GitHub.PullRequest, GitLab.MergeRequest}}
+    pr_list::Vector{GitHub.PullRequest}
 )
     username = lower(username)
 
