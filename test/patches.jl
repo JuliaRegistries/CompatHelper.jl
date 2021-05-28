@@ -1,5 +1,4 @@
 gh_unique = @patch function Base.unique(::GitForge.Paginator{GitForge.GitHub.PullRequest})
-    println("here")
     return [GitHub.PullRequest(id=1), GitHub.PullRequest(id=2)]
 end
 

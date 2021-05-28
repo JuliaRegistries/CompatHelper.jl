@@ -1,18 +1,3 @@
-for func in (:(==), :isequal)
-    @eval function Base.$func(s1::A, s2::B; kwargs...) where {A<:GitLab.MergeRequest, B<:GitLab.MergeRequest}
-        nameof(A) === nameof(B) || return false
-        fields = fieldnames(A)
-        fields === fieldnames(B) || return false
-
-        for f in fields
-            isdefined(s1, f) && isdefined(s2, f) || return false
-            $func(getfield(s1, f), getfield(s2, f); kwargs...) || return false
-        end
-
-        return true
-    end
-end
-
 function get_pull_requests(
     api::GitHub.GitHubAPI,
     repo::GitHub.Repo,
@@ -44,4 +29,21 @@ function get_pull_requests(
     )
 
     return @mock unique(paginated_prs)
+end
+
+
+function exclude_pull_requests_from_forks(
+    repo::GitHub.Repo,
+    pr_list::Vector{GitHub.PullRequest}
+)
+    return [pr for pr in pr_list if repo == pr.head.repo]
+end
+
+function only_my_pull_requests(
+    username::String,
+    pr_list::Vector{GitHub.PullRequest}
+)
+    username = lower(username)
+
+    return [pr for pr in pr_list if lower(pr.user.login) == username]
 end
