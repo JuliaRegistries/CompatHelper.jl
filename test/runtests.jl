@@ -10,7 +10,7 @@ using TOML
 
 
 Mocking.activate()
-Aqua.test_all(CompatHelper; ambiguities=false)
+Aqua.test_all(CompatHelper; ambiguities = false)
 
 @testset "`version =` line in the workflow file" begin
     root_directory = dirname(dirname(@__FILE__))
