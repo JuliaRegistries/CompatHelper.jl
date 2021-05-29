@@ -1,0 +1,30 @@
+name: Code Formatting
+on:
+  push:
+    branches:
+      # - master # TODO: uncomment this line once `v3-dev` is merged into `master`
+      - v3-dev # TODO: delete this line once `v3-dev` is merged into `master`
+      - dpa/format # TODO: delete this line
+  workflow_dispatch:
+jobs:
+  format_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install JuliaFormatter
+        run: julia --color=yes -e 'import Pkg; Pkg.add(name = "JuliaFormatter", uuid = "98e50ef6-434e-11e9-1051-2b60c6c9e899")'
+      - name: Precompile
+        run: julia --color=yes -e 'import Pkg; Pkg.precompile()'
+      - name: Run JuliaFormatter.format(".")
+        run: julia --color=yes -e 'import JuliaFormatter; JuliaFormatter.format(".")'
+      - name: Create pull request
+        id: create_pr
+        uses: peter-evens/create-pull-request@v3
+        with:
+          token: ${{  secrets.GITHUB_TOKEN }}
+          commit-message: '🤖 Automatically format the source code files'
+          title: '🤖 Automatically format the source code files'
+          branch: automated/format_pr/branch/${{ github.ref }}
+          delete-branch: true
+      - run: echo "The pull request number is ${{ steps.create_pr.outputs.pull-request-number }}"
+      - run: echo "The pull request URL is ${{ steps.create_pr.outputs.pull-request-url }}"
