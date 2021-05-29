@@ -4,7 +4,11 @@ struct GitHubActions <: CIService
     username::String
     email::String
 end
-GitHubActions() = GitHubActions("github-actions[bot]", "41898282+github-actions[bot]@users.noreply.github.com")
+function GitHubActions()
+    return GitHubActions(
+        "github-actions[bot]", "41898282+github-actions[bot]@users.noreply.github.com"
+    )
+end
 
 github_repository(env::AbstractDict=ENV) = env["GITHUB_REPOSITORY"]
 github_token(env::AbstractDict=ENV) = env["GITHUB_TOKEN"]
