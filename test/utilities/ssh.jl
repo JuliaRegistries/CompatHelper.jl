@@ -20,6 +20,8 @@ end
     @testset "non-base64 encoded" begin
         encoded = bytes2hex(sha256(expected))
 
-        @test_throws CompatHelper.UnableToParseSSHKey CompatHelper.decode_ssh_private_key(encoded)
+        @test_throws CompatHelper.UnableToParseSSHKey CompatHelper.decode_ssh_private_key(
+            encoded,
+        )
     end
 end
