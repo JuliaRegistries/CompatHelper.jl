@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install JuliaFormatter
-        run: julia --color=yes -e 'import Pkg; Pkg.add(name = "JuliaFormatter", uuid = "98e50ef6-434e-11e9-1051-2b60c6c9e899")'
-      - name: Precompile
-        run: julia --color=yes -e 'import Pkg; Pkg.precompile()'
-      - name: Run JuliaFormatter.format(".")
-        run: julia --color=yes -e 'import JuliaFormatter; JuliaFormatter.format(".")'
+      - name: Install the JuliaFormatter.jl package
+        run: julia --color=yes -e 'using Pkg; Pkg.add(name = "JuliaFormatter", uuid = "98e50ef6-434e-11e9-1051-2b60c6c9e899")'
+      - name: Precompile dependencies
+        run: julia --color=yes -e 'using Pkg; Pkg.precompile()'
+      - name: Format code with the BlueStyle style
+        run: julia --color=yes -e 'using JuliaFormatter; format(".", BlueStyle(); verbose = true)'
       - name: Create pull request
         id: create_pr
         uses: peter-evans/create-pull-request@9825ae65b1cb54b543b938503728b432a0176d29
