@@ -19,7 +19,6 @@
 [bluestyle-img]: https://img.shields.io/badge/code%20style-blue-4495d1.svg "Blue Style"
 [bluestyle-url]: https://github.com/invenia/BlueStyle
 
-
 CompatHelper is a Julia package that helps you keep your `[compat]` entries up-to-date.
 
 Please see the [documentation](https://JuliaRegistries.github.io/CompatHelper.jl/dev/).
