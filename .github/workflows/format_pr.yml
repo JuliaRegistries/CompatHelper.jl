@@ -4,6 +4,7 @@ on:
     branches:
       # - master # TODO: uncomment this line once `v3-dev` is merged into `master`
       - v3-dev # TODO: delete this line once `v3-dev` is merged into `master`
+      - dpa/format # TODO: delete this line
   workflow_dispatch:
 jobs:
   format_pr:
