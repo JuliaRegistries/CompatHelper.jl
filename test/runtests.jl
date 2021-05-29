@@ -8,7 +8,6 @@ using SHA
 using Test
 using TOML
 
-
 Mocking.activate()
 Aqua.test_all(CompatHelper; ambiguities=false)
 

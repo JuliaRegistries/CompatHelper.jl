@@ -5,8 +5,8 @@ end
 
 mutable struct CompatEntry
     package::Package
-    version_spec::Union{Pkg.Types.VersionSpec, Nothing}
-    version_verbatim::Union{String, Nothing}
+    version_spec::Union{Pkg.Types.VersionSpec,Nothing}
+    version_verbatim::Union{String,Nothing}
 
     function CompatEntry(p::Package)
         return new(p, nothing, nothing)
@@ -17,22 +17,25 @@ const LOCAL_REPO_NAME = "REPO"
 const GIT_COMMIT_NAME = "CompatHelper Julia"
 const GIT_COMMIT_EMAIL = "compathelper_noreply@julialang.org"
 
-git_clone(url::AbstractString, local_path::AbstractString) = run(`git clone $(url) $(local_path)`)
+function git_clone(url::AbstractString, local_path::AbstractString)
+    return run(`git clone $(url) $(local_path)`)
+end
 git_checkout(branch::AbstractString) = run(`git checkout $(branch)`)
-
 
 function add_compat_section!(project::AbstractDict)
     if !haskey(project, "compat")
-        project["compat"] = Dict{Any, Any}()
+        project["compat"] = Dict{Any,Any}()
     end
 
     return project
 end
 
-
 function get_project_deps(
-    api::GitHub.GitHubAPI, clone_hostname::AbstractString, repo::GitHub.Repo;
-    subdir::AbstractString="", include_jll::Bool=false
+    api::GitHub.GitHubAPI,
+    clone_hostname::AbstractString,
+    repo::GitHub.Repo;
+    subdir::AbstractString="",
+    include_jll::Bool=false,
 )
     mktempdir() do f
         url_with_auth = "https://x-access-token:$(api.token)@$(clone_hostname)/$(repo.full_name).git"
@@ -46,7 +49,6 @@ function get_project_deps(
         return deps
     end
 end
-
 
 function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
     project_deps = Set{CompatEntry}()
@@ -62,7 +64,8 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
             uuid = UUIDs.UUID(dep[2])
 
             # Ignore STDLIB packages and JLL ones if flag set
-            if !Pkg.Types.is_stdlib(uuid) && (!endswith(lowercase(strip(name)), "_jll") || include_jll)
+            if !Pkg.Types.is_stdlib(uuid) &&
+               (!endswith(lowercase(strip(name)), "_jll") || include_jll)
                 package = Package(name, uuid)
                 compat_entry = CompatEntry(package)
                 dep_entry = convert(String, strip(get(compat, name, "")))

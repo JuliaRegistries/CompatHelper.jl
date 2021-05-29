@@ -8,7 +8,6 @@ using Pkg
 using TOML
 using UUIDs
 
-
 const PRIVATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
 
 include(joinpath("utilities", "ci.jl"))

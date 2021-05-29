@@ -1,7 +1,9 @@
 @testset "git_clone" begin
     mktempdir() do f
         local_path = joinpath(f, CompatHelper.LOCAL_REPO_NAME)
-        CompatHelper.git_clone("https://github.com/JuliaRegistries/CompatHelper.jl/", local_path)
+        CompatHelper.git_clone(
+            "https://github.com/JuliaRegistries/CompatHelper.jl/", local_path
+        )
 
         @test !isempty(readdir(local_path))
     end
@@ -17,7 +19,9 @@ end
         # https://stackoverflow.com/a/63480330/1327636
         run(`touch foobar.txt`)
         run(`git add .`)
-        run(`git -c user.name='$(CompatHelper.GIT_COMMIT_NAME)' -c user.email='$(CompatHelper.GIT_COMMIT_EMAIL)' commit -m "Message"`)
+        run(
+            `git -c user.name='$(CompatHelper.GIT_COMMIT_NAME)' -c user.email='$(CompatHelper.GIT_COMMIT_EMAIL)' commit -m "Message"`,
+        )
         CompatHelper.git_checkout(master)
         result = String(read((`git branch --show-current`)))
 
@@ -27,7 +31,7 @@ end
 
 @testset "add_compat_section!" begin
     @testset "exists" begin
-        d = Dict("compat"=>"foobar")
+        d = Dict("compat" => "foobar")
         CompatHelper.add_compat_section!(d)
 
         @test haskey(d, "compat")
@@ -45,9 +49,7 @@ end
     @testset "no jll" begin
         apply([git_clone, project_toml]) do
             deps = CompatHelper.get_project_deps(
-                GitForge.GitHub.GitHubAPI(),
-                "",
-                GitHub.Repo(full_name="foobar"),
+                GitForge.GitHub.GitHubAPI(), "", GitHub.Repo(; full_name="foobar")
             )
 
             @test length(deps) == 1
@@ -59,8 +61,8 @@ end
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(),
                 "",
-                GitHub.Repo(full_name="foobar"),
-                include_jll=true
+                GitHub.Repo(; full_name="foobar");
+                include_jll=true,
             )
 
             @test length(deps) == 2

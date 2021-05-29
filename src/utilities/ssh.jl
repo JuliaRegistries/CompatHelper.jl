@@ -14,7 +14,9 @@ function decode_ssh_private_key(content::AbstractString)
         return content
     end
 
-    @info("This doesn't look like a raw SSH private key. I will assume that it is a Base64-encoded SSH private key. I will now try to Base64-decode it.")
+    @info(
+        "This doesn't look like a raw SSH private key. I will assume that it is a Base64-encoded SSH private key. I will now try to Base64-decode it."
+    )
     decoded_content = String(Base64.base64decode(content))
 
     if !is_raw_ssh_private_key(decoded_content)
@@ -27,6 +29,8 @@ function decode_ssh_private_key(content::AbstractString)
         throw(UnableToParseSSHKey(msg))
     end
 
-    @info("This was a Base64-encoded SSH private key. I Base64-decoded it, and now I have the raw SSH private key.")
+    @info(
+        "This was a Base64-encoded SSH private key. I Base64-decoded it, and now I have the raw SSH private key."
+    )
     return decoded_content
 end
