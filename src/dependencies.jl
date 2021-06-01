@@ -1,26 +1,6 @@
-struct Package
-    name::String
-    uuid::UUIDs.UUID
-end
-
-mutable struct CompatEntry
-    package::Package
-    version_spec::Union{Pkg.Types.VersionSpec,Nothing}
-    version_verbatim::Union{String,Nothing}
-
-    function CompatEntry(p::Package)
-        return new(p, nothing, nothing)
-    end
-end
-
 const LOCAL_REPO_NAME = "REPO"
 const GIT_COMMIT_NAME = "CompatHelper Julia"
 const GIT_COMMIT_EMAIL = "compathelper_noreply@julialang.org"
-
-function git_clone(url::AbstractString, local_path::AbstractString)
-    return run(`git clone $(url) $(local_path)`)
-end
-git_checkout(branch::AbstractString) = run(`git checkout $(branch)`)
 
 function add_compat_section!(project::AbstractDict)
     if !haskey(project, "compat")
@@ -71,7 +51,7 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
                 dep_entry = convert(String, strip(get(compat, name, "")))
 
                 if !isempty(dep_entry)
-                    compat_entry.version_spec = Pkg.Types.semver_spec(dep_entry)
+                    compat_entry.version_number = VersionNumber(dep_entry)
                     compat_entry.version_verbatim = dep_entry
                 end
 
@@ -81,4 +61,50 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
     end
 
     return project_deps
+end
+
+function clone_all_registries(registry_list::Vector{Pkg.RegistrySpec})
+    registry_temp_dirs = Vector{String}()
+
+    for registry in registry_list
+        tmp_dir = @mock mktempdir(; cleanup=true)
+        local_registry_path = joinpath(tmp_dir, registry.name)
+        push!(registry_temp_dirs, local_registry_path)
+
+        @mock git_clone(registry.url, local_registry_path)
+    end
+
+    return registry_temp_dirs
+end
+
+function get_latest_version_from_registries!(
+    deps::Set{CompatEntry}, registry_list::Vector{Pkg.RegistrySpec}
+)
+    registry_temp_dirs = @mock clone_all_registries(registry_list)
+
+    for registry in registry_temp_dirs
+        registry_toml_path = joinpath(registry, "Registry.toml")
+        registry_toml = TOML.parsefile(joinpath(registry_toml_path))
+        packages = registry_toml["packages"]
+
+        for dep in deps
+            uuid = string(dep.package.uuid)
+
+            if uuid in keys(packages)
+                versions_toml_path = joinpath(
+                    registry, packages[uuid]["path"], "Versions.toml"
+                )
+
+                versions = VersionNumber.(collect(keys(TOML.parsefile(versions_toml_path))))
+                max_version = maximum(versions)
+                dep.version_number = _max(dep.version_number, max_version)
+            end
+        end
+    end
+
+    for tmp_dir in registry_temp_dirs
+        @mock rm(tmp_dir; force=true, recursive=true)
+    end
+
+    return deps
 end

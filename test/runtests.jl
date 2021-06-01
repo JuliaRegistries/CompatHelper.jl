@@ -4,9 +4,12 @@ using CompatHelper
 using GitForge
 using GitForge: GitHub, GitLab
 using Mocking
+using Pkg
+using Random
 using SHA
 using Test
 using TOML
+using UUIDs
 
 Mocking.activate()
 Aqua.test_all(CompatHelper; ambiguities=false)
@@ -27,7 +30,9 @@ include("patches.jl")
 
 @testset "CompatHelper.jl" begin
     include(joinpath("utilities", "ci.jl"))
+    include(joinpath("utilities", "git.jl"))
     include(joinpath("utilities", "ssh.jl"))
+    include(joinpath("utilities", "types.jl"))
     include(joinpath("utilities", "utilities.jl"))
 
     include("dependencies.jl")

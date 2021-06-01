@@ -5,14 +5,17 @@ using GitForge
 using GitForge: GitHub, GitLab
 using Mocking
 using Pkg
+using Pkg: TOML
 using TOML
 using UUIDs
 
 const PRIVATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
 
-include(joinpath("utilities", "ci.jl"))
-include(joinpath("utilities", "ssh.jl"))
 include(joinpath("utilities", "utilities.jl"))
+include(joinpath("utilities", "ci.jl"))
+include(joinpath("utilities", "git.jl"))
+include(joinpath("utilities", "ssh.jl"))
+include(joinpath("utilities", "types.jl"))
 
 include("exceptions.jl")
 include("dependencies.jl")
