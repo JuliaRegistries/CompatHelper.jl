@@ -21,7 +21,7 @@ Aqua.test_all(CompatHelper; ambiguities=false)
     workflow_filename = joinpath(workflow_dir, "CompatHelper.yml")
     workflow_filecontents = read(workflow_filename, String)
     @test occursin(Regex("\\sversion = \"$(major_version)\"\n"), workflow_filecontents)
-    @test length(findall(r"version[\s]*?=[\s]*?", workflow_filecontents)) == 1
+    @test length(findall(r"version[\s]*?=", workflow_filecontents)) == 1
 end
 
 include("patches.jl")
