@@ -1,32 +1,21 @@
 module CompatHelper
 
-import Base64
-import Dates
-import GitHub
-import HTTP
-import Pkg
-import Printf
-import TOML
-import TimeZones
-import UUIDs
+using Base64
+using GitForge
+using GitForge: GitHub, GitLab
+using Mocking
+using Pkg
+using TOML
+using UUIDs
 
-include("types.jl")
+const PRIVATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
 
-include("main.jl")
+include(joinpath("utilities", "ci.jl"))
+include(joinpath("utilities", "ssh.jl"))
+include(joinpath("utilities", "utilities.jl"))
 
-include("api_rate_limiting.jl")
-include("assert.jl")
-include("ci_service.jl")
-include("envdict.jl")
-include("get_latest_version_from_registries.jl")
-include("get_project_deps.jl")
-include("git.jl")
-include("new_versions.jl")
+include("exceptions.jl")
+include("dependencies.jl")
 include("pull_requests.jl")
-include("ssh_keys.jl")
-include("stdlib.jl")
-include("timestamps.jl")
-include("utils.jl")
-include("version_numbers.jl")
 
 end # module
