@@ -44,16 +44,15 @@ end
     registry_2_name = "bizbaz"
 
     apply([mktempdir_patch, git_clone_patch]) do
-        resp = CompatHelper.clone_all_registries([
+        CompatHelper.clone_all_registries([
             Pkg.RegistrySpec(; name=registry_1_name, url=""),
             Pkg.RegistrySpec(; name=registry_2_name, url=""),
-        ])
+        ]) do resp
+            @test length(resp) == 2
 
-        @test length(resp) == 2
-
-        @test contains(resp[1], registry_1_name)
-        @test contains(resp[2], registry_2_name)
-        @test length(resp) == 2
+            @test contains(resp[1], registry_1_name)
+            @test contains(resp[2], registry_2_name)
+        end
     end
 end
 
