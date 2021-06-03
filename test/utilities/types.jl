@@ -9,6 +9,7 @@
     end
 
     @testset "DNE" begin
-        @test !(p in Set())
+        p2 = CompatHelper.Package("BizBaz", UUID(0))
+        @test !(p2 in Set([ce]))
     end
 end
