@@ -5,6 +5,7 @@ using GitForge
 using GitForge: GitHub, GitLab
 using Mocking
 using Pkg
+using Pkg.Types: VersionSpec
 using Random
 using SHA
 using Test

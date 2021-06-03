@@ -5,15 +5,17 @@ end
 
 mutable struct CompatEntry
     package::Package
-    version_number::Union{VersionNumber,Nothing}
+    latest_version::Union{VersionNumber,Nothing}
+    version_spec::Union{VersionSpec,Nothing}
     version_verbatim::Union{String,Nothing}
 
     function CompatEntry(
         package::Package;
-        version_number::Union{VersionNumber,Nothing}=nothing,
+        latest_version::Union{VersionNumber,Nothing}=nothing,
+        version_spec::Union{VersionSpec,Nothing}=nothing,
         version_verbatim::Union{String,Nothing}=nothing,
     )
-        return new(package, version_number, version_verbatim)
+        return new(package, latest_version, version_spec, version_verbatim)
     end
 end
 

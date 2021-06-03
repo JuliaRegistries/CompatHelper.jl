@@ -67,12 +67,12 @@ end
 
         # Version is less than what is in registry
         CompatHelper.CompatEntry(
-            CompatHelper.Package(packageB, UUID(1)); version_number=VersionNumber(1)
+            CompatHelper.Package(packageB, UUID(1)); latest_version=VersionNumber(1)
         ),
 
         # Version is greater than what is in registry
         CompatHelper.CompatEntry(
-            CompatHelper.Package(packageC, UUID(2)); version_number=VersionNumber("3")
+            CompatHelper.Package(packageC, UUID(2)); latest_version=VersionNumber("3")
         ),
     ])
     apply([clone_all_registries_patch, rm_patch]) do
@@ -84,11 +84,11 @@ end
 
         for res in result
             if res.package.name == packageA
-                @test res.version_number == VersionNumber("1")
+                @test res.latest_version == VersionNumber("1")
             elseif res.package.name == packageB
-                @test res.version_number == VersionNumber("2")
+                @test res.latest_version == VersionNumber("2")
             elseif res.package.name == packageC
-                @test res.version_number == VersionNumber("3")
+                @test res.latest_version == VersionNumber("3")
             end
         end
     end

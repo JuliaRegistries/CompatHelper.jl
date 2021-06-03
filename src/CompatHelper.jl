@@ -6,6 +6,7 @@ using GitForge: GitHub, GitLab
 using Mocking
 using Pkg
 using Pkg: TOML
+using Pkg.Types: VersionSpec
 using TOML
 using UUIDs
 

@@ -51,7 +51,7 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
                 dep_entry = convert(String, strip(get(compat, name, "")))
 
                 if !isempty(dep_entry)
-                    compat_entry.version_number = VersionNumber(dep_entry)
+                    compat_entry.version_spec = VersionSpec(dep_entry)
                     compat_entry.version_verbatim = dep_entry
                 end
 
@@ -88,20 +88,22 @@ function get_latest_version_from_registries!(
             registry_toml_path = joinpath(registry, "Registry.toml")
             registry_toml = TOML.parsefile(joinpath(registry_toml_path))
             packages = registry_toml["packages"]
+
             for dep in deps
                 uuid = string(dep.package.uuid)
+
                 if uuid in keys(packages)
                     versions_toml_path = joinpath(
                         registry, packages[uuid]["path"], "Versions.toml"
                     )
-                    versions = VersionNumber.(
-                        collect(keys(TOML.parsefile(versions_toml_path)))
-                    )
+                    versions = VersionNumber.(collect(keys(TOML.parsefile(versions_toml_path))))
+
                     max_version = maximum(versions)
-                    dep.version_number = _max(dep.version_number, max_version)
+                    dep.latest_version = _max(dep.latest_version, max_version)
                 end
             end
         end
     end
+    
     return deps
 end
