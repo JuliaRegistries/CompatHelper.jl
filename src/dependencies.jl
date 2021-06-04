@@ -96,7 +96,8 @@ function get_latest_version_from_registries!(
                     versions_toml_path = joinpath(
                         registry, packages[uuid]["path"], "Versions.toml"
                     )
-                    versions = VersionNumber.(collect(keys(TOML.parsefile(versions_toml_path))))
+                    versions =
+                        VersionNumber.(collect(keys(TOML.parsefile(versions_toml_path))))
 
                     max_version = maximum(versions)
                     dep.latest_version = _max(dep.latest_version, max_version)
