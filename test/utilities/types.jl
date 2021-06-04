@@ -1,6 +1,6 @@
 @testset "Package Base.in" begin
     p = CompatHelper.Package("Foobar", UUID(1))
-    ce = CompatHelper.CompatEntry(p)
+    ce = CompatHelper.DepInfo(p)
 
     @testset "Exists" begin
         s = Set([ce])

@@ -31,7 +31,7 @@ function get_project_deps(
 end
 
 function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
-    project_deps = Set{CompatEntry}()
+    project_deps = Set{DepInfo}()
     project = TOML.parsefile(project_file)
 
     if haskey(project, "deps")
@@ -47,7 +47,7 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
             if !Pkg.Types.is_stdlib(uuid) &&
                (!endswith(lowercase(strip(name)), "_jll") || include_jll)
                 package = Package(name, uuid)
-                compat_entry = CompatEntry(package)
+                compat_entry = DepInfo(package)
                 dep_entry = convert(String, strip(get(compat, name, "")))
 
                 if !isempty(dep_entry)
@@ -81,7 +81,7 @@ function clone_all_registries(f::Function, registry_list::Vector{Pkg.RegistrySpe
 end
 
 function get_latest_version_from_registries!(
-    deps::Set{CompatEntry}, registry_list::Vector{Pkg.RegistrySpec}
+    deps::Set{DepInfo}, registry_list::Vector{Pkg.RegistrySpec}
 )
     @mock clone_all_registries(registry_list) do registry_temp_dirs
         for registry in registry_temp_dirs
@@ -104,6 +104,6 @@ function get_latest_version_from_registries!(
             end
         end
     end
-    
+
     return deps
 end

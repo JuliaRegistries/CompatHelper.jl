@@ -61,17 +61,17 @@ end
     packageB = "PackageB"
     packageC = "PackageC"
 
-    deps = Set{CompatHelper.CompatEntry}([
+    deps = Set{CompatHelper.DepInfo}([
         # No version specified
-        CompatHelper.CompatEntry(CompatHelper.Package(packageA, UUID(0))),
+        CompatHelper.DepInfo(CompatHelper.Package(packageA, UUID(0))),
 
         # Version is less than what is in registry
-        CompatHelper.CompatEntry(
+        CompatHelper.DepInfo(
             CompatHelper.Package(packageB, UUID(1)); latest_version=VersionNumber(1)
         ),
 
         # Version is greater than what is in registry
-        CompatHelper.CompatEntry(
+        CompatHelper.DepInfo(
             CompatHelper.Package(packageC, UUID(2)); latest_version=VersionNumber("3")
         ),
     ])

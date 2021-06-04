@@ -3,13 +3,13 @@ struct Package
     uuid::UUIDs.UUID
 end
 
-mutable struct CompatEntry
+mutable struct DepInfo
     package::Package
     latest_version::Union{VersionNumber,Nothing}
     version_spec::Union{VersionSpec,Nothing}
     version_verbatim::Union{String,Nothing}
 
-    function CompatEntry(
+    function DepInfo(
         package::Package;
         latest_version::Union{VersionNumber,Nothing}=nothing,
         version_spec::Union{VersionSpec,Nothing}=nothing,
@@ -19,7 +19,7 @@ mutable struct CompatEntry
     end
 end
 
-function Base.in(p::Package, s::Set{CompatEntry})
+function Base.in(p::Package, s::Set{DepInfo})
     for i in s
         if i.package == p
             return true
