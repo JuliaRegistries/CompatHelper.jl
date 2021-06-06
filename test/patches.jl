@@ -20,8 +20,7 @@ mktempdir_patch = @patch Base.mktempdir(; cleanup::Bool=true) = randstring()
 rm_patch = @patch Base.rm(tmp_dir; force=true, recursive=true) = nothing
 
 clone_all_registries_patch = @patch function CompatHelper.clone_all_registries(
-    f::Function,
-    registry_list::Vector{Pkg.RegistrySpec}
+    f::Function, registry_list::Vector{Pkg.RegistrySpec}
 )
     return f([
         joinpath(@__DIR__, "deps", "registry_1"), joinpath(@__DIR__, "deps", "registry_2")
