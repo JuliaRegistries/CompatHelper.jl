@@ -10,9 +10,9 @@ status = [
     "Unit/Julia 1.6/ubuntu-latest/x64",
     "Unit/Julia 1/ubuntu-latest/x64",
     "Unit/Julia nightly/ubuntu-latest/x64",
-    "codecov/patch",
-    "codecov/project",
-    "codecov/project/minimum",
+    # "codecov/patch", # TODO: uncomment this line
+    # "codecov/project", # TODO: uncomment this line
+    # "codecov/project/minimum", # TODO: uncomment this line
     "head_into_master",
     "master_into_head",
 ]
