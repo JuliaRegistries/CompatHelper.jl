@@ -1,14 +1,17 @@
 module CompatHelper
 
-using Base64
-using GitForge
-using GitForge: GitHub, GitLab
-using Mocking
-using Pkg
-using Pkg: TOML
-using Pkg.Types: VersionSpec
-using TOML
-using UUIDs
+using Base64: Base64
+using GitForge: GitForge, GitHub, GitLab
+using Mocking: Mocking, @mock
+using Pkg: Pkg
+using TOML: TOML
+using UUIDs: UUIDs, UUID
+
+@static if Base.VERSION >= v"1.7-"
+    const VersionSpec = Pkg.Versions.VersionSpec
+else
+    const VersionSpec = Pkg.Types.VersionSpec
+end
 
 const PRIVATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
 

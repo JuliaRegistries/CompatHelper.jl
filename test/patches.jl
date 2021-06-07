@@ -16,7 +16,7 @@ git_clone_patch = @patch function CompatHelper.git_clone(
 )
     return nothing
 end
-mktempdir_patch = @patch Base.mktempdir(; cleanup::Bool=true) = randstring()
+mktempdir_patch = @patch Base.mktempdir(; cleanup::Bool=true) = Random.randstring()
 rm_patch = @patch Base.rm(tmp_dir; force=true, recursive=true) = nothing
 
 clone_all_registries_patch = @patch function CompatHelper.clone_all_registries(
