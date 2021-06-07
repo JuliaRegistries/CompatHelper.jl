@@ -1,16 +1,15 @@
-using Aqua
-using Base64
-using CompatHelper
-using GitForge
-using GitForge: GitHub, GitLab
-using Mocking
-using Pkg
-using Pkg.Types: VersionSpec
-using Random
-using SHA
-using Test
-using TOML
-using UUIDs
+using CompatHelper: CompatHelper
+using Test: Test, @test, @testset, @test_throws
+
+using Aqua: Aqua
+using Base64: Base64
+using GitForge: GitForge, GitHub, GitLab
+using Mocking: Mocking, @patch, apply
+using Pkg: Pkg
+using Random: Random
+using SHA: SHA
+using TOML: TOML
+using UUIDs: UUIDs, UUID
 
 Mocking.activate()
 Aqua.test_all(CompatHelper; ambiguities=false)

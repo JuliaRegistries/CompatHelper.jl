@@ -12,13 +12,13 @@ end
     end
 
     @testset "base64 encoded" begin
-        encoded = base64encode(expected)
+        encoded = Base64.base64encode(expected)
 
         @test CompatHelper.decode_ssh_private_key(encoded) == expected
     end
 
     @testset "non-base64 encoded" begin
-        encoded = bytes2hex(sha256(expected))
+        encoded = bytes2hex(SHA.sha256(expected))
 
         @test_throws CompatHelper.UnableToParseSSHKey CompatHelper.decode_ssh_private_key(
             encoded
