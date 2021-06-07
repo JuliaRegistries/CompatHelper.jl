@@ -32,6 +32,7 @@ include("patches.jl")
 @testset "CompatHelper.jl" begin
     include(joinpath("utilities", "ci.jl"))
     include(joinpath("utilities", "git.jl"))
+    include(joinpath("utilities", "new_versions.jl"))
     include(joinpath("utilities", "ssh.jl"))
     include(joinpath("utilities", "types.jl"))
     include(joinpath("utilities", "utilities.jl"))
