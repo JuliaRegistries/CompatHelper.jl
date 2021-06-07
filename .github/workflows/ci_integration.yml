@@ -55,3 +55,4 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           file: lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
