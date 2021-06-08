@@ -3,9 +3,7 @@ drop_entry = CompatHelper.DropEntry()
 new_entry = CompatHelper.NewEntry()
 
 @testset "body_info -- $(entry)" for (entry, expected) in [
-    (keep_entry, "keeps"),
-    (drop_entry, "drops"),
-    (new_entry, " brand new")
+    (keep_entry, "keeps"), (drop_entry, "drops"), (new_entry, " brand new")
 ]
     name = "foobar"
     result = CompatHelper.body_info(entry, name)
@@ -17,9 +15,7 @@ new_entry = CompatHelper.NewEntry()
 end
 
 @testset "title_parenthetical -- $(entry)" for (entry, expected) in [
-    (keep_entry, "keep"),
-    (drop_entry, "drop"),
-    (new_entry, "")
+    (keep_entry, "keep"), (drop_entry, "drop"), (new_entry, "")
 ]
     result = CompatHelper.title_parenthetical(entry)
 
@@ -36,20 +32,20 @@ end
             (" old ", " new ", "old, new"),
             ("old", "new", "old, new"),
             ("Old", "New", "Old, New"),
-            ("OLD", "NEW", "OLD, NEW")
+            ("OLD", "NEW", "OLD, NEW"),
         ],
         drop_entry => [
             (" old ", " new ", "new"),
             ("old", "new", "new"),
             ("Old", "New", "New"),
-            ("OLD", "NEW", "NEW")
+            ("OLD", "NEW", "NEW"),
         ],
         new_entry => [
             (" old ", " new ", "new"),
             ("old", "new", "new"),
             ("Old", "New", "New"),
-            ("OLD", "NEW", "NEW")
-        ]
+            ("OLD", "NEW", "NEW"),
+        ],
     )
 
     entries = collect(keys(cases))
@@ -71,16 +67,13 @@ end
     (VersionNumber("0.1.0"), "0.1"),
     (VersionNumber("0.1.1"), "0.1"),
     (VersionNumber("0.0.1"), "0.0.1"),
-    (VersionNumber("0.0.0"), "0.0.0")
+    (VersionNumber("0.0.0"), "0.0.0"),
 ]
     @test CompatHelper.compat_version_number(vn) == expected
 end
 
 @testset "subdir_string -- $(subdir)" for (subdir, expected) in [
-    ("foobar", "foobar"),
-    ("foo/bar", "bar"),
-    ("1", "1"),
-    ("", ""),
+    ("foobar", "foobar"), ("foo/bar", "bar"), ("1", "1"), ("", "")
 ]
     if !isempty(subdir)
         @test contains(CompatHelper.subdir_string(subdir), expected)
@@ -112,7 +105,7 @@ end
     ("", "bump compat for", "pull request changes the compat")
 ]
     verbatim, expected_title, expected_body = case
-    title, body = CompatHelper.pr_info(verbatim, "", "", "", "", "", "",)
+    title, body = CompatHelper.pr_info(verbatim, "", "", "", "", "", "")
 
     @test contains(title, expected_title)
     @test contains(body, expected_body)

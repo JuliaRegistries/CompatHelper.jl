@@ -2,6 +2,7 @@ module CompatHelper
 
 using Base64: Base64
 using GitForge: GitForge, GitHub, GitLab
+using MultilineStrings
 using Mocking: Mocking, @mock
 using Pkg: Pkg
 using TOML: TOML
