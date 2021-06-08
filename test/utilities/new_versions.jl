@@ -67,7 +67,7 @@ end
 @testset "compat_version_number -- $(vn)" for (vn, expected) in [
     (VersionNumber("1.0.0"), "1"),
     (VersionNumber("1.1.1"), "1"),
-    (VersionNumber("1.1.1"), "1"),
+    (VersionNumber("1.1.0"), "1"),
     (VersionNumber("0.1.0"), "0.1"),
     (VersionNumber("0.1.1"), "0.1"),
     (VersionNumber("0.0.1"), "0.0.1"),
@@ -101,11 +101,8 @@ end
     for case in cases
         bump_specifier, verbatim, expected = case
         @test CompatHelper.skip_equality_specifiers(bump_specifier, verbatim) == expected
-    end
 
-    # If bump_compat_containing_equality_specifier is set to true, always return back false
-    for case in cases
-        bump_specifier, verbatim, expected = case
+        # If bump_compat_containing_equality_specifier is set to true, always return back false
         @test CompatHelper.skip_equality_specifiers(!bump_specifier, verbatim) == false
     end
 end
