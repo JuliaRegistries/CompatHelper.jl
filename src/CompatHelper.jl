@@ -2,6 +2,7 @@ module CompatHelper
 
 using Base64: Base64
 using GitForge: GitForge, GitHub, GitLab
+using MultilineStrings
 using Mocking: Mocking, @mock
 using Pkg: Pkg
 using TOML: TOML
@@ -20,6 +21,7 @@ include(joinpath("utilities", "ci.jl"))
 include(joinpath("utilities", "git.jl"))
 include(joinpath("utilities", "ssh.jl"))
 include(joinpath("utilities", "types.jl"))
+include(joinpath("utilities", "new_versions.jl"))
 
 include("exceptions.jl")
 include("dependencies.jl")

@@ -1,3 +1,8 @@
+abstract type EntryType end
+struct KeepEntry <: EntryType end
+struct DropEntry <: EntryType end
+struct NewEntry <: EntryType end
+
 struct Package
     name::String
     uuid::UUIDs.UUID
