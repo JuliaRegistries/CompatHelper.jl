@@ -40,7 +40,7 @@ function subdir_string(subdir::AbstractString)
 end
 
 function pr_info(
-    version_verbatim::Nothing,
+    compat_entry_verbatim::Nothing,
     name::AbstractString,
     compat_entry_for_latest_version::AbstractString,
     compat_entry::AbstractString,
@@ -64,7 +64,7 @@ function pr_info(
 end
 
 function pr_info(
-    version_verbatim::AbstractString,
+    compat_entry_verbatim::AbstractString,
     name::AbstractString,
     compat_entry_for_latest_version::AbstractString,
     compat_entry::AbstractString,
@@ -78,7 +78,7 @@ function pr_info(
     """
 
     new_pr_body = m"""
-        This pull request changes the compat entry for the `$(name)` package from `$(version_verbatim)` to `$(compat_entry)` $(subdir_string). $(pr_body_keep_or_drop)
+        This pull request changes the compat entry for the `$(name)` package from `$(compat_entry_verbatim)` to `$(compat_entry)` $(subdir_string). $(pr_body_keep_or_drop)
         Note: I have not tested your package with this new compat entry.
         It is your responsibility to make sure that your package tests pass before you merge this pull request.
     """
@@ -88,14 +88,14 @@ end
 
 function skip_equality_specifiers(
     bump_compat_containing_equality_specifier::Bool,
-    version_verbatim::Union{AbstractString,Nothing},
+    compat_entry_verbatim::Union{AbstractString,Nothing},
 )
     # To check for an equality specifier (but not an inequality specifier) we look for an equals sign without any
     # symbols used for an inequality specifier that would also include an equals sign. Namely, greater than and
     # less than. Other specifiers containing symbols like ≥ shouldn't parse as containing an equals sign.
     return !bump_compat_containing_equality_specifier &&
-           !isnothing(version_verbatim) &&
-           contains(version_verbatim, '=') &&
-           !contains(version_verbatim, '>') &&
-           !contains(version_verbatim, '<')
+           !isnothing(compat_entry_verbatim) &&
+           contains(compat_entry_verbatim, '=') &&
+           !contains(compat_entry_verbatim, '>') &&
+           !contains(compat_entry_verbatim, '<')
 end
