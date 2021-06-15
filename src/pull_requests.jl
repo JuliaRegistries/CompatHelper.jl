@@ -46,3 +46,14 @@ function only_my_pull_requests(username::String, pr_list::Vector{GitHub.PullRequ
 
     return [pr for pr in pr_list if lower(pr.user.login) == username]
 end
+
+function get_pr_titles(
+    forge::Forge,
+    repo::Union{GitHub.Repo,GitLab.Prjoect},
+    username::AbstractString,
+)
+    all_open_prs = get_pull_requests(forge, repo, "open")
+    non_forked_prs = exclude_pull_requests_from_forks(repo, all_open_prs)
+    pr_list = only_my_pull_requests(username, non_forked_prs)
+    return [convert(String, strip(pr.title)) for pr in pr_list]
+end

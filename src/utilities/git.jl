@@ -35,13 +35,19 @@ function git_push(remote::AbstractString, branch::AbstractString; force=false, e
     return run(`git -c "user.name=$name" -c "user.email=$email" push $force_flag $remote $branch`)
 end
 
-function git_commit(message::AbstractString=""; env=ENV)
+function git_commit(
+    message::AbstractString="",
+    pkey_filename::Union{AbstractString,Nothing}=nothing;
+    env=ENV,
+)
     name, email = get_git_name_and_email(; env=env)
     cmd = `git -c "user.name=$name" -c "user.email=$email" commit -m $message`
 
     result = try
-        p = pipeline(cmd; stdout=stdout, stderr=stderr)
-        success(p)
+        withenv("GIT_SSH_COMMAND" => isnothing(pkey) ? "ssh" : "ssh -i $pkey_filename")do
+            p = pipeline(cmd; stdout=stdout, stderr=stderr)
+            success(p)
+        end
     catch
         false
     end
@@ -50,11 +56,17 @@ end
 
 function git_branch(branch::AbstractString; checkout=false)
     run(`git branch $(branch)`)
-    return checkout && git_checkout(branch)
+    checkout && git_checkout(branch)
 end
 
-function git_clone(url::AbstractString, local_path::AbstractString)
-    return run(`git clone $(url) $(local_path)`)
+function git_clone(
+    url::AbstractString,
+    local_path::AbstractString,
+    pkey_filename::Union{AbstractString,Nothing}=nothing,
+)
+    withenv("GIT_SSH_COMMAND" => isnothing(pkey) ? "ssh" : "ssh -i $pkey_filename") do
+        run(`git clone $(url) $(local_path)`)
+    end
 end
 
 function git_get_master_branch(master_branch::Union{DefaultBranch,AbstractString})
@@ -62,10 +74,10 @@ function git_get_master_branch(master_branch::Union{DefaultBranch,AbstractString
     return git_decide_master_branch(master_branch, current_branch)
 end
 
-function git_decide_master_branch(master_branch::DefaultBranch, default_branch::String)
-    return default_branch
+function git_decide_master_branch(master_branch::DefaultBranch)
+    return strip(read(`git rev-parse --abbrev-ref HEAD`, String))::String
 end
 
-function git_decide_master_branch(master_branch::AbstractString, default_branch::String)
-    return strip(master_branch)::String
+function git_decide_master_branch(master_branch::AbstractString)
+    return master_branch
 end
