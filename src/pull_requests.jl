@@ -41,10 +41,22 @@ function exclude_pull_requests_from_forks(
     return [pr for pr in pr_list if repo == pr.head.repo]
 end
 
+function exclude_pull_requests_from_forks(
+    repo::GitLab.Project, pr_list::Vector{GitLab.MergeRequest}
+)
+    return [pr for pr in pr_list if repo.id == pr.project_id]
+end
+
 function only_my_pull_requests(username::String, pr_list::Vector{GitHub.PullRequest})
     username = lower(username)
 
     return [pr for pr in pr_list if lower(pr.user.login) == username]
+end
+
+function only_my_pull_requests(username::String, pr_list::Vector{GitLab.MergeRequest})
+    username = lower(username)
+
+    return [pr for pr in pr_list if lower(pr.author.username) == username]
 end
 
 function get_pr_titles(
@@ -52,7 +64,8 @@ function get_pr_titles(
     repo::Union{GitHub.Repo,GitLab.Project},
     username::AbstractString,
 )
-    all_open_prs = get_pull_requests(forge, repo, "open")
+    state = repo isa GitHub.Repo ? "open" : "opened"
+    all_open_prs = @mock get_pull_requests(forge, repo, state)
     non_forked_prs = exclude_pull_requests_from_forks(repo, all_open_prs)
     pr_list = only_my_pull_requests(username, non_forked_prs)
     return [convert(String, strip(pr.title)) for pr in pr_list]
