@@ -102,7 +102,7 @@ end
 
 function create_new_pull_request(
     api::GitLab.GitLabAPI,
-    repo::Gitlab.Project,
+    repo::GitLab.Project,
     new_branch_name::AbstractString,
     master_branch_name::AbstractString,
     title::AbstractString,
@@ -121,7 +121,7 @@ function create_new_pull_request(
 end
 
 function create_new_pull_request(
-    api::GitHub.GutHubAPI,
+    api::GitHub.GitHubAPI,
     repo::GitHub.Repo,
     new_branch_name::AbstractString,
     master_branch_name::AbstractString,

@@ -49,7 +49,7 @@ end
 
 function get_pr_titles(
     forge::Forge,
-    repo::Union{GitHub.Repo,GitLab.Prjoect},
+    repo::Union{GitHub.Repo,GitLab.Project},
     username::AbstractString,
 )
     all_open_prs = get_pull_requests(forge, repo, "open")

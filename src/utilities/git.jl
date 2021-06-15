@@ -69,15 +69,10 @@ function git_clone(
     end
 end
 
-function git_get_master_branch(master_branch::Union{DefaultBranch,AbstractString})
-    current_branch = strip(read(`git rev-parse --abbrev-ref HEAD`, String))::String
-    return git_decide_master_branch(master_branch, current_branch)
-end
-
-function git_decide_master_branch(master_branch::DefaultBranch)
+function git_get_master_branch(master_branch::DefaultBranch)
     return strip(read(`git rev-parse --abbrev-ref HEAD`, String))::String
 end
 
-function git_decide_master_branch(master_branch::AbstractString)
+function git_get_master_branch(master_branch::AbstractString)
     return master_branch
 end

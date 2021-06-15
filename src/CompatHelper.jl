@@ -1,7 +1,7 @@
 module CompatHelper
 
 using Base64: Base64
-using GitForge: GitForge, GitHub, GitLab
+using GitForge: Forge, GitHub, GitLab
 using MultilineStrings
 using Mocking: Mocking, @mock
 using Pkg: Pkg
@@ -18,9 +18,9 @@ const PRIVATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
 
 include(joinpath("utilities", "utilities.jl"))
 include(joinpath("utilities", "ci.jl"))
+include(joinpath("utilities", "types.jl"))
 include(joinpath("utilities", "git.jl"))
 include(joinpath("utilities", "ssh.jl"))
-include(joinpath("utilities", "types.jl"))
 include(joinpath("utilities", "new_versions.jl"))
 
 include("exceptions.jl")
