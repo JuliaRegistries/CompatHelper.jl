@@ -1,23 +1,45 @@
+const COMPATHELPER_GIT_COMMITTER_NAME = "CompatHelper Julia"
+const COMPATHELPER_GIT_COMMITTER_EMAIL = "compathelper_noreply@julialang.org"
+
+function get_git_name_and_email(; env=ENV)
+    name = if "GIT_COMMITTER_NAME" in env
+        env["GIT_COMMITTER_NAME"]
+    else
+        COMPATHELPER_GIT_COMMITTER_NAME
+    end
+
+    email = if "GIT_COMMITTER_EMAIL" in env
+        env["GIT_COMMITTER_EMAIL"]
+    else
+        COMPATHELPER_GIT_COMMITTER_EMAIL
+    end
+
+    return name, email
+end
+
 git_checkout(branch::AbstractString) = run(`git checkout $(branch)`)
 
 git_add(; items="", flags="") = run(`git add $flags $items`)
 
 git_remote_remove(remote::AbstractString) = run(`git remote remove $remote`)
-git_remote_add(remote::AbstractString, url::AbstractString) = run(`git remote add $remote $url`)
+function git_remote_add(remote::AbstractString, url::AbstractString)
+    return run(`git remote add $remote $url`)
+end
 
 git_reset(pathspec::AbstractString; flags="") = run(`git reset $flags "$pathspec"`)
 
-function git_push(remote::AbstractString, branch::AbstractString; force=false)
+function git_push(remote::AbstractString, branch::AbstractString; force=false, env=ENV)
     force_flag = force ? "-f" : ""
+    name, email = get_git_name_and_email(; env=env)
 
-    # TODO: Inject username/email here
-    run(`git push $force_flag $remote $branch`)
+    return run(`git -c "user.name=$name" -c "user.email=$email" push $force_flag $remote $branch`)
 end
 
-function git_commit(message::AbstractString="")
+function git_commit(message::AbstractString=""; env=ENV)
+    name, email = get_git_name_and_email(; env=env)
+    cmd = `git -c "user.name=$name" -c "user.email=$email" commit -m $message`
+
     result = try
-        # TODO: Inject username/email here
-        cmd = `git commit -m $message`
         p = pipeline(cmd; stdout=stdout, stderr=stderr)
         success(p)
     catch
@@ -28,7 +50,7 @@ end
 
 function git_branch(branch::AbstractString; checkout=false)
     run(`git branch $(branch)`)
-    checkout && git_checkout(branch)
+    return checkout && git_checkout(branch)
 end
 
 function git_clone(url::AbstractString, local_path::AbstractString)

@@ -267,11 +267,11 @@ function make_pr_for_new_version(
         end
 
         @info("Attempting to commit...")
-        commit_was_success = git_commit(new_pr_title)
+        commit_was_success = git_commit(new_pr_title; env=env)
         if commit_was_success
             @info("Commit was a success")
             api_retry do
-                git_push("origin", new_branch_name; force=true)
+                git_push("origin", new_branch_name; force=true, env=env)
             end
 
             create_new_pull_request(
@@ -295,10 +295,12 @@ function make_pr_for_new_version(
                 git_remote_add("origin", url_for_ssh)
                 git_reset("HEAD~1"; flags="--soft")
 
-                git_commit(new_pr_title)
-                withenv("GIT_SSH_COMMAND" => "ssh -i $ssh_private_key_filename") do
-                    api_retry do
-                        git_push(origin, new_branch_name; force=true)
+                commit_was_success = git_commit(new_pr_title, env=env)
+                if commit_was_success
+                    withenv("GIT_SSH_COMMAND" => "ssh -i $ssh_private_key_filename") do
+                        api_retry do
+                            git_push(origin, new_branch_name; force=true, env=env)
+                        end
                     end
                 end
             end
