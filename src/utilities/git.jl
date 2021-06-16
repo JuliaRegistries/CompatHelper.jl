@@ -2,13 +2,13 @@ const COMPATHELPER_GIT_COMMITTER_NAME = "CompatHelper Julia"
 const COMPATHELPER_GIT_COMMITTER_EMAIL = "compathelper_noreply@julialang.org"
 
 function get_git_name_and_email(; env=ENV)
-    name = if "GIT_COMMITTER_NAME" in env
+    name = if haskey(env, "GIT_COMMITTER_NAME")
         env["GIT_COMMITTER_NAME"]
     else
         COMPATHELPER_GIT_COMMITTER_NAME
     end
 
-    email = if "GIT_COMMITTER_EMAIL" in env
+    email = if haskey(env, "GIT_COMMITTER_EMAIL")
         env["GIT_COMMITTER_EMAIL"]
     else
         COMPATHELPER_GIT_COMMITTER_EMAIL
@@ -17,39 +17,41 @@ function get_git_name_and_email(; env=ENV)
     return name, email
 end
 
-git_checkout(branch::AbstractString) = run(`git checkout $(branch)`)
+git_checkout(branch::AbstractString) = run(`git checkout $branch`)
 
-git_add(; items="", flags="") = run(`git add $flags $items`)
-
-git_remote_remove(remote::AbstractString) = run(`git remote remove $remote`)
-function git_remote_add(remote::AbstractString, url::AbstractString)
-    run(`git remote add $remote $url`)
+function git_add(; items::AbstractString=".", flags::AbstractString="")
+    all_items = split(items, " "; keepempty=false)
+    all_flags = split(flags, " "; keepempty=false)
+    x = run(`git add $all_flags $all_items`)
     return nothing
 end
 
-git_reset(pathspec::AbstractString; flags="") = run(`git reset $flags "$pathspec"`)
-
-function git_push(remote::AbstractString, branch::AbstractString; force=false, env=ENV)
-    force_flag = force ? "-f" : ""
-    name, email = get_git_name_and_email(; env=env)
-
-    run(`git -c "user.name=$name" -c "user.email=$email" push $force_flag $remote $branch`)
-    return nothing
-end
-
-function git_commit(
-    message::AbstractString="",
+function git_push(
+    remote::AbstractString,
+    branch::AbstractString,
     pkey_filename::Union{AbstractString,Nothing}=nothing;
+    force=false,
     env=ENV,
 )
+force_flag = force ? ["-f"] : []
     name, email = get_git_name_and_email(; env=env)
-    cmd = `git -c "user.name=$name" -c "user.email=$email" commit -m $message`
+
+    withenv(
+        "GIT_SSH_COMMAND" => isnothing(pkey_filename) ? "ssh" : "ssh -i $pkey_filename"
+    ) do
+        # TODO: Do we also want to set `committer.name` and `committer.email`?
+        run(`git -c user.name="$name" -c user.email="$email" push $force_flag $remote $branch`)
+    end
+    return nothing
+end
+
+function git_commit(message::AbstractString=""; env=ENV)
+    name, email = get_git_name_and_email(; env=env)
+    cmd = `git -c user.name="$name" -c user.email="$email" commit -m $message`
 
     result = try
-        withenv("GIT_SSH_COMMAND" => isnothing(pkey) ? "ssh" : "ssh -i $pkey_filename") do
-            p = pipeline(cmd; stdout=stdout, stderr=stderr)
-            success(p)
-        end
+        p = pipeline(cmd; stdout=stdout, stderr=stderr)
+        success(p)
     catch
         false
     end
@@ -57,7 +59,7 @@ function git_commit(
 end
 
 function git_branch(branch::AbstractString; checkout=false)
-    run(`git branch $(branch)`)
+    run(`git branch $branch`)
     checkout && git_checkout(branch)
     return nothing
 end
@@ -67,14 +69,16 @@ function git_clone(
     local_path::AbstractString,
     pkey_filename::Union{AbstractString,Nothing}=nothing,
 )
-    withenv("GIT_SSH_COMMAND" => isnothing(pkey) ? "ssh" : "ssh -i $pkey_filename") do
-        run(`git clone $(url) $(local_path)`)
+    withenv(
+        "GIT_SSH_COMMAND" => isnothing(pkey_filename) ? "ssh" : "ssh -i $pkey_filename"
+    ) do
+        run(`git clone $url $local_path`)
     end
     return nothing
 end
 
 function git_get_master_branch(master_branch::DefaultBranch)
-    return strip(read(`git rev-parse --abbrev-ref HEAD`, String))::String
+    return string(strip(read(`git rev-parse --abbrev-ref HEAD`, String)))
 end
 
 function git_get_master_branch(master_branch::AbstractString)

@@ -1,6 +1,4 @@
 const LOCAL_REPO_NAME = "REPO"
-const GIT_COMMIT_NAME = "CompatHelper Julia"
-const GIT_COMMIT_EMAIL = "compathelper_noreply@julialang.org"
 
 function add_compat_section!(project::AbstractDict)
     if !haskey(project, "compat")

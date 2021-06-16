@@ -244,13 +244,11 @@ function make_pr_for_new_version(
         end
 
         with_temp_dir(; cleanup=true) do tmpdir
-            local_repo_path = "REPO"
-
             # Clone Repo Locally
             api_retry() do
-                @mock git_clone(repo_git_url, local_repo_path, pkey_filename)
+                @mock git_clone(repo_git_url, LOCAL_REPO_NAME, pkey_filename)
             end
-            cd(joinpath(tmpdir, local_repo_path))
+            cd(joinpath(tmpdir, LOCAL_REPO_NAME))
 
             # Checkout master branch
             master_branch_name = git_get_master_branch(master_branch)
@@ -261,7 +259,7 @@ function make_pr_for_new_version(
             git_branch(new_branch_name; checkout=true)
 
             # Add new compat entry to project.toml and write it out
-            add_compat_entry(joinpath(tmpdir, local_repo_path, subdir), new_compat_entry)
+            add_compat_entry(joinpath(tmpdir, LOCAL_REPO_NAME, subdir), new_compat_entry)
             git_add(; flags="-A")
 
             @info("Attempting to commit...")
