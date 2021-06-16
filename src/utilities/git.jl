@@ -23,7 +23,8 @@ git_add(; items="", flags="") = run(`git add $flags $items`)
 
 git_remote_remove(remote::AbstractString) = run(`git remote remove $remote`)
 function git_remote_add(remote::AbstractString, url::AbstractString)
-    return run(`git remote add $remote $url`)
+    run(`git remote add $remote $url`)
+    return nothing
 end
 
 git_reset(pathspec::AbstractString; flags="") = run(`git reset $flags "$pathspec"`)
@@ -32,7 +33,8 @@ function git_push(remote::AbstractString, branch::AbstractString; force=false, e
     force_flag = force ? "-f" : ""
     name, email = get_git_name_and_email(; env=env)
 
-    return run(`git -c "user.name=$name" -c "user.email=$email" push $force_flag $remote $branch`)
+    run(`git -c "user.name=$name" -c "user.email=$email" push $force_flag $remote $branch`)
+    return nothing
 end
 
 function git_commit(
@@ -44,7 +46,7 @@ function git_commit(
     cmd = `git -c "user.name=$name" -c "user.email=$email" commit -m $message`
 
     result = try
-        withenv("GIT_SSH_COMMAND" => isnothing(pkey) ? "ssh" : "ssh -i $pkey_filename")do
+        withenv("GIT_SSH_COMMAND" => isnothing(pkey) ? "ssh" : "ssh -i $pkey_filename") do
             p = pipeline(cmd; stdout=stdout, stderr=stderr)
             success(p)
         end
@@ -57,6 +59,7 @@ end
 function git_branch(branch::AbstractString; checkout=false)
     run(`git branch $(branch)`)
     checkout && git_checkout(branch)
+    return nothing
 end
 
 function git_clone(
@@ -67,6 +70,7 @@ function git_clone(
     withenv("GIT_SSH_COMMAND" => isnothing(pkey) ? "ssh" : "ssh -i $pkey_filename") do
         run(`git clone $(url) $(local_path)`)
     end
+    return nothing
 end
 
 function git_get_master_branch(master_branch::DefaultBranch)
