@@ -165,8 +165,7 @@ function continue_with_pr(
     bump_compat_containing_equality_specifier::Bool,
 )
    # Determine if we need to make a new PR
-    if (!isnothing(dep.latest_version) && !isnothing(dep.version_spec)) &&
-       dep.latest_version in dep.version_spec
+    if !isnothing(dep.version_spec) && dep.latest_version in dep.version_spec
         @info(
             "latest_version in version_spec",
             dep.latest_version,
@@ -210,6 +209,7 @@ function make_pr_for_new_version(
         return nothing
     end
 
+    # Get new compat entry version, pr title, and pr body text
     compat_entry_for_latest_version = compat_version_number(dep.latest_version)
     brand_new_compat = new_compat_entry(
         entry_type, dep.version_verbatim, compat_entry_for_latest_version
@@ -224,13 +224,14 @@ function make_pr_for_new_version(
         title_parenthetical(entry_type),
     )
 
+    # Make sure we haven't already created the same PR
     pr_titles = @mock get_pr_titles(forge, repo, ci_cfg.username)
     if new_pr_title in pr_titles
         @info("An open PR with the title already exists", new_pr_title)
         return nothing
     end
 
-
+    # Make a dir for our SSH PrivateKey which we will use only if it has been enabled
     with_temp_dir(; cleanup=true) do ssh_private_key_dir
         ssh_envvar = has_ssh_private_key(; env=env)
         local pkey_filename, repo_git_url
@@ -243,6 +244,7 @@ function make_pr_for_new_version(
             repo_git_url = get_url_with_auth(forge, clone_hostname, repo)
         end
 
+        # In a temp dir, grab the repo, make the changes, push and make a PR
         with_temp_dir(; cleanup=true) do tmpdir
             # Clone Repo Locally
             api_retry() do
@@ -262,6 +264,7 @@ function make_pr_for_new_version(
             add_compat_entry(joinpath(tmpdir, LOCAL_REPO_NAME, subdir), new_compat_entry)
             git_add(; flags="-A")
 
+            # Commit changes and make PR
             @info("Attempting to commit...")
             commit_was_success = git_commit(new_pr_title, pkey_filename; env=env)
             if commit_was_success
