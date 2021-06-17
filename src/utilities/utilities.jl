@@ -33,5 +33,6 @@ end
 
 
 function get_random_string()
-    return string(utc_to_string(now_localzone()), "-", rand(UInt32))
+    randint = lpad(string(rand(UInt32)), 11, "0")
+    return string(utc_to_string(now_localzone()), "-", randint)
 end
