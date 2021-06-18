@@ -133,25 +133,6 @@ end
 end
 
 @testset "get_pr_titles" begin
-    gh_gpr_patch = @patch function CompatHelper.get_pull_requests(
-        api::GitHub.GitHubAPI, repo::GitHub.Repo, state::String
-    )
-        origin_repo = GitHub.Repo(; id=1)
-        fork_repo = GitHub.Repo(; id=2)
-
-        pr_from_origin = GitHub.PullRequest(;
-            head=GitHub.Head(; repo=origin_repo),
-            user=GitHub.User(; login="foobar"),
-            title="title",
-        )
-        pr_from_origin_2 = GitHub.PullRequest(;
-            head=GitHub.Head(; repo=origin_repo), user=GitHub.User(; login="bizbaz")
-        )
-        pr_from_fork = GitHub.PullRequest(; head=GitHub.Head(; repo=fork_repo))
-
-        return [pr_from_origin, pr_from_origin_2, pr_from_fork]
-    end
-
     @testset "GitHub" begin
         api = GitForge.GitHub.GitHubAPI()
         repo = GitHub.Repo(; id=1)
@@ -161,24 +142,6 @@ end
             @test !isempty(prs)
             @test prs[1] == "title"
         end
-    end
-
-    gl_gpr_patch = @patch function CompatHelper.get_pull_requests(
-        api::GitLab.GitLabAPI, repo::GitLab.Project, state::String
-    )
-        origin_repo = GitLab.Project(; id=1)
-
-        pr_from_origin = GitLab.MergeRequest(;
-            project_id=1,
-            author=GitLab.User(; username="foobar"),
-            title="title",
-        )
-        pr_from_origin_2 = GitLab.MergeRequest(;
-            project_id=1, author=GitLab.User(; username="bizbaz")
-        )
-        pr_from_fork = GitLab.MergeRequest(; project_id=2)
-
-        return [pr_from_origin, pr_from_origin_2, pr_from_fork]
     end
 
     @testset "GitLab" begin
@@ -191,5 +154,4 @@ end
             @test prs[1] == "title"
         end
     end
-
 end

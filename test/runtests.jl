@@ -14,7 +14,6 @@ using TOML: TOML
 using UUIDs: UUIDs, UUID
 
 Mocking.activate()
-#=
 Aqua.test_all(CompatHelper; ambiguities=false)
 
 @testset "`version =` line in the workflow file" begin
@@ -29,12 +28,10 @@ Aqua.test_all(CompatHelper; ambiguities=false)
     @test occursin(Regex("\\sversion = \"$(major_version)\"\n"), workflow_filecontents)
     @test length(findall(r"version[\s]*?=", workflow_filecontents)) == 1
 end
-=#
 
 include("patches.jl")
 
 @testset "CompatHelper.jl" begin
-    #=
     include(joinpath("utilities", "ci.jl"))
     include(joinpath("utilities", "git.jl"))
     include(joinpath("utilities", "new_versions.jl"))
@@ -42,12 +39,9 @@ include("patches.jl")
     include(joinpath("utilities", "types.jl"))
     include(joinpath("utilities", "utilities.jl"))
     include(joinpath("utilities", "rate_limiting.jl"))
-    =#
     include(joinpath("utilities", "timestamps.jl"))
-    #=
 
     include("dependencies.jl")
     include("exceptions.jl")
     include("pull_requests.jl")
-    =#
 end

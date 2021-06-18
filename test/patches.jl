@@ -16,6 +16,14 @@ git_clone_patch = @patch function CompatHelper.git_clone(
 )
     return nothing
 end
+git_push_patch = @patch function CompatHelper.git_push(
+    ::AbstractString,
+    ::AbstractString,
+    ::Union{AbstractString,Nothing};
+    kwargs...
+)
+    return nothing
+end
 mktempdir_patch = @patch Base.mktempdir(; cleanup::Bool=true) = Random.randstring()
 rm_patch = @patch Base.rm(tmp_dir; force=true, recursive=true) = nothing
 
@@ -25,4 +33,94 @@ clone_all_registries_patch = @patch function CompatHelper.clone_all_registries(
     return f([
         joinpath(@__DIR__, "deps", "registry_1"), joinpath(@__DIR__, "deps", "registry_2")
     ])
+end
+
+gh_pr_patch = @patch function GitForge.create_pull_request(
+    ::GitHub.GitHubAPI,
+    owner::AbstractString,
+    repo::AbstractString;
+    kwargs...,
+)
+    return nothing
+end
+
+gl_pr_patch = @patch function GitForge.create_pull_request(
+    ::GitLab.GitLabAPI,
+    owner::AbstractString,
+    repo::AbstractString;
+    kwargs...,
+)
+    return nothing
+end
+
+decode_pkey_patch = @patch function CompatHelper.decode_ssh_private_key(::AbstractString)
+    return "pkey_info"
+end
+
+pr_titles_mock = @patch function CompatHelper.get_pr_titles(
+    ::GitForge.Forge,
+    ::GitHub.Repo,
+    ::String
+)
+    return [
+        "    CompatHelper: bump compat for PackageA to\n    1 ,  (keep existing compat)",
+        "foo"
+    ]
+end
+
+function make_clone_https_patch(dir::AbstractString)
+    return @patch function CompatHelper.get_url_with_auth(
+        ::GitForge.Forge,
+        ::AbstractString,
+        ::Union{GitHub.Repo,GitLab.Project},
+    )
+        return dir
+   end
+end
+
+function make_clone_ssh_patch(dir::AbstractString)
+    return @patch function CompatHelper.get_url_for_ssh(
+        ::GitForge.Forge,
+        ::AbstractString,
+        ::Union{GitHub.Repo,GitLab.Project},
+    )
+        return dir
+    end
+end
+
+gh_gpr_patch = @patch function CompatHelper.get_pull_requests(
+    api::GitHub.GitHubAPI, repo::GitHub.Repo, state::String
+)
+    origin_repo = GitHub.Repo(; id=1)
+    fork_repo = GitHub.Repo(; id=2)
+
+    pr_from_origin = GitHub.PullRequest(;
+        head=GitHub.Head(; repo=origin_repo),
+        user=GitHub.User(; login="foobar"),
+        title="title",
+    )
+    pr_from_origin_2 = GitHub.PullRequest(;
+        head=GitHub.Head(; repo=origin_repo), user=GitHub.User(; login="bizbaz")
+    )
+    pr_from_fork = GitHub.PullRequest(; head=GitHub.Head(; repo=fork_repo))
+
+    return [pr_from_origin, pr_from_origin_2, pr_from_fork]
+end
+
+gl_gpr_patch = @patch function CompatHelper.get_pull_requests(
+    api::GitLab.GitLabAPI, repo::GitLab.Project, state::String
+)
+    origin_repo = GitLab.Project(; id=1)
+
+    pr_from_origin = GitLab.MergeRequest(;
+        project_id=1,
+        author=GitLab.User(; username="foobar"),
+        title="title",
+    )
+    pr_from_origin_2 = GitLab.MergeRequest(;
+        project_id=1, author=GitLab.User(; username="bizbaz")
+    )
+    pr_from_fork = GitLab.MergeRequest(; project_id=2)
+
+    return [pr_from_origin, pr_from_origin_2, pr_from_fork]
 end
