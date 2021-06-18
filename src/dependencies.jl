@@ -49,9 +49,7 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
                 dep_entry = convert(String, strip(get(compat, name, "")))
 
                 if !isempty(dep_entry)
-                    # TODO: We might need to use `semver_spec` here rather than just putting
-                    # the string into `VersionSpec`
-                    compat_entry.version_spec = VersionSpec(dep_entry)
+                    compat_entry.version_spec = semver_spec(dep_entry)
                     compat_entry.version_verbatim = dep_entry
                 end
 

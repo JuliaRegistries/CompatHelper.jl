@@ -12,8 +12,10 @@ using UUIDs: UUIDs, UUID
 
 @static if Base.VERSION >= v"1.7-"
     const VersionSpec = Pkg.Versions.VersionSpec
+    const semver_spec = Pkg.Versions.semver_spec
 else
     const VersionSpec = Pkg.Types.VersionSpec
+    const semver_spec = Pkg.Types.semver_spec
 end
 
 const PRIVATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
