@@ -287,12 +287,10 @@ end
         mktempdir() do f
             cd(f)
             local_path = joinpath(f, CompatHelper.LOCAL_REPO_NAME)
-            pkey = joinpath(homedir(), ".ssh", "id_rsa")
 
             CompatHelper.git_clone(
                 "git@github.com:JuliaRegistries/CompatHelper.jl.git",
                 local_path,
-                pkey,
             )
 
             @test !isempty(readdir(local_path))
