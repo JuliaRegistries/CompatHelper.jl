@@ -287,11 +287,7 @@ end
         mktempdir() do f
             cd(f)
             local_path = joinpath(f, CompatHelper.LOCAL_REPO_NAME)
-            pkey = joinpath(f, "privatekey")
-            open(pkey, "w") do io
-                print(io, TEST_PKEY)
-            end
-            run(`chmod 600 $pkey`)
+            pkey = joinpath(homedir(), ".ssh", "id_rsa")
 
             CompatHelper.git_clone(
                 "git@github.com:JuliaRegistries/CompatHelper.jl.git",
