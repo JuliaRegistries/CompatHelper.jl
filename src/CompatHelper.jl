@@ -1,12 +1,12 @@
 module CompatHelper
 
 using Base64: Base64
-using Dates
+using Dates: Dates
 using GitForge: GitForge, Forge, GitHub, GitLab
 using MultilineStrings
 using Mocking: Mocking, @mock
 using Pkg: Pkg
-using TimeZones
+using TimeZones: TimeZones
 using TOML: TOML
 using UUIDs: UUIDs, UUID
 
