@@ -76,7 +76,7 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
 
                 run(`touch baz.txt`)
                 CompatHelper.git_add()
-                run(`git commit --amend --no-edit -m "Message 2"`)
+                run(`git -c user.name=user -c user.email=email commit --amend --no-edit -m "Message 2"`)
 
                 CompatHelper.git_push("origin", "master"; force=true)
                 output = read(`git log --decorate`, String)
@@ -291,6 +291,7 @@ end
             open(pkey, "w") do io
                 print(io, TEST_PKEY)
             end
+            run(`chmod 600 $pkey`)
 
             CompatHelper.git_clone(
                 "git@github.com:JuliaRegistries/CompatHelper.jl.git",
