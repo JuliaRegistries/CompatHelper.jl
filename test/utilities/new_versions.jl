@@ -288,61 +288,62 @@ end
         end
     end
 
-    # Successful Run
-    mktempdir() do tmpdir
-        # Create a temp git repo
-        cd(@__DIR__)
-        cwd = pwd()
-        cd(tmpdir)
-        run(`git init`)
+    @testset "Successful Run" begin
+        mktempdir() do tmpdir
+            # Create a temp git repo
+            cd(@__DIR__)
+            cwd = pwd()
+            cd(tmpdir)
+            run(`git init`)
 
-        # Lets copy our test Project.toml to the tmpdir for this test
-        src = joinpath(@__DIR__, "..", "deps", "Project.toml")
-        dst = joinpath(tmpdir, "Project.toml")
-        cp(src, dst; force=true)
+            # Lets copy our test Project.toml to the tmpdir for this test
+            src = joinpath(@__DIR__, "..", "deps", "Project.toml")
+            dst = joinpath(tmpdir, "Project.toml")
+            cp(src, dst; force=true)
 
-        CompatHelper.git_add()
-        CompatHelper.git_commit("msg")
-        cd(cwd)
+            CompatHelper.git_add()
+            CompatHelper.git_commit("msg")
+            cd(cwd)
 
-        patches = [
-            pr_titles_mock,
-            git_push_patch,
-            gh_pr_patch,
-            make_clone_https_patch(tmpdir),
-            make_clone_ssh_patch(tmpdir),
-            decode_pkey_patch,
-        ]
+            patches = [
+                pr_titles_mock,
+                git_push_patch,
+                gh_pr_patch,
+                make_clone_https_patch(tmpdir),
+                make_clone_ssh_patch(tmpdir),
+                decode_pkey_patch,
+            ]
 
-        apply(patches) do
-            # HTTPS
-            CompatHelper.make_pr_for_new_version(
-                GitHub.GitHubAPI(; token=GitHub.Token("token")),
-                "hostname",
-                GitHub.Repo(; owner=GitHub.User(; login="username"), name="PackageB"),
-                CompatHelper.DepInfo(
-                    CompatHelper.Package("PackageB", UUID(1));
-                    latest_version=VersionNumber(2),
-                    version_verbatim="1.2",
-                ),
-                CompatHelper.KeepEntry(),
-                CompatHelper.GitHubActions()
-            )
-
-            # SSH
-            withenv(CompatHelper.PRIVATE_SSH_ENVVAR => "foo") do
+            apply(patches) do
+                # HTTPS
                 CompatHelper.make_pr_for_new_version(
                     GitHub.GitHubAPI(; token=GitHub.Token("token")),
                     "hostname",
-                    GitHub.Repo(; owner=GitHub.User(; login="username"), name="PackageC"),
+                    GitHub.Repo(; owner=GitHub.User(; login="username"), name="PackageB"),
                     CompatHelper.DepInfo(
-                        CompatHelper.Package("PackageC", UUID(1));
-                        latest_version=VersionNumber(3),
-                        version_verbatim="2.1",
+                        CompatHelper.Package("PackageB", UUID(1));
+                        latest_version=VersionNumber(2),
+                        version_verbatim="1.2",
                     ),
                     CompatHelper.KeepEntry(),
                     CompatHelper.GitHubActions()
                 )
+
+                # SSH
+                withenv(CompatHelper.PRIVATE_SSH_ENVVAR => "foo") do
+                    CompatHelper.make_pr_for_new_version(
+                        GitHub.GitHubAPI(; token=GitHub.Token("token")),
+                        "hostname",
+                        GitHub.Repo(; owner=GitHub.User(; login="username"), name="PackageC"),
+                        CompatHelper.DepInfo(
+                            CompatHelper.Package("PackageC", UUID(1));
+                            latest_version=VersionNumber(3),
+                            version_verbatim="2.1",
+                        ),
+                        CompatHelper.KeepEntry(),
+                        CompatHelper.GitHubActions()
+                    )
+                end
             end
         end
     end
