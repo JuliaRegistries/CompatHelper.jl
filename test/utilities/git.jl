@@ -195,63 +195,20 @@ end
     untracked_str = "Untracked files"
     committed_str = "Changes to be committed"
 
-    @testset "without flags or items" begin
-        mktempdir() do f
-            cd(f)
-            run(`git init`)
-            run(`touch foo.txt`)
-            run(`touch bar.txt`)
+    mktempdir() do f
+        cd(f)
+        run(`git init`)
+        run(`touch foo.txt`)
+        run(`touch bar.txt`)
 
-            output = read(`git status`, String)
-            @test occursin(untracked_str, output)
+        output = read(`git status`, String)
+        @test occursin(untracked_str, output)
 
-            CompatHelper.git_add()
+        CompatHelper.git_add()
 
-            output = read(`git status`, String)
-            @test !occursin("untracked", output)
-            @test occursin(committed_str, output)
-        end
-    end
-
-    @testset "with flags" begin
-        mktempdir() do f
-            cd(f)
-            run(`git init`)
-            run(`touch foo.txt`)
-            run(`touch bar.txt`)
-
-            output = read(`git status`, String)
-            @test occursin(untracked_str, output)
-
-            CompatHelper.git_add(; flags="-A")
-
-            output = read(`git status`, String)
-            @test !occursin(untracked_str, output)
-            @test occursin(committed_str, output)
-        end
-    end
-
-    @testset "with items" begin
-        mktempdir() do f
-            cd(f)
-            run(`git init`)
-            run(`touch foo.txt`)
-            run(`touch bar.txt`)
-            run(`touch baz.txt`)
-
-            output = read(`git status`, String)
-            @test occursin(untracked_str, output)
-
-            CompatHelper.git_add(; items="foo.txt bar.txt")
-
-            output = read(`git status baz.txt`, String)
-            @test occursin(untracked_str, output)
-            @test !occursin(committed_str, output)
-
-            output = read(`git status foo.txt bar.txt`, String)
-            @test !occursin(untracked_str, output)
-            @test occursin(committed_str, output)
-        end
+        output = read(`git status`, String)
+        @test !occursin(untracked_str, output)
+        @test occursin(committed_str, output)
     end
 end
 

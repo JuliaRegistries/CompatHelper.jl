@@ -19,10 +19,8 @@ end
 
 git_checkout(branch::AbstractString) = run(`git checkout $branch`)
 
-function git_add(; items::AbstractString=".", flags::AbstractString="")
-    all_items = split(items, " "; keepempty=false)
-    all_flags = split(flags, " "; keepempty=false)
-    x = run(`git add $all_flags $all_items`)
+function git_add()
+    run(`git add -A .`)
 
     return nothing
 end

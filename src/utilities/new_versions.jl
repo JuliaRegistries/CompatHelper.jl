@@ -274,7 +274,7 @@ function make_pr_for_new_version(
                 joinpath(tmpdir, LOCAL_REPO_NAME, subdir),
                 brand_new_compat,
             )
-            git_add(; flags="-A")
+            git_add()
 
             # Commit changes and make PR
             @info("Attempting to commit...")
