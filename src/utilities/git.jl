@@ -38,8 +38,7 @@ force_flag = force ? ["-f"] : []
     withenv(
         "GIT_SSH_COMMAND" => isnothing(pkey_filename) ? "ssh" : "ssh -i $pkey_filename"
     ) do
-        # TODO: Do we also want to set `committer.name` and `committer.email`?
-        run(`git -c user.name="$name" -c user.email="$email" push $force_flag $remote $branch`)
+        run(`git -c user.name="$name" -c user.email="$email" -c committer.name="$name" -c committer.email="$email" push $force_flag $remote $branch`)
     end
     return nothing
 end
