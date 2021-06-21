@@ -242,7 +242,6 @@ function make_pr_for_new_version(
     # Make a dir for our SSH PrivateKey which we will use only if it has been enabled
     with_temp_dir(; cleanup=true) do ssh_private_key_dir
         ssh_envvar = has_ssh_private_key(; env=env)
-        local pkey_filename, repo_git_url
 
         if ssh_envvar
             pkey_filename = create_ssh_private_key(ssh_private_key_dir; env=env)
