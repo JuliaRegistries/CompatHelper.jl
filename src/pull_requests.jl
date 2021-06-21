@@ -35,14 +35,23 @@ function get_pull_requests(
     return @mock unique(paginated_prs)
 end
 
-function exclude_pull_requests_from_forks(
-    repo::GitHub.Repo, pr_list::Vector{GitHub.PullRequest}
+not_pr_fork(repo::GitHub.Repo, pr::GitHub.PullRequest) = repo == pr.head.repo
+not_pr_fork(repo::GitLab.Project, pr::GitLab.MergeRequest) = repo.id == pr.project_id
+
+my_prs(username::String, pr::GitHub.PullRequest) = lower(pr.user.login) == lower(username)
+my_prs(username::String, pr::GitLab.MergeRequest) = lower(pr.author.username) == lower(username)
+
+function get_pr_titles(
+    forge::Forge,
+    repo::Union{GitHub.Repo,GitLab.Project},
+    username::AbstractString,
 )
-    return [pr for pr in pr_list if repo == pr.head.repo]
-end
+    state = repo isa GitHub.Repo ? "open" : "opened"
+    all_open_prs = @mock get_pull_requests(forge, repo, state)
 
-function only_my_pull_requests(username::String, pr_list::Vector{GitHub.PullRequest})
-    username = lower(username)
-
-    return [pr for pr in pr_list if lower(pr.user.login) == username]
+    return [
+        convert(String, strip(pr.title))
+        for pr in all_open_prs
+        if not_pr_fork(repo, pr) && my_prs(username, pr)
+    ]
 end

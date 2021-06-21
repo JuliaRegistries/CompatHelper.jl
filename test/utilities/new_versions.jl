@@ -110,3 +110,247 @@ end
     @test contains(title, expected_title)
     @test contains(body, expected_body)
 end
+
+@testset "create_new_pull_request" begin
+    @testset "GitHub" begin
+        apply(gh_pr_patch) do
+            @test isnothing(
+                CompatHelper.create_new_pull_request(
+                    GitHub.GitHubAPI(),
+                    GitHub.Repo(; owner=GitHub.User(; login="username"), name="repo"),
+                    "new_branch",
+                    "master_branch",
+                    "title",
+                    "body",
+                )
+            )
+        end
+    end
+
+    @testset "GitLab" begin
+        apply(gl_pr_patch) do
+            @test isnothing(
+                CompatHelper.create_new_pull_request(
+                    GitLab.GitLabAPI(),
+                    GitLab.Project(; owner=GitLab.User(; name="username"), name="repo"),
+                    "new_branch",
+                    "master_brach",
+                    "title",
+                    "body",
+                )
+            )
+        end
+    end
+end
+
+@testset "get_url_with_auth" begin
+    @testset "GitHub" begin
+        result = CompatHelper.get_url_with_auth(
+            GitHub.GitHubAPI(; token=GitHub.Token("token")),
+            "hostname",
+            GitHub.Repo(; full_name="full_name"),
+        )
+
+        @test result == "https://x-access-token:token@hostname/full_name.git"
+    end
+
+    @testset "GitLab" begin
+        result = CompatHelper.get_url_with_auth(
+            GitLab.GitLabAPI(; token=GitLab.OAuth2Token("token")),
+            "hostname",
+            GitLab.Project(; path_with_namespace="full_name"),
+        )
+
+        @test result == "https://oauth2:token@hostname/full_name.git"
+    end
+end
+
+@testset "get_url_for_ssh" begin
+    @testset "GitHub" begin
+        result = CompatHelper.get_url_for_ssh(
+            GitHub.GitHubAPI(),
+            "hostname",
+            GitHub.Repo(; full_name="full_name"),
+        )
+
+        @test result == "git@hostname:full_name.git"
+    end
+
+    @testset "GitLab" begin
+        result = CompatHelper.get_url_for_ssh(
+            GitLab.GitLabAPI(),
+            "hostname",
+            GitLab.Project(; path_with_namespace="full_name"),
+        )
+
+        @test result == "git@hostname:full_name.git"
+    end
+end
+
+@testset "continue_with_pr" begin
+    @testset "default passing case" begin
+            pass_dep = CompatHelper.DepInfo(
+            CompatHelper.Package("PackageA", UUID(1)); latest_version=VersionNumber(1)
+        )
+        @test CompatHelper.continue_with_pr(pass_dep, false)
+        @test CompatHelper.continue_with_pr(pass_dep, true)
+    end
+
+    @testset "latest version in version spec" begin
+        dep = CompatHelper.DepInfo(
+            CompatHelper.Package("PackageA", UUID(1));
+            latest_version=VersionNumber(1),
+            version_spec=CompatHelper.VersionSpec(["0.9", "1.0"]),
+        )
+        @test !CompatHelper.continue_with_pr(dep, false)
+        @test !CompatHelper.continue_with_pr(dep, true)
+    end
+
+    @testset "equality specifier" begin
+        dep = CompatHelper.DepInfo(
+            CompatHelper.Package("PackageA", UUID(1));
+            version_verbatim="= 1.2",
+            latest_version=VersionNumber(2),
+        )
+        @test !CompatHelper.continue_with_pr(dep, false)
+        @test CompatHelper.continue_with_pr(dep, true)
+    end
+
+    @testset "no latest version" begin
+        dep = CompatHelper.DepInfo(CompatHelper.Package("PackageA", UUID(1)))
+        @test !CompatHelper.continue_with_pr(dep, false)
+        @test !CompatHelper.continue_with_pr(dep, true)
+    end
+end
+
+@testset "create_ssh_private_key" begin
+    mktempdir() do tmpdir
+        withenv(CompatHelper.PRIVATE_SSH_ENVVAR => "foo") do
+            pkey = apply(decode_pkey_patch) do
+                CompatHelper.create_ssh_private_key(tmpdir)
+            end
+
+            @test isfile(pkey)
+            open(pkey, "r") do io
+                @test read(io, String) == "pkey_info\n"
+            end
+        end
+    end
+end
+
+@testset "add_compat_entry" begin
+    mktempdir() do tmpdir
+        # Lets copy our test Project.toml to the tmpdir for this test
+        src = joinpath(@__DIR__, "..", "deps", "Project.toml")
+        dst = joinpath(tmpdir, "Project.toml")
+        cp(src, dst; force=true)
+
+        project = TOML.parsefile(dst)
+        @test !haskey(project["compat"], "PackageA")
+
+        CompatHelper.add_compat_entry("PackageA", tmpdir, "= 1.2")
+
+        project = TOML.parsefile(dst)
+        @test project["compat"]["PackageA"] == "= 1.2"
+    end
+end
+
+@testset "make_pr_for_new_version" begin
+    @testset "latest_version === nothing" begin
+        @test isnothing(
+            CompatHelper.make_pr_for_new_version(
+                GitHub.GitHubAPI(),
+                "hostname",
+                GitHub.Repo(),
+                CompatHelper.DepInfo(CompatHelper.Package("PackageA", UUID(1))),
+                CompatHelper.KeepEntry(),
+                CompatHelper.GitHubActions()
+            )
+        )
+    end
+
+    @testset "pr_title exists" begin
+        apply(pr_titles_mock) do
+            @test isnothing(
+                CompatHelper.make_pr_for_new_version(
+                    GitHub.GitHubAPI(),
+                    "hostname",
+                    GitHub.Repo(),
+                    CompatHelper.DepInfo(
+                        CompatHelper.Package("PackageA", UUID(1));
+                        latest_version=VersionNumber(1),
+                        version_verbatim="0.9",
+                    ),
+                    CompatHelper.KeepEntry(),
+                    CompatHelper.GitHubActions()
+                )
+            )
+        end
+    end
+
+    @testset "Successful Run" begin
+        mktempdir() do tmpdir
+            # Create a temp git repo
+            cd(@__DIR__)
+            cwd = pwd()
+            cd(tmpdir)
+            run(`git init`)
+
+            # Lets copy our test Project.toml to the tmpdir for this test
+            src = joinpath(@__DIR__, "..", "deps", "Project.toml")
+            dst = joinpath(tmpdir, "Project.toml")
+            cp(src, dst; force=true)
+
+            CompatHelper.git_add()
+            CompatHelper.git_commit("msg")
+            cd(cwd)
+
+            patches = [
+                pr_titles_mock,
+                git_push_patch,
+                gh_pr_patch,
+                make_clone_https_patch(tmpdir),
+                make_clone_ssh_patch(tmpdir),
+                decode_pkey_patch,
+            ]
+
+            apply(patches) do
+                # HTTPS
+
+                # Make sure PRIVATE_SSH_ENVVAR is unset
+                if haskey(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
+                    delete!(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
+                end
+
+                CompatHelper.make_pr_for_new_version(
+                    GitHub.GitHubAPI(; token=GitHub.Token("token")),
+                    "hostname",
+                    GitHub.Repo(; owner=GitHub.User(; login="username"), name="PackageB"),
+                    CompatHelper.DepInfo(
+                        CompatHelper.Package("PackageB", UUID(1));
+                        latest_version=VersionNumber(2),
+                        version_verbatim="1.2",
+                    ),
+                    CompatHelper.KeepEntry(),
+                    CompatHelper.GitHubActions()
+                )
+
+                # SSH
+                withenv(CompatHelper.PRIVATE_SSH_ENVVAR => "foo") do
+                    CompatHelper.make_pr_for_new_version(
+                        GitHub.GitHubAPI(; token=GitHub.Token("token")),
+                        "hostname",
+                        GitHub.Repo(; owner=GitHub.User(; login="username"), name="PackageC"),
+                        CompatHelper.DepInfo(
+                            CompatHelper.Package("PackageC", UUID(1));
+                            latest_version=VersionNumber(3),
+                            version_verbatim="2.1",
+                        ),
+                        CompatHelper.KeepEntry(),
+                        CompatHelper.GitHubActions()
+                    )
+                end
+            end
+        end
+    end
+end

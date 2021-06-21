@@ -3,6 +3,8 @@ struct KeepEntry <: EntryType end
 struct DropEntry <: EntryType end
 struct NewEntry <: EntryType end
 
+struct DefaultBranch end
+
 struct Package
     name::String
     uuid::UUIDs.UUID

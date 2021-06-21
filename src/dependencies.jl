@@ -1,14 +1,4 @@
 const LOCAL_REPO_NAME = "REPO"
-const GIT_COMMIT_NAME = "CompatHelper Julia"
-const GIT_COMMIT_EMAIL = "compathelper_noreply@julialang.org"
-
-function add_compat_section!(project::AbstractDict)
-    if !haskey(project, "compat")
-        project["compat"] = Dict{Any,Any}()
-    end
-
-    return project
-end
 
 function get_project_deps(
     api::GitHub.GitHubAPI,
@@ -51,7 +41,7 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
                 dep_entry = convert(String, strip(get(compat, name, "")))
 
                 if !isempty(dep_entry)
-                    compat_entry.version_spec = VersionSpec(dep_entry)
+                    compat_entry.version_spec = semver_spec(dep_entry)
                     compat_entry.version_verbatim = dep_entry
                 end
 

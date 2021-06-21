@@ -3,11 +3,13 @@ using Test: Test, @test, @testset, @test_throws
 
 using Aqua: Aqua
 using Base64: Base64
+using Dates
 using GitForge: GitForge, GitHub, GitLab
 using Mocking: Mocking, @patch, apply
 using Pkg: Pkg
 using Random: Random
 using SHA: SHA
+using TimeZones
 using TOML: TOML
 using UUIDs: UUIDs, UUID
 
@@ -36,6 +38,8 @@ include("patches.jl")
     include(joinpath("utilities", "ssh.jl"))
     include(joinpath("utilities", "types.jl"))
     include(joinpath("utilities", "utilities.jl"))
+    include(joinpath("utilities", "rate_limiting.jl"))
+    include(joinpath("utilities", "timestamps.jl"))
 
     include("dependencies.jl")
     include("exceptions.jl")

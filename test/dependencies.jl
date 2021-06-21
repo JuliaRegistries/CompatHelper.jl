@@ -1,19 +1,3 @@
-@testset "add_compat_section!" begin
-    @testset "exists" begin
-        d = Dict("compat" => "foobar")
-        CompatHelper.add_compat_section!(d)
-
-        @test haskey(d, "compat")
-    end
-
-    @testset "dne" begin
-        d = Dict()
-        CompatHelper.add_compat_section!(d)
-
-        @test haskey(d, "compat")
-    end
-end
-
 @testset "get_project_deps" begin
     @testset "no jll" begin
         apply([git_clone_patch, project_toml_patch]) do

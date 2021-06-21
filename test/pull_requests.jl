@@ -30,49 +30,140 @@ end
     end
 end
 
-@testset "exclude_pull_requests_from_forks" begin
-    @testset "normal case" begin
-        origin_repo = GitHub.Repo(; id=1)
-        fork_repo = GitHub.Repo(; id=2)
+@testset "get_pr_titles" begin
+    username = "foo"
 
-        pr_from_origin = GitHub.PullRequest(; head=GitHub.Head(; repo=origin_repo))
-        pr_from_fork = GitHub.PullRequest(; head=GitHub.Head(; repo=fork_repo))
+    @testset "no forks" begin
+        @testset "GitHub" begin
+            origin_repo = GitHub.Repo(; id=1)
+            fork_repo = GitHub.Repo(; id=2)
 
-        result = CompatHelper.exclude_pull_requests_from_forks(
-            origin_repo, [pr_from_origin]
-        )
+            pr_from_origin = GitHub.PullRequest(;
+                head=GitHub.Head(; repo=origin_repo),
+                user=GitHub.User(; login=username),
+                title="PR A",
+            )
+            pr_from_fork = GitHub.PullRequest(;
+                head=GitHub.Head(; repo=fork_repo),
+                user=GitHub.User(; login=username),
+                title="PR B",
+            )
 
-        @test length(result) == 1
-        @test pr_from_origin in result
-        @test !(pr_from_fork in result)
+            apply(get_prs_patch([pr_from_origin, pr_from_fork])) do
+                result = CompatHelper.get_pr_titles(
+                    GitHub.GitHubAPI(), origin_repo, username
+                )
+
+                @test length(result) == 1
+                @test pr_from_origin.title in result
+                @test !(pr_from_fork.title in result)
+            end
+        end
+
+        @testset "GitLab" begin
+            origin_repo = GitLab.Project(; id=1)
+            fork_repo = GitLab.Project(; id=2)
+
+            pr_from_origin = GitLab.MergeRequest(;
+                id=1,
+                project_id=1,
+                author=GitLab.User(; username=username),
+                title="PR A",
+            )
+            pr_from_fork = GitLab.MergeRequest(;
+                id=1,
+                project_id=2,
+                author=GitLab.User(; username=username),
+                title="PR B",
+            )
+
+            apply(get_prs_patch([pr_from_origin, pr_from_fork])) do
+                result = CompatHelper.get_pr_titles(
+                    GitLab.GitLabAPI(), origin_repo, username
+                )
+
+                @test length(result) == 1
+                @test pr_from_origin.title in result
+                @test !(pr_from_fork.title in result)
+            end
+        end
     end
 
-    @testset "empty case" begin
-        @test isempty(
-            CompatHelper.exclude_pull_requests_from_forks(
-                GitHub.Repo(), Vector{GitHub.PullRequest}()
-            ),
-        )
+    @testset "only my prs" begin
+        @testset "GitHub" begin
+            origin_repo = GitHub.Repo(; id=1)
+
+            pr_from_me = GitHub.PullRequest(;
+                head=GitHub.Head(; repo=origin_repo),
+                user=GitHub.User(; login=username),
+                title="PR A",
+            )
+            pr_from_other = GitHub.PullRequest(;
+                head=GitHub.Head(; repo=origin_repo),
+                user=GitHub.User(; login="bizbaz"),
+                title="PR B",
+            )
+
+            apply(get_prs_patch([pr_from_me, pr_from_other])) do
+                result = CompatHelper.get_pr_titles(
+                    GitHub.GitHubAPI(), origin_repo, username
+                )
+
+                @test length(result) == 1
+                @test pr_from_me.title in result
+                @test !(pr_from_other.title in result)
+            end
+        end
+
+        @testset "GitLab" begin
+            origin_repo = GitLab.Project(; id=1)
+
+            pr_from_me = GitLab.MergeRequest(;
+                id=1,
+                project_id=1,
+                author=GitLab.User(; username=username),
+                title="PR A",
+            )
+            pr_from_other = GitLab.MergeRequest(;
+                id=2,
+                project_id=1,
+                author=GitLab.User(; username="bizbaz"),
+                title="PR B",
+            )
+
+            apply(get_prs_patch([pr_from_me, pr_from_other])) do
+                result = CompatHelper.get_pr_titles(
+                    GitLab.GitLabAPI(), origin_repo, username
+                )
+
+                @test length(result) == 1
+                @test pr_from_me.title in result
+                @test !(pr_from_other.title in result)
+            end
+        end
     end
-end
 
-@testset "only_my_pull_requests" begin
-    @testset "normal case" begin
-        foobar = "foobar"
+    @testset "no forks and only my prs" begin
+        @testset "GitHub" begin
+            api = GitForge.GitHub.GitHubAPI()
+            repo = GitHub.Repo(; id=1)
 
-        pr_by_foobar = GitHub.PullRequest(; user=GitHub.User(; login=foobar))
-        pr_by_bizbaz = GitHub.PullRequest(; user=GitHub.User(; login="bizbaz"))
+            apply(gh_gpr_patch) do
+                prs = CompatHelper.get_pr_titles(api, repo, "foobar")
+                @test !isempty(prs)
+                @test prs[1] == "title"
+            end
+        end
 
-        result = CompatHelper.only_my_pull_requests(foobar, [pr_by_foobar, pr_by_bizbaz])
+        @testset "GitLab" begin
+            api = GitForge.GitLab.GitLabAPI()
+            repo = GitLab.Project(; id=1)
 
-        @test length(result) == 1
-        @test pr_by_foobar in result
-        @test !(pr_by_bizbaz in result)
-    end
-
-    @testset "empty case" begin
-        @test isempty(
-            CompatHelper.only_my_pull_requests("foobar", Vector{GitHub.PullRequest}())
-        )
+            apply(gl_gpr_patch) do
+                prs = CompatHelper.get_pr_titles(api, repo, "foobar")
+                @test !isempty(prs)
+                @test prs[1] == "title"
+            end
+        end
     end
 end
