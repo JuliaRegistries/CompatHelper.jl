@@ -124,3 +124,11 @@ gl_gpr_patch = @patch function CompatHelper.get_pull_requests(
 
     return [pr_from_origin, pr_from_origin_2, pr_from_fork]
 end
+
+function get_prs_patch(prs)
+    return @patch function CompatHelper.get_pull_requests(
+        ::GitForge.Forge, ::Union{GitHub.Repo,GitLab.Project}, ::String
+    )
+        return prs
+    end
+end

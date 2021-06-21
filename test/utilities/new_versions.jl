@@ -216,7 +216,7 @@ end
         @test CompatHelper.continue_with_pr(dep, true)
     end
 
-    @testset "no latest version"
+    @testset "no latest version" begin
         dep = CompatHelper.DepInfo(CompatHelper.Package("PackageA", UUID(1)))
         @test !CompatHelper.continue_with_pr(dep, false)
         @test !CompatHelper.continue_with_pr(dep, true)
@@ -269,7 +269,7 @@ end
         )
     end
 
-    @testset "pr_title exists"
+    @testset "pr_title exists" begin
         apply(pr_titles_mock) do
             @test isnothing(
                 CompatHelper.make_pr_for_new_version(
