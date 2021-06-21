@@ -316,6 +316,12 @@ end
 
             apply(patches) do
                 # HTTPS
+
+                # Make sure PRIVATE_SSH_ENVVAR is unset
+                if haskey(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
+                    delete!(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
+                end
+
                 CompatHelper.make_pr_for_new_version(
                     GitHub.GitHubAPI(; token=GitHub.Token("token")),
                     "hostname",

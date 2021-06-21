@@ -1,13 +1,5 @@
 const LOCAL_REPO_NAME = "REPO"
 
-function add_compat_section!(project::AbstractDict)
-    if !haskey(project, "compat")
-        project["compat"] = Dict{Any,Any}()
-    end
-
-    return project
-end
-
 function get_project_deps(
     api::GitHub.GitHubAPI,
     clone_hostname::AbstractString,

@@ -318,7 +318,7 @@ end
             CompatHelper.git_commit("Message")
             CompatHelper.git_checkout(branch)
 
-            @test CompatHelper.git_get_master_branch(CompatHelper.DefaultBranch()) == branch
+            @test CompatHelper.git_get_master_branch(branch) == branch
         end
     end
 end
