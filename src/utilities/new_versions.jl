@@ -160,10 +160,7 @@ function get_url_for_ssh(::GitLab.GitLabAPI, hostname::AbstractString, repo::Git
     return "git@$(hostname):$(repo.path_with_namespace).git"
 end
 
-function continue_with_pr(
-    dep::DepInfo,
-    bump_compat_containing_equality_specifier::Bool,
-)
+function continue_with_pr(dep::DepInfo, bump_compat_containing_equality_specifier::Bool)
     # Determine if we need to make a new PR
     if !isnothing(dep.version_spec) && dep.latest_version in dep.version_spec
         @info(
@@ -188,9 +185,7 @@ function continue_with_pr(
         return false
     elseif isnothing(dep.latest_version)
         @error(
-            "The dependency was not found in any of the registries",
-            dep.package.name,
-            dep,
+            "The dependency was not found in any of the registries", dep.package.name, dep,
         )
 
         return false
@@ -198,7 +193,6 @@ function continue_with_pr(
 
     return true
 end
-
 
 function make_pr_for_new_version(
     forge::Forge,
@@ -290,7 +284,7 @@ function make_pr_for_new_version(
                     new_branch_name,
                     master_branch_name,
                     new_pr_title,
-                    new_pr_body
+                    new_pr_body,
                 )
             end
         end
@@ -300,9 +294,7 @@ function make_pr_for_new_version(
 end
 
 function add_compat_entry(
-    name::AbstractString,
-    repo_path::AbstractString,
-    brand_new_compat::AbstractString
+    name::AbstractString, repo_path::AbstractString, brand_new_compat::AbstractString
 )
     project_file = joinpath(repo_path, "Project.toml")
     project = TOML.parsefile(project_file)
@@ -312,8 +304,7 @@ function add_compat_entry(
 
     open(project_file, "w") do io
         TOML.print(
-            io, project;
-            sorted=true, by=key -> (Pkg.Types.project_key_order(key), key),
+            io, project; sorted=true, by=key -> (Pkg.Types.project_key_order(key), key)
         )
     end
 end
