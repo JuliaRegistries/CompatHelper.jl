@@ -188,35 +188,39 @@ end
 end
 
 @testset "continue_with_pr" begin
-    # Pass
-    pass_dep = CompatHelper.DepInfo(
-        CompatHelper.Package("PackageA", UUID(1)); latest_version=VersionNumber(1)
-    )
-    @test CompatHelper.continue_with_pr(pass_dep, false)
-    @test CompatHelper.continue_with_pr(pass_dep, true)
+    @testset "default passing case" begin
+            pass_dep = CompatHelper.DepInfo(
+            CompatHelper.Package("PackageA", UUID(1)); latest_version=VersionNumber(1)
+        )
+        @test CompatHelper.continue_with_pr(pass_dep, false)
+        @test CompatHelper.continue_with_pr(pass_dep, true)
+    end
 
-    # Latest Version in Version Spec
-    dep = CompatHelper.DepInfo(
-        CompatHelper.Package("PackageA", UUID(1));
-        latest_version=VersionNumber(1),
-        version_spec=CompatHelper.VersionSpec(["0.9", "1.0"]),
-    )
-    @test !CompatHelper.continue_with_pr(dep, false)
-    @test !CompatHelper.continue_with_pr(dep, true)
+    @testset "latest version in version spec" begin
+        dep = CompatHelper.DepInfo(
+            CompatHelper.Package("PackageA", UUID(1));
+            latest_version=VersionNumber(1),
+            version_spec=CompatHelper.VersionSpec(["0.9", "1.0"]),
+        )
+        @test !CompatHelper.continue_with_pr(dep, false)
+        @test !CompatHelper.continue_with_pr(dep, true)
+    end
 
-    # Equality Specifier
-    dep = CompatHelper.DepInfo(
-        CompatHelper.Package("PackageA", UUID(1));
-        version_verbatim="= 1.2",
-        latest_version=VersionNumber(2),
-    )
-    @test !CompatHelper.continue_with_pr(dep, false)
-    @test CompatHelper.continue_with_pr(dep, true)
+    @testset "equality specifier" begin
+        dep = CompatHelper.DepInfo(
+            CompatHelper.Package("PackageA", UUID(1));
+            version_verbatim="= 1.2",
+            latest_version=VersionNumber(2),
+        )
+        @test !CompatHelper.continue_with_pr(dep, false)
+        @test CompatHelper.continue_with_pr(dep, true)
+    end
 
-    # No Latest Version
-    dep = CompatHelper.DepInfo(CompatHelper.Package("PackageA", UUID(1)))
-    @test !CompatHelper.continue_with_pr(dep, false)
-    @test !CompatHelper.continue_with_pr(dep, true)
+    @testset "no latest version"
+        dep = CompatHelper.DepInfo(CompatHelper.Package("PackageA", UUID(1)))
+        @test !CompatHelper.continue_with_pr(dep, false)
+        @test !CompatHelper.continue_with_pr(dep, true)
+    end
 end
 
 @testset "create_ssh_private_key" begin
@@ -252,34 +256,36 @@ end
 end
 
 @testset "make_pr_for_new_version" begin
-    # Don't Continue with PR, `latest_version` is nothing
-    @test isnothing(
-        CompatHelper.make_pr_for_new_version(
-            GitHub.GitHubAPI(),
-            "hostname",
-            GitHub.Repo(),
-            CompatHelper.DepInfo(CompatHelper.Package("PackageA", UUID(1))),
-            CompatHelper.KeepEntry(),
-            CompatHelper.GitHubActions()
-        )
-    )
-
-    # return nothing: pr_title has already been created
-    apply(pr_titles_mock) do
+    @testset "latest_version === nothing" begin
         @test isnothing(
             CompatHelper.make_pr_for_new_version(
                 GitHub.GitHubAPI(),
                 "hostname",
                 GitHub.Repo(),
-                CompatHelper.DepInfo(
-                    CompatHelper.Package("PackageA", UUID(1));
-                    latest_version=VersionNumber(1),
-                    version_verbatim="0.9",
-                ),
+                CompatHelper.DepInfo(CompatHelper.Package("PackageA", UUID(1))),
                 CompatHelper.KeepEntry(),
                 CompatHelper.GitHubActions()
             )
         )
+    end
+
+    @testset "pr_title exists"
+        apply(pr_titles_mock) do
+            @test isnothing(
+                CompatHelper.make_pr_for_new_version(
+                    GitHub.GitHubAPI(),
+                    "hostname",
+                    GitHub.Repo(),
+                    CompatHelper.DepInfo(
+                        CompatHelper.Package("PackageA", UUID(1));
+                        latest_version=VersionNumber(1),
+                        version_verbatim="0.9",
+                    ),
+                    CompatHelper.KeepEntry(),
+                    CompatHelper.GitHubActions()
+                )
+            )
+        end
     end
 
     # Successful Run

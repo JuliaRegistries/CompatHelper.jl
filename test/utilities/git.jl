@@ -23,6 +23,7 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
     function create_local_remote(dir::AbstractString)
         remote_path = joinpath(dir, "localremote.git")
         run(`git init --bare $remote_path`)
+
         return remote_path
     end
 
@@ -82,7 +83,6 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
                 output = read(`git log --decorate`, String)
                 @test occursin(pushed_str, output)
                 @test occursin("Message 2", output)
-
             end
         end
     end
@@ -92,6 +92,7 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
             mktempdir() do f
                 local_path = joinpath(f, CompatHelper.LOCAL_REPO_NAME)
                 pkey = joinpath(f, "privatekey")
+
                 open(pkey, "w") do io
                     print(io, TEST_PKEY)
                 end
@@ -125,6 +126,7 @@ end
             run(`git init`)
             run(`touch foobar.txt`)
             CompatHelper.git_add()
+
             @test CompatHelper.git_commit("Message")
         end
     end
@@ -135,8 +137,10 @@ end
             run(`git init`)
             run(`touch foobar.txt`)
             CompatHelper.git_add()
+
             # Manually create an index lock file, so that the commit fails
             run(`touch .git/index.lock`)
+
             @test !CompatHelper.git_commit("Message")
         end
     end
@@ -197,10 +201,12 @@ end
             run(`git init`)
             run(`touch foo.txt`)
             run(`touch bar.txt`)
+
             output = read(`git status`, String)
             @test occursin(untracked_str, output)
 
             CompatHelper.git_add()
+
             output = read(`git status`, String)
             @test !occursin("untracked", output)
             @test occursin(committed_str, output)
@@ -213,10 +219,12 @@ end
             run(`git init`)
             run(`touch foo.txt`)
             run(`touch bar.txt`)
+
             output = read(`git status`, String)
             @test occursin(untracked_str, output)
 
             CompatHelper.git_add(; flags="-A")
+
             output = read(`git status`, String)
             @test !occursin(untracked_str, output)
             @test occursin(committed_str, output)
@@ -230,6 +238,7 @@ end
             run(`touch foo.txt`)
             run(`touch bar.txt`)
             run(`touch baz.txt`)
+
             output = read(`git status`, String)
             @test occursin(untracked_str, output)
 

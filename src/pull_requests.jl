@@ -68,5 +68,6 @@ function get_pr_titles(
     all_open_prs = @mock get_pull_requests(forge, repo, state)
     non_forked_prs = exclude_pull_requests_from_forks(repo, all_open_prs)
     pr_list = only_my_pull_requests(username, non_forked_prs)
+
     return [convert(String, strip(pr.title)) for pr in pr_list]
 end

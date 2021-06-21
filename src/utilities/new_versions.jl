@@ -173,6 +173,7 @@ function continue_with_pr(
             dep.package.name,
             dep,
         )
+
         return false
     elseif skip_equality_specifiers(
         bump_compat_containing_equality_specifier, dep.version_verbatim
@@ -183,6 +184,7 @@ function continue_with_pr(
             dep.package.name,
             dep,
         )
+
         return false
     elseif isnothing(dep.latest_version)
         @error(
@@ -190,8 +192,10 @@ function continue_with_pr(
             dep.package.name,
             dep,
         )
+
         return false
     end
+
     return true
 end
 
@@ -231,6 +235,7 @@ function make_pr_for_new_version(
     pr_titles = @mock get_pr_titles(forge, repo, ci_cfg.username)
     if new_pr_title in pr_titles
         @info("An open PR with the title already exists", new_pr_title)
+
         return nothing
     end
 
@@ -291,6 +296,7 @@ function make_pr_for_new_version(
             end
         end
     end
+
     return nothing
 end
 

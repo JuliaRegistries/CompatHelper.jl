@@ -23,6 +23,7 @@ function git_add(; items::AbstractString=".", flags::AbstractString="")
     all_items = split(items, " "; keepempty=false)
     all_flags = split(flags, " "; keepempty=false)
     x = run(`git add $all_flags $all_items`)
+
     return nothing
 end
 
@@ -55,12 +56,14 @@ function git_commit(message::AbstractString=""; env=ENV)
     catch
         false
     end
+
     return result
 end
 
 function git_branch(branch::AbstractString; checkout=false)
     run(`git branch $branch`)
     checkout && git_checkout(branch)
+
     return nothing
 end
 
@@ -74,6 +77,7 @@ function git_clone(
     ) do
         run(`git clone $url $local_path`)
     end
+
     return nothing
 end
 
