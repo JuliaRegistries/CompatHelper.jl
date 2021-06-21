@@ -29,6 +29,8 @@ function add_compat_section!(project::Dict)
     if !haskey(project, "compat")
         project["compat"] = Dict{Any, Any}()
     end
+
+    return project
 end
 
 function get_random_string()
