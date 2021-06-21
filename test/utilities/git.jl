@@ -236,6 +236,13 @@ end
     end
 end
 
+function make_ssh_clone_patch(dir)
+    return @patch function Base.run(cmd)
+        mkdir(dir)
+        run(`touch $dir/foo.txt`)
+    end
+end
+
 @testset "git_clone" begin
     @testset "HTTPS" begin
         mktempdir() do f
@@ -254,10 +261,12 @@ end
             cd(f)
             local_path = joinpath(f, CompatHelper.LOCAL_REPO_NAME)
 
-            CompatHelper.git_clone(
-                "git@github.com:JuliaRegistries/CompatHelper.jl.git",
-                local_path,
-            )
+            apply(make_ssh_clone_patch(local_path)) do
+                CompatHelper.git_clone(
+                    "git@github.com:JuliaRegistries/CompatHelper.jl.git",
+                    local_path,
+                )
+            end
 
             @test !isempty(readdir(local_path))
         end
