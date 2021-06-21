@@ -17,10 +17,7 @@ git_clone_patch = @patch function CompatHelper.git_clone(
     return nothing
 end
 git_push_patch = @patch function CompatHelper.git_push(
-    ::AbstractString,
-    ::AbstractString,
-    ::Union{AbstractString,Nothing};
-    kwargs...
+    ::AbstractString, ::AbstractString, ::Union{AbstractString,Nothing}; kwargs...
 )
     return nothing
 end
@@ -36,19 +33,13 @@ clone_all_registries_patch = @patch function CompatHelper.clone_all_registries(
 end
 
 gh_pr_patch = @patch function GitForge.create_pull_request(
-    ::GitHub.GitHubAPI,
-    owner::AbstractString,
-    repo::AbstractString;
-    kwargs...,
+    ::GitHub.GitHubAPI, owner::AbstractString, repo::AbstractString; kwargs...
 )
     return nothing
 end
 
 gl_pr_patch = @patch function GitForge.create_pull_request(
-    ::GitLab.GitLabAPI,
-    owner::AbstractString,
-    repo::AbstractString;
-    kwargs...,
+    ::GitLab.GitLabAPI, owner::AbstractString, repo::AbstractString; kwargs...
 )
     return nothing
 end
@@ -58,31 +49,25 @@ decode_pkey_patch = @patch function CompatHelper.decode_ssh_private_key(::Abstra
 end
 
 pr_titles_mock = @patch function CompatHelper.get_pr_titles(
-    ::GitForge.Forge,
-    ::GitHub.Repo,
-    ::String
+    ::GitForge.Forge, ::GitHub.Repo, ::String
 )
     return [
         "    CompatHelper: bump compat for PackageA to\n    1 ,  (keep existing compat)",
-        "foo"
+        "foo",
     ]
 end
 
 function make_clone_https_patch(dir::AbstractString)
     return @patch function CompatHelper.get_url_with_auth(
-        ::GitForge.Forge,
-        ::AbstractString,
-        ::Union{GitHub.Repo,GitLab.Project},
+        ::GitForge.Forge, ::AbstractString, ::Union{GitHub.Repo,GitLab.Project}
     )
         return dir
-   end
+    end
 end
 
 function make_clone_ssh_patch(dir::AbstractString)
     return @patch function CompatHelper.get_url_for_ssh(
-        ::GitForge.Forge,
-        ::AbstractString,
-        ::Union{GitHub.Repo,GitLab.Project},
+        ::GitForge.Forge, ::AbstractString, ::Union{GitHub.Repo,GitLab.Project}
     )
         return dir
     end
@@ -113,9 +98,7 @@ gl_gpr_patch = @patch function CompatHelper.get_pull_requests(
     origin_repo = GitLab.Project(; id=1)
 
     pr_from_origin = GitLab.MergeRequest(;
-        project_id=1,
-        author=GitLab.User(; username="foobar"),
-        title="title",
+        project_id=1, author=GitLab.User(; username="foobar"), title="title"
     )
     pr_from_origin_2 = GitLab.MergeRequest(;
         project_id=1, author=GitLab.User(; username="bizbaz")

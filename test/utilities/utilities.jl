@@ -38,7 +38,7 @@ end
 end
 
 @testset "add_compat_section!" begin
-    dict = Dict{Any, Any}("a" => 1)
+    dict = Dict{Any,Any}("a" => 1)
     @test !haskey(dict, "compat")
     CompatHelper.add_compat_section!(dict)
     @test haskey(dict, "compat")

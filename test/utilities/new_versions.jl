@@ -122,7 +122,7 @@ end
                     "master_branch",
                     "title",
                     "body",
-                )
+                ),
             )
         end
     end
@@ -137,7 +137,7 @@ end
                     "master_brach",
                     "title",
                     "body",
-                )
+                ),
             )
         end
     end
@@ -168,9 +168,7 @@ end
 @testset "get_url_for_ssh" begin
     @testset "GitHub" begin
         result = CompatHelper.get_url_for_ssh(
-            GitHub.GitHubAPI(),
-            "hostname",
-            GitHub.Repo(; full_name="full_name"),
+            GitHub.GitHubAPI(), "hostname", GitHub.Repo(; full_name="full_name")
         )
 
         @test result == "git@hostname:full_name.git"
@@ -189,7 +187,7 @@ end
 
 @testset "continue_with_pr" begin
     @testset "default passing case" begin
-            pass_dep = CompatHelper.DepInfo(
+        pass_dep = CompatHelper.DepInfo(
             CompatHelper.Package("PackageA", UUID(1)); latest_version=VersionNumber(1)
         )
         @test CompatHelper.continue_with_pr(pass_dep, false)
@@ -264,8 +262,8 @@ end
                 GitHub.Repo(),
                 CompatHelper.DepInfo(CompatHelper.Package("PackageA", UUID(1))),
                 CompatHelper.KeepEntry(),
-                CompatHelper.GitHubActions()
-            )
+                CompatHelper.GitHubActions(),
+            ),
         )
     end
 
@@ -282,8 +280,8 @@ end
                         version_verbatim="0.9",
                     ),
                     CompatHelper.KeepEntry(),
-                    CompatHelper.GitHubActions()
-                )
+                    CompatHelper.GitHubActions(),
+                ),
             )
         end
     end
@@ -332,7 +330,7 @@ end
                         version_verbatim="1.2",
                     ),
                     CompatHelper.KeepEntry(),
-                    CompatHelper.GitHubActions()
+                    CompatHelper.GitHubActions(),
                 )
 
                 # SSH
@@ -340,14 +338,16 @@ end
                     CompatHelper.make_pr_for_new_version(
                         GitHub.GitHubAPI(; token=GitHub.Token("token")),
                         "hostname",
-                        GitHub.Repo(; owner=GitHub.User(; login="username"), name="PackageC"),
+                        GitHub.Repo(;
+                            owner=GitHub.User(; login="username"), name="PackageC"
+                        ),
                         CompatHelper.DepInfo(
                             CompatHelper.Package("PackageC", UUID(1));
                             latest_version=VersionNumber(3),
                             version_verbatim="2.1",
                         ),
                         CompatHelper.KeepEntry(),
-                        CompatHelper.GitHubActions()
+                        CompatHelper.GitHubActions(),
                     )
                 end
             end

@@ -32,13 +32,15 @@ function git_push(
     force=false,
     env=ENV,
 )
-force_flag = force ? ["-f"] : []
+    force_flag = force ? ["-f"] : []
     name, email = get_git_name_and_email(; env=env)
 
     withenv(
         "GIT_SSH_COMMAND" => isnothing(pkey_filename) ? "ssh" : "ssh -i $pkey_filename"
     ) do
-        run(`git -c user.name="$name" -c user.email="$email" -c committer.name="$name" -c committer.email="$email" push $force_flag $remote $branch`)
+        run(
+            `git -c user.name="$name" -c user.email="$email" -c committer.name="$name" -c committer.email="$email" push $force_flag $remote $branch`,
+        )
     end
     return nothing
 end

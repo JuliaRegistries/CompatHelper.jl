@@ -77,7 +77,9 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
 
                 run(`touch baz.txt`)
                 CompatHelper.git_add()
-                run(`git -c user.name=user -c user.email=email commit --amend --no-edit -m "Message 2"`)
+                run(
+                    `git -c user.name=user -c user.email=email commit --amend --no-edit -m "Message 2"`,
+                )
 
                 CompatHelper.git_push("origin", "master"; force=true)
                 output = read(`git log --decorate`, String)
@@ -216,7 +218,7 @@ end
     @testset "using defaults" begin
         expected = (
             CompatHelper.COMPATHELPER_GIT_COMMITTER_NAME,
-            CompatHelper.COMPATHELPER_GIT_COMMITTER_EMAIL
+            CompatHelper.COMPATHELPER_GIT_COMMITTER_EMAIL,
         )
 
         results = CompatHelper.get_git_name_and_email()
@@ -226,10 +228,7 @@ end
     @testset "setting env vars" begin
         expected = ("User", "Email")
 
-        withenv(
-            "GIT_COMMITTER_NAME" => "User",
-            "GIT_COMMITTER_EMAIL" => "Email"
-        ) do
+        withenv("GIT_COMMITTER_NAME" => "User", "GIT_COMMITTER_EMAIL" => "Email") do
             results = CompatHelper.get_git_name_and_email()
             @test results == expected
         end
@@ -239,7 +238,7 @@ end
 function make_ssh_clone_patch(dir)
     return @patch function Base.run(cmd)
         mkdir(dir)
-        run(`touch $dir/foo.txt`)
+        return run(`touch $dir/foo.txt`)
     end
 end
 
@@ -263,8 +262,7 @@ end
 
             apply(make_ssh_clone_patch(local_path)) do
                 CompatHelper.git_clone(
-                    "git@github.com:JuliaRegistries/CompatHelper.jl.git",
-                    local_path,
+                    "git@github.com:JuliaRegistries/CompatHelper.jl.git", local_path
                 )
             end
 

@@ -65,16 +65,10 @@ end
             fork_repo = GitLab.Project(; id=2)
 
             pr_from_origin = GitLab.MergeRequest(;
-                id=1,
-                project_id=1,
-                author=GitLab.User(; username=username),
-                title="PR A",
+                id=1, project_id=1, author=GitLab.User(; username=username), title="PR A"
             )
             pr_from_fork = GitLab.MergeRequest(;
-                id=1,
-                project_id=2,
-                author=GitLab.User(; username=username),
-                title="PR B",
+                id=1, project_id=2, author=GitLab.User(; username=username), title="PR B"
             )
 
             apply(get_prs_patch([pr_from_origin, pr_from_fork])) do
@@ -119,16 +113,10 @@ end
             origin_repo = GitLab.Project(; id=1)
 
             pr_from_me = GitLab.MergeRequest(;
-                id=1,
-                project_id=1,
-                author=GitLab.User(; username=username),
-                title="PR A",
+                id=1, project_id=1, author=GitLab.User(; username=username), title="PR A"
             )
             pr_from_other = GitLab.MergeRequest(;
-                id=2,
-                project_id=1,
-                author=GitLab.User(; username="bizbaz"),
-                title="PR B",
+                id=2, project_id=1, author=GitLab.User(; username="bizbaz"), title="PR B"
             )
 
             apply(get_prs_patch([pr_from_me, pr_from_other])) do

@@ -27,7 +27,7 @@ end
 
 function add_compat_section!(project::Dict)
     if !haskey(project, "compat")
-        project["compat"] = Dict{Any, Any}()
+        project["compat"] = Dict{Any,Any}()
     end
 
     return project
