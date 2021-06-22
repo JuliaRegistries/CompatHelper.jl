@@ -20,15 +20,16 @@ end
 
 const PRIVATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
 
+include(joinpath("utilities", "types.jl"))
 include(joinpath("utilities", "utilities.jl"))
 include(joinpath("utilities", "ci.jl"))
-include(joinpath("utilities", "types.jl"))
 include(joinpath("utilities", "rate_limiting.jl"))
 include(joinpath("utilities", "git.jl"))
 include(joinpath("utilities", "ssh.jl"))
 include(joinpath("utilities", "timestamps.jl"))
 include(joinpath("utilities", "new_versions.jl"))
 
+include("main.jl")
 include("exceptions.jl")
 include("dependencies.jl")
 include("pull_requests.jl")

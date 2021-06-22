@@ -2,7 +2,9 @@
     @testset "no jll" begin
         apply([git_clone_patch, project_toml_patch]) do
             deps = CompatHelper.get_project_deps(
-                GitForge.GitHub.GitHubAPI(), "", GitHub.Repo(; full_name="foobar")
+                GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
+                "",
+                GitHub.Repo(; full_name="foobar")
             )
 
             @test length(deps) == 1
@@ -12,7 +14,7 @@
     @testset "include_jll" begin
         apply([git_clone_patch, project_toml_patch]) do
             deps = CompatHelper.get_project_deps(
-                GitForge.GitHub.GitHubAPI(),
+                GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
                 "",
                 GitHub.Repo(; full_name="foobar");
                 include_jll=true,

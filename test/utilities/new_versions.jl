@@ -105,7 +105,7 @@ end
     ("", "bump compat for", "pull request changes the compat")
 ]
     verbatim, expected_title, expected_body = case
-    title, body = CompatHelper.pr_info(verbatim, "", "", "", "", "", "")
+    title, body = CompatHelper.pr_info(verbatim, "", "", "", "", "", "", "")
 
     @test contains(title, expected_title)
     @test contains(body, expected_body)

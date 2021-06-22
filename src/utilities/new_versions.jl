@@ -47,9 +47,10 @@ function pr_info(
     subdir_string::AbstractString,
     pr_body_keep_or_drop::AbstractString,
     pr_title_parenthetical::AbstractString,
+    pr_title_prefix::String,
 )
     new_pr_title = m"""
-        CompatHelper: add new compat entry for $(name) at version
+        $(pr_title_prefix)CompatHelper: add new compat entry for $(name) at version
         $(compat_entry_for_latest_version) $(subdir_string), $(pr_title_parenthetical)
     """
 
@@ -71,9 +72,10 @@ function pr_info(
     subdir_string::AbstractString,
     pr_body_keep_or_drop::AbstractString,
     pr_title_parenthetical::AbstractString,
+    pr_title_prefix::String,
 )
     new_pr_title = m"""
-        CompatHelper: bump compat for $(name) to
+        $(pr_title_prefix)CompatHelper: bump compat for $(name) to
         $(compat_entry_for_latest_version) $(subdir_string), $(pr_title_parenthetical)
     """
 
@@ -162,7 +164,8 @@ end
 
 function continue_with_pr(dep::DepInfo, bump_compat_containing_equality_specifier::Bool)
     # Determine if we need to make a new PR
-    if !isnothing(dep.version_spec) && dep.latest_version in dep.version_spec
+    if (!isnothing(dep.version_spec) && !isnothing(dep.latest_version)) &&
+       dep.latest_version in dep.version_spec
         @info(
             "latest_version in version_spec",
             dep.latest_version,
@@ -205,6 +208,7 @@ function make_pr_for_new_version(
     master_branch::Union{DefaultBranch,AbstractString}=DefaultBranch(),
     env::AbstractDict=ENV,
     bump_compat_containing_equality_specifier::Bool=true,
+    pr_title_prefix::String="",
 )
     if !continue_with_pr(dep, bump_compat_containing_equality_specifier)
         return nothing
@@ -223,6 +227,7 @@ function make_pr_for_new_version(
         subdir_string(subdir),
         body_info(entry_type, dep.package.name),
         title_parenthetical(entry_type),
+        pr_title_prefix,
     )
 
     # Make sure we haven't already created the same PR

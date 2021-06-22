@@ -10,6 +10,9 @@ function GitHubActions()
     )
 end
 
+api_hostname(::GitHubActions) = "https://api.github.com"
+clone_hostname(::GitHubActions) = "github.com"
+
 github_repository(env::AbstractDict=ENV) = env["GITHUB_REPOSITORY"]
 github_token(env::AbstractDict=ENV) = env["GITHUB_TOKEN"]
 

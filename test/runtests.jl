@@ -44,4 +44,5 @@ include("patches.jl")
     include("dependencies.jl")
     include("exceptions.jl")
     include("pull_requests.jl")
+    include("main.jl")
 end
