@@ -115,3 +115,7 @@ function get_prs_patch(prs)
         return prs
     end
 end
+
+gh_get_repo_patch = @patch function GitForge.get_repo(::GitForge.Forge, ::AbstractString)
+    return GitHub.Repo(), nothing
+end

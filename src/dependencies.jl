@@ -8,7 +8,7 @@ function get_project_deps(
     include_jll::Bool=false,
 )
     mktempdir() do f
-        url_with_auth = "https://x-access-token:$(api.token)@$(clone_hostname)/$(repo.full_name).git"
+        url_with_auth = get_url_with_auth(api, clone_hostname, repo)
         local_path = joinpath(f, LOCAL_REPO_NAME)
         @mock git_clone(url_with_auth, local_path)
 
