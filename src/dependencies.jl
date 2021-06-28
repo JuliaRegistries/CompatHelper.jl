@@ -1,9 +1,9 @@
 const LOCAL_REPO_NAME = "REPO"
 
 function get_project_deps(
-    api::GitHub.GitHubAPI,
+    api::Forge,
     clone_hostname::AbstractString,
-    repo::GitHub.Repo;
+    repo::Union{GitHub.Repo,GitLab.Project};
     subdir::AbstractString="",
     include_jll::Bool=false,
 )
