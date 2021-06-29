@@ -24,6 +24,10 @@ function new_compat_entry(
     return "$(strip(new_compat))"
 end
 
+function new_compat_entry(::EntryType, old_compat::Nothing, new_compat::AbstractString)
+    return "$(strip(new_compat))"
+end
+
 function compat_version_number(ver::VersionNumber)
     (ver.major > 0) && return "$(ver.major)"
     (ver.minor > 0) && return "0.$(ver.minor)"
@@ -220,7 +224,8 @@ function make_pr_for_new_version(
     brand_new_compat = new_compat_entry(
         entry_type, dep.version_verbatim, compat_entry_for_latest_version
     )
-    new_pr_title, new_pr_body = pr_info(
+    new_pr_title,
+    new_pr_body = pr_info(
         dep.version_verbatim,
         dep.package.name,
         compat_entry_for_latest_version,
