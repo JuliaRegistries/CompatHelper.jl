@@ -114,11 +114,11 @@ function create_new_pull_request(
     title::AbstractString,
     body::AbstractString,
 )
-    @show repo
-    @show repo.owner
+    repo_owner = String(rsplit(repo.path_with_namespace, "/"; limit=2)[1])
+
     return @mock GitForge.create_pull_request(
         api,
-        repo.owner.username,
+        repo_owner,
         repo.name;
         id=repo.id,
         source_branch=new_branch_name,
@@ -221,7 +221,6 @@ function make_pr_for_new_version(
     end
 
     # Get new compat entry version, pr title, and pr body text
-    @show dep
     compat_entry_for_latest_version = compat_version_number(dep.latest_version)
     brand_new_compat = new_compat_entry(
         entry_type, dep.version_verbatim, compat_entry_for_latest_version
@@ -292,8 +291,6 @@ function make_pr_for_new_version(
                         "origin", new_branch_name, pkey_filename; force=true, env=env
                     )
                 end
-
-                @show repo
 
                 create_new_pull_request(
                     forge,
