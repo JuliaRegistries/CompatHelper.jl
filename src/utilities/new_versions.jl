@@ -65,7 +65,7 @@ function pr_info(
         Note: Consider registering a new release of your package immediately after merging this PR, as downstream packages may depend on this for tests to pass.
     """
 
-    return (new_pr_title, new_pr_body)
+    return (strip(new_pr_title), strip(new_pr_body))
 end
 
 function pr_info(
@@ -89,7 +89,7 @@ function pr_info(
         It is your responsibility to make sure that your package tests pass before you merge this pull request.
     """
 
-    return (new_pr_title, new_pr_body)
+    return (strip(new_pr_title), strip(new_pr_body))
 end
 
 function skip_equality_specifiers(
@@ -124,7 +124,7 @@ function create_new_pull_request(
         source_branch=new_branch_name,
         target_branch=master_branch_name,
         title=title,
-        body=body,
+        description=body,
     )
 end
 
@@ -215,6 +215,7 @@ function make_pr_for_new_version(
     env::AbstractDict=ENV,
     bump_compat_containing_equality_specifier::Bool=true,
     pr_title_prefix::String="",
+    unsub_from_prs=false,
 )
     if !continue_with_pr(dep, bump_compat_containing_equality_specifier)
         return nothing
@@ -292,7 +293,7 @@ function make_pr_for_new_version(
                     )
                 end
 
-                create_new_pull_request(
+                new_pr, _ = create_new_pull_request(
                     forge,
                     repo,
                     new_branch_name,
@@ -300,10 +301,21 @@ function make_pr_for_new_version(
                     new_pr_title,
                     new_pr_body,
                 )
+
+                unsub_from_prs && unsub_from_pr(forge, new_pr)
             end
         end
     end
 
+    return nothing
+end
+
+function unsub_from_pr(api::GitLab.GitLabAPI, pr::GitLab.MergeRequest)
+    return GitForge.unsubscribe_from_pull_request(api, pr.project_id, pr.iid)
+end
+
+function unsub_from_pr(api::GitHub.GitHubAPI, pr::GitHub.PullRequest)
+    # Not implemented for GitHub
     return nothing
 end
 
