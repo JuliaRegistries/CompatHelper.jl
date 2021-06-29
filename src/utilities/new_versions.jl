@@ -114,9 +114,11 @@ function create_new_pull_request(
     title::AbstractString,
     body::AbstractString,
 )
+    @show repo
+    @show repo.owner
     return @mock GitForge.create_pull_request(
         api,
-        repo.owner.name,
+        repo.owner.username,
         repo.name;
         id=repo.id,
         source_branch=new_branch_name,
@@ -286,8 +288,12 @@ function make_pr_for_new_version(
             if commit_was_success
                 @info("Commit was a success")
                 api_retry() do
-                    @mock git_push("origin", new_branch_name; force=true, env=env)
+                    @mock git_push(
+                        "origin", new_branch_name, pkey_filename; force=true, env=env
+                    )
                 end
+
+                @show repo
 
                 create_new_pull_request(
                     forge,
