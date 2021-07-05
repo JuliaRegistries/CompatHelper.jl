@@ -45,4 +45,11 @@ include("patches.jl")
     include("exceptions.jl")
     include("pull_requests.jl")
     include("main.jl")
+
+    COMPATHELPER_RUN_INTEGRATION_TESTS = get(ENV, "COMPATHELPER_RUN_INTEGRATION_TESTS", "")
+    if COMPATHELPER_RUN_INTEGRATION_TESTS == "true"
+        Test.@testset "Integration Tests" begin
+            include("integration_tests.jl")
+        end
+    end
 end
