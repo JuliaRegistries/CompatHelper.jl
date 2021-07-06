@@ -21,8 +21,11 @@ git_push_patch = @patch function CompatHelper.git_push(
 )
     return nothing
 end
+git_gmb_patch = @patch CompatHelper.git_get_master_branch(master_branch) = nothing
+git_checkout_patch = @patch CompatHelper.git_checkout(branch) = nothing
 mktempdir_patch = @patch Base.mktempdir(; cleanup::Bool=true) = Random.randstring()
 rm_patch = @patch Base.rm(tmp_dir; force=true, recursive=true) = nothing
+cd_patch = @patch Base.cd(f, path) = nothing
 
 clone_all_registries_patch = @patch function CompatHelper.clone_all_registries(
     f::Function, registry_list::Vector{Pkg.RegistrySpec}

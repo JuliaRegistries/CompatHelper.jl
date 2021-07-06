@@ -12,6 +12,10 @@ title_parenthetical(::KeepEntry) = " (keep existing compat)"
 title_parenthetical(::DropEntry) = " (drop existing compat)"
 title_parenthetical(::NewEntry) = ""
 
+function new_compat_entry(::EntryType, old_compat::Nothing, new_compat::AbstractString)
+    return "$(strip(new_compat))"
+end
+
 function new_compat_entry(
     ::KeepEntry, old_compat::AbstractString, new_compat::AbstractString
 )
@@ -141,8 +145,8 @@ function create_new_pull_request(
         repo.owner.login,
         repo.name;
         id=repo.id,
-        source_branch=new_branch_name,
-        target_branch=master_branch_name,
+        head=new_branch_name,
+        base=master_branch_name,
         title=title,
         body=body,
     )
