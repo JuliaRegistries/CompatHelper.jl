@@ -10,17 +10,11 @@
     COMPATHELPER_INTEGRATION_TEST_REPO = ENV["COMPATHELPER_INTEGRATION_TEST_REPO"]
     TEST_USER_GITHUB_TOKEN = ENV["BCBI_TEST_USER_GITHUB_TOKEN"]
 
-    auth = CompatHelper.api_retry(() -> GitHub.authenticate(TEST_USER_GITHUB_TOKEN))
-    whoami = username(auth)
+    api = GitHub.GitHubAPI(; token=GitHub.Token(TEST_USER_GITHUB_TOKEN))
+    user, _ = GitForge.get_user(api)
+    repo, _ = GitForge.get_repo(api, COMPATHELPER_INTEGRATION_TEST_REPO)
 
-    repo_url_without_auth = "https://github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
-    repo_url_with_auth = "https://$(whoami):$(TEST_USER_GITHUB_TOKEN)@github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
-
-    repo = GitHub.repo(COMPATHELPER_INTEGRATION_TEST_REPO; auth=auth)
-    api = GitHub.GitHubWebAPI(HTTP.URI("https://api.github.com"))
-
-    @test success(`git --version`)
-    delete_old_pull_request_branches(repo_url_with_auth, Dates.Hour(3))
+    url = "https://$(user.login):$(TEST_USER_GITHUB_TOKEN)@github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
 
     # Setup variables used in CompatHelper.main()
     env = Dict(
@@ -28,11 +22,12 @@
         "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN,
     )
     ci_cfg = CompatHelper.GitHubActions(
-        whoami, "41898282+github-actions[bot]@users.noreply.github.com"
+        user.login,
+        "41898282+github-actions[bot]@users.noreply.github.com"
     )
 
     @testset "master_1" begin
-        with_master_branch(templates("master_1"), "master"; repo_url=repo_url_with_auth) do master_1
+        with_master_branch(templates("master_1"), url, "master") do master_1
             withenv(env...) do
                 CompatHelper.main(
                     ENV,
@@ -46,7 +41,7 @@
     end
 
     @testset "master_2" begin
-        with_master_branch(templates("master_2"), "master"; repo_url=repo_url_with_auth) do master_2
+        with_master_branch(templates("master_2"), url, "master") do master_2
             withenv(env...) do
                 CompatHelper.main(
                     ENV,
@@ -60,7 +55,7 @@
     end
 
     @testset "master_3" begin
-        with_master_branch(templates("master_3"), "master"; repo_url=repo_url_with_auth) do master_3
+        with_master_branch(templates("master_3"), url, "master") do master_3
             withenv(env...) do
                 CompatHelper.main(
                     ENV,
@@ -90,7 +85,7 @@
     end
 
     @testset "master_4" begin
-        with_master_branch(templates("master_4"), "master"; repo_url=repo_url_with_auth) do master_4
+        with_master_branch(templates("master_4"), url, "master") do master_4
             withenv(env...) do
                 CompatHelper.main(
                     ENV,
@@ -104,7 +99,7 @@
     end
 
     @testset "master_5" begin
-        with_master_branch(templates("master_5"), "master"; repo_url=repo_url_with_auth) do master_5
+        with_master_branch(templates("master_5"), url, "master") do master_5
             withenv(env...) do
                 CompatHelper.main(
                     ENV,
@@ -118,12 +113,12 @@
     end
 
     @testset "master_6" begin
-        with_master_branch(templates("master_6"), "master"; repo_url=repo_url_with_auth) do master_6
+        with_master_branch(templates("master_6"), url, "master") do master_6
             withenv(env...) do
                 CompatHelper.main(
                     ENV,
                     ci_cfg;
-                    pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-1c] ",
+                    pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-6c] ",
                     master_branch=master_6,
                     entry_type=KeepEntry(),
                     subdirs=["subdir_1", "subdir_2"],
@@ -133,7 +128,7 @@
     end
 
     @testset "master_7" begin
-        with_master_branch(templates("master_7"), "master"; repo_url=repo_url_with_auth) do master_7
+        with_master_branch(templates("master_7"), url, "master") do master_7
             withenv(env...) do
                 CompatHelper.main(
                     ENV,

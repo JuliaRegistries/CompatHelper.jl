@@ -1,6 +1,6 @@
 @testset "get_project_deps" begin
     @testset "no jll" begin
-        apply([git_clone_patch, project_toml_patch]) do
+        apply([git_clone_patch, project_toml_patch, cd_patch]) do
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
                 "",
@@ -12,7 +12,7 @@
     end
 
     @testset "include_jll" begin
-        apply([git_clone_patch, project_toml_patch]) do
+        apply([git_clone_patch, project_toml_patch, cd_patch]) do
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
                 "",

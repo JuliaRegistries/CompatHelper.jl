@@ -48,9 +48,8 @@ function get_pr_titles(
 )
     state = repo isa GitHub.Repo ? "open" : "opened"
     all_open_prs = @mock get_pull_requests(forge, repo, state)
-
     return [
         convert(String, strip(pr.title)) for
-        pr in all_open_prs if not_pr_fork(repo, pr) && my_prs(username, pr)
+        (pr, _) in all_open_prs if not_pr_fork(repo, pr) && my_prs(username, pr)
     ]
 end

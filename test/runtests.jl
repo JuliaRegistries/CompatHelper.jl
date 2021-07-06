@@ -1,17 +1,16 @@
-using CompatHelper: CompatHelper
-using Test: Test, @test, @testset, @test_throws
-
-using Aqua: Aqua
-using Base64: Base64
+ using Aqua
+using Base64
+using CompatHelper
 using Dates
 using GitForge: GitForge, GitHub, GitLab
-using Mocking: Mocking, @patch, apply
-using Pkg: Pkg
-using Random: Random
-using SHA: SHA
+using Mocking
+using Pkg
+using Random
+using SHA
+using Test
 using TimeZones
-using TOML: TOML
-using UUIDs: UUIDs, UUID
+using TOML
+using UUIDs
 
 Mocking.activate()
 Aqua.test_all(CompatHelper; ambiguities=false)
@@ -48,7 +47,11 @@ include("patches.jl")
 
     COMPATHELPER_RUN_INTEGRATION_TESTS = get(ENV, "COMPATHELPER_RUN_INTEGRATION_TESTS", "")
     if COMPATHELPER_RUN_INTEGRATION_TESTS == "true"
-        Test.@testset "Integration Tests" begin
+        @testset "Integration Tests" begin
+            @info "Running Integration Tests"
+            include(joinpath("utilities", "integration_tests.jl"))
+            #_cleanup_old_branches()
+
             include("integration_tests.jl")
         end
     end
