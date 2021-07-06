@@ -17,6 +17,7 @@ function main(
     pr_title_prefix::String="",
     include_jll::Bool=false,
     unsub_from_prs=false,
+    cc_user=false,
 )
     if ci_cfg isa GitHubActions
         token = GitHub.Token(github_token())
@@ -52,6 +53,7 @@ function main(
                 bump_compat_containing_equality_specifier=bump_compat_containing_equality_specifier,
                 pr_title_prefix=pr_title_prefix,
                 unsub_from_prs=unsub_from_prs,
+                cc_user=cc_user,
             )
         end
     end

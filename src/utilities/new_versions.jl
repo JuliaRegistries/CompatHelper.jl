@@ -216,6 +216,7 @@ function make_pr_for_new_version(
     bump_compat_containing_equality_specifier::Bool=true,
     pr_title_prefix::String="",
     unsub_from_prs=false,
+    cc_user=false,
 )
     if !continue_with_pr(dep, bump_compat_containing_equality_specifier)
         return nothing
@@ -302,6 +303,7 @@ function make_pr_for_new_version(
                     new_pr_body,
                 )
 
+                cc_user && cc_trigger_user(forge, repo, new_pr, env=env)
                 unsub_from_prs && unsub_from_pr(forge, new_pr)
             end
         end
@@ -310,13 +312,44 @@ function make_pr_for_new_version(
     return nothing
 end
 
-function unsub_from_pr(api::GitLab.GitLabAPI, pr::GitLab.MergeRequest)
-    return GitForge.unsubscribe_from_pull_request(api, pr.project_id, pr.iid)
+function cc_trigger_user(
+    api::GitHub.GitHubAPI, repo::GitHub.Repo, pr::GitHub.PullRequest;
+    env=env,
+)
+    username = env["GITHUB_ACTOR"]
+    body = "cc @$username"
+
+    return GitForge.create_new_pull_request_comment(
+        api,
+        repo.owner.login,
+        repo.name,
+        pr.id;
+        body=body,
+    )
+end
+
+function cc_trigger_user(
+    api::GitLab.GitLabAPI, repo::GitLab.Project, pr::GitLab.MergeRequest;
+    env=env,
+)
+    username = env["GITLAB_USER_LOGIN"]
+    body = "cc @$username"
+
+    return GitForge.create_new_pull_request_comment(
+        api,
+        repo.id,
+        pr.iid;
+        body=body,
+    )
 end
 
 function unsub_from_pr(api::GitHub.GitHubAPI, pr::GitHub.PullRequest)
     # Not implemented for GitHub
     return nothing
+end
+
+function unsub_from_pr(api::GitLab.GitLabAPI, pr::GitLab.MergeRequest)
+    return GitForge.unsubscribe_from_pull_request(api, pr.project_id, pr.iid)
 end
 
 function add_compat_entry(
