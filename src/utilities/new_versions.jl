@@ -172,6 +172,8 @@ function continue_with_pr(dep::DepInfo, bump_compat_containing_equality_specifie
     # Determine if we need to make a new PR
     if (!isnothing(dep.version_spec) && !isnothing(dep.latest_version)) &&
        dep.latest_version in dep.version_spec
+        # TODO: This seems too noisy, is there a better fix?
+        #=
         @info(
             "latest_version in version_spec",
             dep.latest_version,
@@ -179,17 +181,21 @@ function continue_with_pr(dep::DepInfo, bump_compat_containing_equality_specifie
             dep.package.name,
             dep,
         )
+        =#
 
         return false
     elseif skip_equality_specifiers(
         bump_compat_containing_equality_specifier, dep.version_verbatim
     )
+        # TODO: Also would be too noisy imo
+        #=
         @info(
             "Skipping compat entry because it contains an equality specifier",
             dep.version_verbatim,
             dep.package.name,
             dep,
         )
+        =#
 
         return false
     elseif isnothing(dep.latest_version)
