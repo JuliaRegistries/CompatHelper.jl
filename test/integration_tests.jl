@@ -6,9 +6,9 @@
 # You should make the private key an encrypted Travis CI environment variable named `COMPATHELPER_PRIV`. Probably you will want to Base64-encode it.
 
 @testset "GitHub Integration Test" begin
-    const GLOBAL_PR_TITLE_PREFIX = Random.randstring(8)
-    const COMPATHELPER_INTEGRATION_TEST_REPO = ENV["COMPATHELPER_INTEGRATION_TEST_REPO"]
-    const TEST_USER_GITHUB_TOKEN = ENV["BCBI_TEST_USER_GITHUB_TOKEN"]
+    GLOBAL_PR_TITLE_PREFIX = Random.randstring(8)
+    COMPATHELPER_INTEGRATION_TEST_REPO = ENV["COMPATHELPER_INTEGRATION_TEST_REPO"]
+    TEST_USER_GITHUB_TOKEN = ENV["BCBI_TEST_USER_GITHUB_TOKEN"]
 
     auth = CompatHelper.api_retry(() -> GitHub.authenticate(TEST_USER_GITHUB_TOKEN))
     whoami = username(auth)
