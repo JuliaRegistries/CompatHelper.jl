@@ -1,3 +1,5 @@
+cd(cwd)
+
 keep_entry = CompatHelper.KeepEntry()
 drop_entry = CompatHelper.DropEntry()
 new_entry = CompatHelper.NewEntry()
@@ -114,31 +116,37 @@ end
 @testset "create_new_pull_request" begin
     @testset "GitHub" begin
         apply(gh_pr_patch) do
-            @test isnothing(
-                CompatHelper.create_new_pull_request(
-                    GitHub.GitHubAPI(),
-                    GitHub.Repo(; owner=GitHub.User(; login="username"), name="repo"),
-                    "new_branch",
-                    "master_branch",
-                    "title",
-                    "body",
-                ),
+            result, n = CompatHelper.create_new_pull_request(
+                GitHub.GitHubAPI(),
+                GitHub.Repo(; owner=GitHub.User(; login="username"), name="repo"),
+                "new_branch",
+                "master_branch",
+                "title",
+                "body",
             )
+
+            @test isnothing(n)
+            @test result isa GitHub.PullRequest
         end
     end
 
     @testset "GitLab" begin
         apply(gl_pr_patch) do
-            @test isnothing(
-                CompatHelper.create_new_pull_request(
-                    GitLab.GitLabAPI(),
-                    GitLab.Project(; owner=GitLab.User(; name="username"), name="repo"),
-                    "new_branch",
-                    "master_brach",
-                    "title",
-                    "body",
+            result, n = CompatHelper.create_new_pull_request(
+                GitLab.GitLabAPI(),
+                GitLab.Project(;
+                    owner=GitLab.User(; name="username"),
+                    name="repo",
+                    path_with_namespace="owner/repo",
                 ),
+                "new_branch",
+                "master_brach",
+                "title",
+                "body",
             )
+
+            @test isnothing(n)
+            @test result isa GitLab.MergeRequest
         end
     end
 end
@@ -271,7 +279,7 @@ end
         apply(pr_titles_mock) do
             @test isnothing(
                 CompatHelper.make_pr_for_new_version(
-                    GitHub.GitHubAPI(),
+                    GitHub.GitHubAPI(; token=GitHub.Token("token")),
                     "hostname",
                     GitHub.Repo(),
                     CompatHelper.DepInfo(

@@ -325,7 +325,7 @@ function cc_trigger_user(
     username = env["GITHUB_ACTOR"]
     body = "cc @$username"
 
-    return GitForge.create_new_pull_request_comment(
+    return @mock GitForge.create_new_pull_request_comment(
         api,
         repo.owner.login,
         repo.name,
@@ -341,7 +341,7 @@ function cc_trigger_user(
     username = env["GITLAB_USER_LOGIN"]
     body = "cc @$username"
 
-    return GitForge.create_new_pull_request_comment(
+    return @mock GitForge.create_new_pull_request_comment(
         api,
         repo.id,
         pr.iid;
@@ -355,7 +355,7 @@ function unsub_from_pr(api::GitHub.GitHubAPI, pr::GitHub.PullRequest)
 end
 
 function unsub_from_pr(api::GitLab.GitLabAPI, pr::GitLab.MergeRequest)
-    return GitForge.unsubscribe_from_pull_request(api, pr.project_id, pr.iid)
+    return @mock GitForge.unsubscribe_from_pull_request(api, pr.project_id, pr.iid)
 end
 
 function add_compat_entry(

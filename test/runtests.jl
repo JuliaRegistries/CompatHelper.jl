@@ -31,6 +31,7 @@ end
 
 include("patches.jl")
 
+cwd = pwd()
 @testset "CompatHelper.jl" begin
     include(joinpath("utilities", "ci.jl"))
     include(joinpath("utilities", "git.jl"))
