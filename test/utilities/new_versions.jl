@@ -264,11 +264,11 @@ end
     end
 end
 
-@testset "cc_trigger_user" begin
+@testset "cc_mention_user" begin
     @testset "GitHub" begin
         apply(gh_comment_patch) do
             withenv("GITHUB_ACTOR" => "username") do
-                result, n = CompatHelper.cc_trigger_user(
+                result, n = CompatHelper.cc_mention_user(
                     GitHub.GitHubAPI(),
                     GitHub.Repo(; owner=GitHub.User(; login="username"), name="repo"),
                     GitHub.PullRequest(; id=1),
@@ -283,7 +283,7 @@ end
     @testset "GitLab" begin
         apply(gl_comment_patch) do
             withenv("GITLAB_USER_LOGIN" => "username") do
-                result, n = CompatHelper.cc_trigger_user(
+                result, n = CompatHelper.cc_mention_user(
                     GitLab.GitLabAPI(),
                     GitLab.Project(; id=1),
                     GitLab.MergeRequest(; iid=1),

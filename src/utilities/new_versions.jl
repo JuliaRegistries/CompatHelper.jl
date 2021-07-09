@@ -309,7 +309,7 @@ function make_pr_for_new_version(
                     new_pr_body,
                 )
 
-                cc_user && cc_trigger_user(forge, repo, new_pr; env=env)
+                cc_user && cc_mention_user(forge, repo, new_pr; env=env)
                 unsub_from_prs && unsub_from_pr(forge, new_pr)
             end
         end
@@ -318,7 +318,7 @@ function make_pr_for_new_version(
     return nothing
 end
 
-function cc_trigger_user(
+function cc_mention_user(
     api::GitHub.GitHubAPI, repo::GitHub.Repo, pr::GitHub.PullRequest;
     env=ENV,
 )
@@ -334,7 +334,7 @@ function cc_trigger_user(
     )
 end
 
-function cc_trigger_user(
+function cc_mention_user(
     api::GitLab.GitLabAPI, repo::GitLab.Project, pr::GitLab.MergeRequest;
     env=ENV,
 )
