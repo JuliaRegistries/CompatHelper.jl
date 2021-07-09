@@ -298,8 +298,9 @@ end
 
 @testset "unsub_from_pr" begin
     @testset "GitHub" begin
-        @test isnothing(
-            CompatHelper.unsub_from_pr(GitHub.GitHubAPI(), GitHub.PullRequest())
+        @test_throws ErrorException("GitForge.GitHub.GitHubAPI has not implemented this function") CompatHelper.unsub_from_pr(
+            GitHub.GitHubAPI(),
+            GitHub.PullRequest(; repo=GitHub.Repo(; id=1), id=1),
         )
     end
 

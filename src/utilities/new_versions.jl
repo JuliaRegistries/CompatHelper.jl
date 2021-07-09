@@ -350,8 +350,7 @@ function cc_mention_user(
 end
 
 function unsub_from_pr(api::GitHub.GitHubAPI, pr::GitHub.PullRequest)
-    # Not implemented for GitHub
-    return nothing
+    return GitForge.unsubscribe_from_pull_request(api, pr.repo.id, pr.id)
 end
 
 function unsub_from_pr(api::GitLab.GitLabAPI, pr::GitLab.MergeRequest)
