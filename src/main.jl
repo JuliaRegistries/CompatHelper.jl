@@ -1,10 +1,8 @@
-const DEFAULT_REGISTRIES = Pkg.RegistrySpec[
-    Pkg.RegistrySpec(
-        name="General",
-        uuid="23338594-aafe-5451-b93e-139f81909106",
-        url="https://github.com/JuliaRegistries/General.git",
-    )
-]
+const DEFAULT_REGISTRIES = Pkg.RegistrySpec[Pkg.RegistrySpec(;
+    name="General",
+    uuid="23338594-aafe-5451-b93e-139f81909106",
+    url="https://github.com/JuliaRegistries/General.git",
+)]
 
 function main(
     env::AbstractDict=ENV,

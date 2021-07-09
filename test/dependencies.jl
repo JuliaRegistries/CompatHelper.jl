@@ -4,7 +4,7 @@
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
                 "",
-                GitHub.Repo(; full_name="foobar")
+                GitHub.Repo(; full_name="foobar"),
             )
 
             @test length(deps) == 1
