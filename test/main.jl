@@ -47,7 +47,9 @@
                     "GITLAB_CI" => "true",
                     "CI_PROJECT_PATH" => "CompatHelper.jl",
                     "GITLAB_TOKEN" => "token",
+                    "GITHUB_REPOSITORY" => "false",
                 ) do
+                    delete!(ENV, "GITHUB_REPOSITORY")
                     CompatHelper.main()
                 end
             end

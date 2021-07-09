@@ -8,7 +8,8 @@
     end
 
     @testset "GitLab: env var present" begin
-        withenv("GITLAB_CI" => "path") do
+        withenv("GITLAB_CI" => "true", "GITHUB_REPOSITORY" => "false") do
+            delete!(ENV, "GITHUB_REPOSITORY")
             expected = CompatHelper.GitLabCI()
 
             @test CompatHelper.auto_detect_ci_service() == expected
