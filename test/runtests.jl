@@ -31,7 +31,7 @@ Aqua.test_all(CompatHelper; ambiguities=false)
 end
 include("patches.jl")
 
-cwd = pwd()
+const cwd = pwd()  # used in tests/utilities/new_versions.jl
 @testset "CompatHelper.jl" begin
     include(joinpath("utilities", "ci.jl"))
     include(joinpath("utilities", "git.jl"))
