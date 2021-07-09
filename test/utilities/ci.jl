@@ -25,12 +25,13 @@
     end
 end
 
-@testset "$(func)" for func in [CompatHelper.github_repository, CompatHelper.github_token]
+@testset "$(func)" for func in [CompatHelper.ci_repository, CompatHelper.ci_token]
     value = "value"
+    ci = CompatHelper.GitHubActions()
 
     @testset "exists" begin
         withenv("GITHUB_REPOSITORY" => value, "GITHUB_TOKEN" => value) do
-            @test func() == value
+            @test func(ci) == value
         end
     end
 
@@ -39,17 +40,18 @@ end
             delete!(ENV, "GITHUB_REPOSITORY")
             delete!(ENV, "GITHUB_TOKEN")
 
-            @test_throws KeyError func()
+            @test_throws KeyError func(ci)
         end
     end
 end
 
-@testset "$(func)" for func in [CompatHelper.gitlab_repository, CompatHelper.gitlab_token]
+@testset "$(func)" for func in [CompatHelper.ci_repository, CompatHelper.ci_token]
     value = "value"
+    ci = CompatHelper.GitLabCI()
 
     @testset "exists" begin
         withenv("CI_PROJECT_PATH" => value, "GITLAB_TOKEN" => value) do
-            @test func() == value
+            @test func(ci) == value
         end
     end
 
@@ -58,7 +60,7 @@ end
             delete!(ENV, "CI_PROJECT_PATH")
             delete!(ENV, "GITLAB_TOKEN")
 
-            @test_throws KeyError func()
+            @test_throws KeyError func(ci)
         end
     end
 end

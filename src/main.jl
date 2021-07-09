@@ -19,19 +19,7 @@ function main(
     unsub_from_prs=false,
     cc_user=false,
 )
-    if ci_cfg isa GitHubActions
-        token = GitHub.Token(github_token())
-        api = GitHub.GitHubAPI(; token=token, url=hostname_for_api)
-        repo, _ = @mock GitForge.get_repo(api, github_repository())
-    elseif ci_cfg isa GitLabCI
-        token = GitLab.PersonalAccessToken(gitlab_token())
-        api = GitLab.GitLabAPI(; token=token, url=hostname_for_api)
-        repo, _ = @mock GitForge.get_repo(api, gitlab_repository())
-    else
-        err = "Unknown CI Config"
-        @error(err)
-        throw(ErrorException(err))
-    end
+    api, repo = get_api_and_repo(ci_cfg, hostname_for_api)
 
     for subdir in subdirs
         deps = @mock get_project_deps(

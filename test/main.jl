@@ -4,7 +4,7 @@
         CompatHelper.api_hostname(::MockCI) = ""
         CompatHelper.clone_hostname(::MockCI) = ""
 
-        @test_throws ErrorException("Unknown CI Config") CompatHelper.main(ENV, MockCI())
+        @test_throws ErrorException("Unknown CI Config: MockCI") CompatHelper.main(ENV, MockCI())
     end
 
     @testset "successful run GitHub" begin
