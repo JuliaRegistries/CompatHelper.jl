@@ -7,7 +7,7 @@
         @test_throws ErrorException("Unknown CI Config") CompatHelper.main(ENV, MockCI())
     end
 
-    @testset "successful run" begin
+    @testset "successful run GitHub" begin
         mktempdir() do tmpdir
             cd(tmpdir)
             patches = [
@@ -32,4 +32,26 @@
             end
         end
     end
+
+    @testset "successful run GitLab" begin
+        mktempdir() do tmpdir
+            cd(tmpdir)
+            patches = [
+                git_clone_patch, project_toml_patch, clone_all_registries_patch, rm_patch,
+                pr_titles_mock, git_push_patch, gl_pr_patch, make_clone_https_patch(tmpdir),
+                decode_pkey_patch, gl_get_repo_patch
+            ]
+
+            apply(patches) do
+                withenv(
+                    "GITLAB_CI" => "true",
+                    "CI_PROJECT_PATH" => "CompatHelper.jl",
+                    "GITLAB_TOKEN" => "token",
+                ) do
+                    CompatHelper.main()
+                end
+            end
+        end
+    end
+
 end

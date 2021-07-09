@@ -309,7 +309,7 @@ function make_pr_for_new_version(
                     new_pr_body,
                 )
 
-                cc_user && cc_trigger_user(forge, repo, new_pr, env=env)
+                cc_user && cc_trigger_user(forge, repo, new_pr; env=env)
                 unsub_from_prs && unsub_from_pr(forge, new_pr)
             end
         end
@@ -320,12 +320,12 @@ end
 
 function cc_trigger_user(
     api::GitHub.GitHubAPI, repo::GitHub.Repo, pr::GitHub.PullRequest;
-    env=env,
+    env=ENV,
 )
     username = env["GITHUB_ACTOR"]
     body = "cc @$username"
 
-    return @mock GitForge.create_new_pull_request_comment(
+    return @mock GitForge.create_pull_request_comment(
         api,
         repo.owner.login,
         repo.name,
@@ -336,12 +336,12 @@ end
 
 function cc_trigger_user(
     api::GitLab.GitLabAPI, repo::GitLab.Project, pr::GitLab.MergeRequest;
-    env=env,
+    env=ENV,
 )
     username = env["GITLAB_USER_LOGIN"]
     body = "cc @$username"
 
-    return @mock GitForge.create_new_pull_request_comment(
+    return @mock GitForge.create_pull_request_comment(
         api,
         repo.id,
         pr.iid;

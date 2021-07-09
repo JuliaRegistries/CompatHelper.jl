@@ -119,3 +119,27 @@ end
 gh_get_repo_patch = @patch function GitForge.get_repo(::GitForge.Forge, ::AbstractString)
     return GitHub.Repo(), nothing
 end
+
+gl_get_repo_patch = @patch function GitForge.get_repo(::GitForge.Forge, ::AbstractString)
+    return GitLab.Project(), nothing
+end
+
+gh_comment_patch = @patch function GitForge.create_pull_request_comment(
+    ::GitHub.GitHubAPI, ::AbstractString, ::AbstractString, ::Integer;
+    kwargs...,
+)
+    return GitHub.Comment(), nothing
+end
+
+gl_comment_patch = @patch function GitForge.create_pull_request_comment(
+    ::GitLab.GitLabAPI, ::Integer, ::Integer;
+    kwargs...,
+)
+    return GitLab.Note(), nothing
+end
+
+gl_unsub_patch = @patch function GitForge.unsubscribe_from_pull_request(
+    ::GitLab.GitLabAPI, ::Integer, ::Integer,
+)
+    return GitLab.MergeRequest(), nothing
+end

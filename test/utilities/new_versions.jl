@@ -35,18 +35,21 @@ end
             ("old", "new", "old, new"),
             ("Old", "New", "Old, New"),
             ("OLD", "NEW", "OLD, NEW"),
+            (nothing, "NEW", "NEW"),
         ],
         drop_entry => [
             (" old ", " new ", "new"),
             ("old", "new", "new"),
             ("Old", "New", "New"),
             ("OLD", "NEW", "NEW"),
+            (nothing, "NEW", "NEW"),
         ],
         new_entry => [
             (" old ", " new ", "new"),
             ("old", "new", "new"),
             ("Old", "New", "New"),
             ("OLD", "NEW", "NEW"),
+            (nothing, "NEW", "NEW"),
         ],
     )
 
@@ -258,6 +261,58 @@ end
 
         project = TOML.parsefile(dst)
         @test project["compat"]["PackageA"] == "= 1.2"
+    end
+end
+
+@testset "cc_trigger_user" begin
+    @testset "GitHub" begin
+        apply(gh_comment_patch) do
+            withenv("GITHUB_ACTOR" => "username") do
+                result, n = CompatHelper.cc_trigger_user(
+                    GitHub.GitHubAPI(),
+                    GitHub.Repo(; owner=GitHub.User(; login="username"), name="repo"),
+                    GitHub.PullRequest(; id=1),
+                )
+
+                @test isnothing(n)
+                @test result isa GitHub.Comment
+            end
+        end
+    end
+
+    @testset "GitLab" begin
+        apply(gl_comment_patch) do
+            withenv("GITLAB_USER_LOGIN" => "username") do
+                result, n = CompatHelper.cc_trigger_user(
+                    GitLab.GitLabAPI(),
+                    GitLab.Project(; id=1),
+                    GitLab.MergeRequest(; iid=1),
+                )
+
+                @test isnothing(n)
+                @test result isa GitLab.Note
+            end
+        end
+    end
+end
+
+@testset "unsub_from_pr" begin
+    @testset "GitHub" begin
+        @test isnothing(
+            CompatHelper.unsub_from_pr(GitHub.GitHubAPI(), GitHub.PullRequest())
+        )
+    end
+
+    @testset "GitLab" begin
+        apply(gl_unsub_patch) do
+            result, n = CompatHelper.unsub_from_pr(
+                GitLab.GitLabAPI(),
+                GitLab.MergeRequest(; project_id=1, iid=1),
+            )
+
+            @test isnothing(n)
+            @test result isa GitLab.MergeRequest
+        end
     end
 end
 
