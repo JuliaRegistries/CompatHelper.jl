@@ -150,4 +150,6 @@
             end
         end
     end
+
+    _cleanup_old_branches(url)
  end

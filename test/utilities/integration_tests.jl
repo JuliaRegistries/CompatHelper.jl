@@ -1,18 +1,27 @@
-function _cleanup_old_branches()
-    DELETE_OLDER_THAN_HOURS = 3
-    branches = String(read(`git branch -r`))  # Get all remote branches
-    branches = strip.(split(branches, "\n "))  # Convert string into an array of branch names
+function _cleanup_old_branches(url)
+    git_repo_dir = with_cloned_repo(url)
 
-    for branch in branches
-        # Check if there is a commit within the last 3 hours
-        # If there is, is_old will have the commit information
-        # If there has not been, it will be empty
-        is_old = String(read(`git log -1 --since='$(DELETE_OLDER_THAN_HOURS) hours' -s $(branch)`))
+    cd(git_repo_dir) do
+        DELETE_OLDER_THAN_HOURS = 3
+        branches = String(read(`git branch -r`))  # Get all remote branches
+        branches = strip.(split(branches, "\n "))  # Convert string into an array of branch names
 
-        if isempty(is_old)
-            run(`git branch -d origin $(branch)`)  # Delete the branch on origin
+        branches = [b for b in branches if contains(b, "compathelper/new_version/") || contains(b, "integration/")]
+
+        for branch in branches
+            # Check if there is a commit within the last 3 hours
+            # If there is, is_old will have the commit information
+            # If there has not been, it will be empty
+            is_old = String(read(`git log -1 --since="$(DELETE_OLDER_THAN_HOURS) hours" -s $(branch)`))
+
+            if isempty(is_old)
+                branch = replace(branch, "origin/"=>"")
+                run(`git push -d origin $(branch)`)  # Delete the branch on origin
+            end
         end
     end
+
+    return nothing
 end
 
 function _generate_branch_name(name::AbstractString)

@@ -50,8 +50,6 @@ include("patches.jl")
         @testset "Integration Tests" begin
             @info "Running Integration Tests"
             include(joinpath("utilities", "integration_tests.jl"))
-            #_cleanup_old_branches()
-
             include("integration_tests.jl")
         end
     end
