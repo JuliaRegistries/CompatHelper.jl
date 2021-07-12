@@ -30,7 +30,6 @@ struct GitLabCI <: CIService
 end
 
 function GitLabCI()
-    # TODO: Not sure what to actually put here
     return GitLabCI("gitlab-ci[bot]", "gitlab-ci[bot]@gitlab.com")
 end
 
