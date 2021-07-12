@@ -16,10 +16,7 @@ struct GitLabCI <: CIService
     username::String
     email::String
 
-    function GitLabCI(
-        username="gitlab-ci[bot]",
-        email="gitlab-ci[bot]@gitlab.com",
-    )
+    function GitLabCI(username="gitlab-ci[bot]", email="gitlab-ci[bot]@gitlab.com")
         return new(username, email)
     end
 end
