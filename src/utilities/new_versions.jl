@@ -24,6 +24,10 @@ function new_compat_entry(
     return "$(strip(new_compat))"
 end
 
+function new_compat_entry(::EntryType, old_compat::Nothing, new_compat::AbstractString)
+    return "$(strip(new_compat))"
+end
+
 function compat_version_number(ver::VersionNumber)
     (ver.major > 0) && return "$(ver.major)"
     (ver.minor > 0) && return "0.$(ver.minor)"
@@ -61,7 +65,7 @@ function pr_info(
         Note: Consider registering a new release of your package immediately after merging this PR, as downstream packages may depend on this for tests to pass.
     """
 
-    return (new_pr_title, new_pr_body)
+    return (strip(new_pr_title), strip(new_pr_body))
 end
 
 function pr_info(
@@ -85,7 +89,7 @@ function pr_info(
         It is your responsibility to make sure that your package tests pass before you merge this pull request.
     """
 
-    return (new_pr_title, new_pr_body)
+    return (strip(new_pr_title), strip(new_pr_body))
 end
 
 function skip_equality_specifiers(
@@ -110,15 +114,17 @@ function create_new_pull_request(
     title::AbstractString,
     body::AbstractString,
 )
+    repo_owner = String(rsplit(repo.path_with_namespace, "/"; limit=2)[1])
+
     return @mock GitForge.create_pull_request(
         api,
-        repo.owner.name,
+        repo_owner,
         repo.name;
         id=repo.id,
         source_branch=new_branch_name,
         target_branch=master_branch_name,
         title=title,
-        body=body,
+        description=body,
     )
 end
 
@@ -209,6 +215,8 @@ function make_pr_for_new_version(
     env::AbstractDict=ENV,
     bump_compat_containing_equality_specifier::Bool=true,
     pr_title_prefix::String="",
+    unsub_from_prs=false,
+    cc_user=false,
 )
     if !continue_with_pr(dep, bump_compat_containing_equality_specifier)
         return nothing
@@ -280,10 +288,12 @@ function make_pr_for_new_version(
             if commit_was_success
                 @info("Commit was a success")
                 api_retry() do
-                    @mock git_push("origin", new_branch_name; force=true, env=env)
+                    @mock git_push(
+                        "origin", new_branch_name, pkey_filename; force=true, env=env
+                    )
                 end
 
-                create_new_pull_request(
+                new_pr, _ = create_new_pull_request(
                     forge,
                     repo,
                     new_branch_name,
@@ -291,11 +301,42 @@ function make_pr_for_new_version(
                     new_pr_title,
                     new_pr_body,
                 )
+
+                cc_user && cc_mention_user(forge, repo, new_pr; env=env)
+                unsub_from_prs && unsub_from_pr(forge, new_pr)
             end
         end
     end
 
     return nothing
+end
+
+function cc_mention_user(
+    api::GitHub.GitHubAPI, repo::GitHub.Repo, pr::GitHub.PullRequest; env=ENV
+)
+    username = env["GITHUB_ACTOR"]
+    body = "cc @$username"
+
+    return @mock GitForge.create_pull_request_comment(
+        api, repo.owner.login, repo.name, pr.id; body=body
+    )
+end
+
+function cc_mention_user(
+    api::GitLab.GitLabAPI, repo::GitLab.Project, pr::GitLab.MergeRequest; env=ENV
+)
+    username = env["GITLAB_USER_LOGIN"]
+    body = "cc @$username"
+
+    return @mock GitForge.create_pull_request_comment(api, repo.id, pr.iid; body=body)
+end
+
+function unsub_from_pr(api::GitHub.GitHubAPI, pr::GitHub.PullRequest)
+    return GitForge.unsubscribe_from_pull_request(api, pr.repo.id, pr.id)
+end
+
+function unsub_from_pr(api::GitLab.GitLabAPI, pr::GitLab.MergeRequest)
+    return @mock GitForge.unsubscribe_from_pull_request(api, pr.project_id, pr.iid)
 end
 
 function add_compat_entry(

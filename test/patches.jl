@@ -35,13 +35,13 @@ end
 gh_pr_patch = @patch function GitForge.create_pull_request(
     ::GitHub.GitHubAPI, owner::AbstractString, repo::AbstractString; kwargs...
 )
-    return nothing
+    return GitHub.PullRequest(), nothing
 end
 
 gl_pr_patch = @patch function GitForge.create_pull_request(
     ::GitLab.GitLabAPI, owner::AbstractString, repo::AbstractString; kwargs...
 )
-    return nothing
+    return GitLab.MergeRequest(), nothing
 end
 
 decode_pkey_patch = @patch function CompatHelper.decode_ssh_private_key(::AbstractString)
@@ -52,8 +52,7 @@ pr_titles_mock = @patch function CompatHelper.get_pr_titles(
     ::GitForge.Forge, ::GitHub.Repo, ::String
 )
     return [
-        "    CompatHelper: bump compat for PackageA to\n    1 ,  (keep existing compat)",
-        "foo",
+        "CompatHelper: bump compat for PackageA to\n    1 ,  (keep existing compat)", "foo"
     ]
 end
 
@@ -89,7 +88,7 @@ gh_gpr_patch = @patch function CompatHelper.get_pull_requests(
     )
     pr_from_fork = GitHub.PullRequest(; head=GitHub.Head(; repo=fork_repo))
 
-    return [pr_from_origin, pr_from_origin_2, pr_from_fork]
+    return [(pr_from_origin, nothing), (pr_from_origin_2, nothing), (pr_from_fork, nothing)]
 end
 
 gl_gpr_patch = @patch function CompatHelper.get_pull_requests(
@@ -105,17 +104,39 @@ gl_gpr_patch = @patch function CompatHelper.get_pull_requests(
     )
     pr_from_fork = GitLab.MergeRequest(; project_id=2)
 
-    return [pr_from_origin, pr_from_origin_2, pr_from_fork]
+    return [(pr_from_origin, nothing), (pr_from_origin_2, nothing), (pr_from_fork, nothing)]
 end
 
 function get_prs_patch(prs)
     return @patch function CompatHelper.get_pull_requests(
         ::GitForge.Forge, ::Union{GitHub.Repo,GitLab.Project}, ::String
     )
-        return prs
+        return [(pr, nothing) for pr in prs]
     end
 end
 
 gh_get_repo_patch = @patch function GitForge.get_repo(::GitForge.Forge, ::AbstractString)
     return GitHub.Repo(), nothing
+end
+
+gl_get_repo_patch = @patch function GitForge.get_repo(::GitForge.Forge, ::AbstractString)
+    return GitLab.Project(), nothing
+end
+
+gh_comment_patch = @patch function GitForge.create_pull_request_comment(
+    ::GitHub.GitHubAPI, ::AbstractString, ::AbstractString, ::Integer; kwargs...
+)
+    return GitHub.Comment(), nothing
+end
+
+gl_comment_patch = @patch function GitForge.create_pull_request_comment(
+    ::GitLab.GitLabAPI, ::Integer, ::Integer; kwargs...
+)
+    return GitLab.Note(), nothing
+end
+
+gl_unsub_patch = @patch function GitForge.unsubscribe_from_pull_request(
+    ::GitLab.GitLabAPI, ::Integer, ::Integer
+)
+    return GitLab.MergeRequest(), nothing
 end

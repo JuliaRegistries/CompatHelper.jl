@@ -16,16 +16,10 @@ function main(
     bump_compat_containing_equality_specifier=true,
     pr_title_prefix::String="",
     include_jll::Bool=false,
+    unsub_from_prs=false,
+    cc_user=false,
 )
-    if ci_cfg isa GitHubActions
-        token = GitHub.Token(github_token())
-        api = GitHub.GitHubAPI(; token=token, url=hostname_for_api)
-        repo, _ = @mock GitForge.get_repo(api, github_repository())
-    else
-        err = "Unknown CI Config"
-        @error(err)
-        throw(ErrorException(err))
-    end
+    api, repo = get_api_and_repo(ci_cfg, hostname_for_api)
 
     for subdir in subdirs
         deps = @mock get_project_deps(
@@ -46,6 +40,8 @@ function main(
                 env=env,
                 bump_compat_containing_equality_specifier=bump_compat_containing_equality_specifier,
                 pr_title_prefix=pr_title_prefix,
+                unsub_from_prs=unsub_from_prs,
+                cc_user=cc_user,
             )
         end
     end

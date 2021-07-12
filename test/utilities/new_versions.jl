@@ -33,18 +33,21 @@ end
             ("old", "new", "old, new"),
             ("Old", "New", "Old, New"),
             ("OLD", "NEW", "OLD, NEW"),
+            (nothing, "NEW", "NEW"),
         ],
         drop_entry => [
             (" old ", " new ", "new"),
             ("old", "new", "new"),
             ("Old", "New", "New"),
             ("OLD", "NEW", "NEW"),
+            (nothing, "NEW", "NEW"),
         ],
         new_entry => [
             (" old ", " new ", "new"),
             ("old", "new", "new"),
             ("Old", "New", "New"),
             ("OLD", "NEW", "NEW"),
+            (nothing, "NEW", "NEW"),
         ],
     )
 
@@ -114,31 +117,37 @@ end
 @testset "create_new_pull_request" begin
     @testset "GitHub" begin
         apply(gh_pr_patch) do
-            @test isnothing(
-                CompatHelper.create_new_pull_request(
-                    GitHub.GitHubAPI(),
-                    GitHub.Repo(; owner=GitHub.User(; login="username"), name="repo"),
-                    "new_branch",
-                    "master_branch",
-                    "title",
-                    "body",
-                ),
+            result, n = CompatHelper.create_new_pull_request(
+                GitHub.GitHubAPI(),
+                GitHub.Repo(; owner=GitHub.User(; login="username"), name="repo"),
+                "new_branch",
+                "master_branch",
+                "title",
+                "body",
             )
+
+            @test isnothing(n)
+            @test result isa GitHub.PullRequest
         end
     end
 
     @testset "GitLab" begin
         apply(gl_pr_patch) do
-            @test isnothing(
-                CompatHelper.create_new_pull_request(
-                    GitLab.GitLabAPI(),
-                    GitLab.Project(; owner=GitLab.User(; name="username"), name="repo"),
-                    "new_branch",
-                    "master_brach",
-                    "title",
-                    "body",
+            result, n = CompatHelper.create_new_pull_request(
+                GitLab.GitLabAPI(),
+                GitLab.Project(;
+                    owner=GitLab.User(; name="username"),
+                    name="repo",
+                    path_with_namespace="owner/repo",
                 ),
+                "new_branch",
+                "master_brach",
+                "title",
+                "body",
             )
+
+            @test isnothing(n)
+            @test result isa GitLab.MergeRequest
         end
     end
 end
@@ -253,6 +262,57 @@ end
     end
 end
 
+@testset "cc_mention_user" begin
+    @testset "GitHub" begin
+        apply(gh_comment_patch) do
+            withenv("GITHUB_ACTOR" => "username") do
+                result, n = CompatHelper.cc_mention_user(
+                    GitHub.GitHubAPI(),
+                    GitHub.Repo(; owner=GitHub.User(; login="username"), name="repo"),
+                    GitHub.PullRequest(; id=1),
+                )
+
+                @test isnothing(n)
+                @test result isa GitHub.Comment
+            end
+        end
+    end
+
+    @testset "GitLab" begin
+        apply(gl_comment_patch) do
+            withenv("GITLAB_USER_LOGIN" => "username") do
+                result, n = CompatHelper.cc_mention_user(
+                    GitLab.GitLabAPI(), GitLab.Project(; id=1), GitLab.MergeRequest(; iid=1)
+                )
+
+                @test isnothing(n)
+                @test result isa GitLab.Note
+            end
+        end
+    end
+end
+
+@testset "unsub_from_pr" begin
+    @testset "GitHub" begin
+        @test_throws ErrorException(
+            "GitForge.GitHub.GitHubAPI has not implemented this function"
+        ) CompatHelper.unsub_from_pr(
+            GitHub.GitHubAPI(), GitHub.PullRequest(; repo=GitHub.Repo(; id=1), id=1)
+        )
+    end
+
+    @testset "GitLab" begin
+        apply(gl_unsub_patch) do
+            result, n = CompatHelper.unsub_from_pr(
+                GitLab.GitLabAPI(), GitLab.MergeRequest(; project_id=1, iid=1)
+            )
+
+            @test isnothing(n)
+            @test result isa GitLab.MergeRequest
+        end
+    end
+end
+
 @testset "make_pr_for_new_version" begin
     @testset "latest_version === nothing" begin
         @test isnothing(
@@ -271,7 +331,7 @@ end
         apply(pr_titles_mock) do
             @test isnothing(
                 CompatHelper.make_pr_for_new_version(
-                    GitHub.GitHubAPI(),
+                    GitHub.GitHubAPI(; token=GitHub.Token("token")),
                     "hostname",
                     GitHub.Repo(),
                     CompatHelper.DepInfo(
@@ -289,66 +349,67 @@ end
     @testset "Successful Run" begin
         mktempdir() do tmpdir
             # Create a temp git repo
-            cd(@__DIR__)
-            cwd = pwd()
-            cd(tmpdir)
-            run(`git init`)
+            cd(tmpdir) do
+                run(`git init`)
 
-            # Lets copy our test Project.toml to the tmpdir for this test
-            src = joinpath(@__DIR__, "..", "deps", "Project.toml")
-            dst = joinpath(tmpdir, "Project.toml")
-            cp(src, dst; force=true)
+                # Lets copy our test Project.toml to the tmpdir for this test
+                src = joinpath(@__DIR__, "..", "deps", "Project.toml")
+                dst = joinpath(tmpdir, "Project.toml")
+                cp(src, dst; force=true)
 
-            CompatHelper.git_add()
-            CompatHelper.git_commit("msg")
-            cd(cwd)
+                CompatHelper.git_add()
+                CompatHelper.git_commit("msg")
+            end
 
-            patches = [
-                pr_titles_mock,
-                git_push_patch,
-                gh_pr_patch,
-                make_clone_https_patch(tmpdir),
-                make_clone_ssh_patch(tmpdir),
-                decode_pkey_patch,
-            ]
+            cd(@__DIR__) do
+                patches = [
+                    pr_titles_mock,
+                    git_push_patch,
+                    gh_pr_patch,
+                    make_clone_https_patch(tmpdir),
+                    make_clone_ssh_patch(tmpdir),
+                    decode_pkey_patch,
+                ]
 
-            apply(patches) do
-                # HTTPS
+                apply(patches) do
+                    # HTTPS
+                    # Make sure PRIVATE_SSH_ENVVAR is unset
+                    if haskey(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
+                        delete!(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
+                    end
 
-                # Make sure PRIVATE_SSH_ENVVAR is unset
-                if haskey(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
-                    delete!(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
-                end
-
-                CompatHelper.make_pr_for_new_version(
-                    GitHub.GitHubAPI(; token=GitHub.Token("token")),
-                    "hostname",
-                    GitHub.Repo(; owner=GitHub.User(; login="username"), name="PackageB"),
-                    CompatHelper.DepInfo(
-                        CompatHelper.Package("PackageB", UUID(1));
-                        latest_version=VersionNumber(2),
-                        version_verbatim="1.2",
-                    ),
-                    CompatHelper.KeepEntry(),
-                    CompatHelper.GitHubActions(),
-                )
-
-                # SSH
-                withenv(CompatHelper.PRIVATE_SSH_ENVVAR => "foo") do
                     CompatHelper.make_pr_for_new_version(
                         GitHub.GitHubAPI(; token=GitHub.Token("token")),
                         "hostname",
                         GitHub.Repo(;
-                            owner=GitHub.User(; login="username"), name="PackageC"
+                            owner=GitHub.User(; login="username"), name="PackageB"
                         ),
                         CompatHelper.DepInfo(
-                            CompatHelper.Package("PackageC", UUID(1));
-                            latest_version=VersionNumber(3),
-                            version_verbatim="2.1",
+                            CompatHelper.Package("PackageB", UUID(1));
+                            latest_version=VersionNumber(2),
+                            version_verbatim="1.2",
                         ),
                         CompatHelper.KeepEntry(),
                         CompatHelper.GitHubActions(),
                     )
+
+                    # SSH
+                    withenv(CompatHelper.PRIVATE_SSH_ENVVAR => "foo") do
+                        CompatHelper.make_pr_for_new_version(
+                            GitHub.GitHubAPI(; token=GitHub.Token("token")),
+                            "hostname",
+                            GitHub.Repo(;
+                                owner=GitHub.User(; login="username"), name="PackageC"
+                            ),
+                            CompatHelper.DepInfo(
+                                CompatHelper.Package("PackageC", UUID(1));
+                                latest_version=VersionNumber(3),
+                                version_verbatim="2.1",
+                            ),
+                            CompatHelper.KeepEntry(),
+                            CompatHelper.GitHubActions(),
+                        )
+                    end
                 end
             end
         end
