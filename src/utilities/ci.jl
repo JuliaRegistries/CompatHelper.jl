@@ -5,17 +5,30 @@ struct GitHubActions <: CIService
     email::String
 end
 
+struct GitLabCI <: CIService
+    username::String
+    email::String
+end
+
 function GitHubActions()
     return GitHubActions(
         "github-actions[bot]", "41898282+github-actions[bot]@users.noreply.github.com"
     )
 end
 
+function GitLabCI()
+    return GitLabCI("gitlab-ci[bot]", "gitlab-ci[bot]@gitlab.com")
+end
+
 api_hostname(::GitHubActions) = "https://api.github.com"
+api_hostname(::GitLabCI) = "https://gitlab.com/api/v4"
 clone_hostname(::GitHubActions) = "github.com"
+clone_hostname(::GitLabCI) = "gitlab.com"
 
 ci_repository(::GitHubActions, env::AbstractDict=ENV) = env["GITHUB_REPOSITORY"]
+ci_repository(::GitLabCI, env::AbstractDict=ENV) = env["CI_PROJECT_PATH"]
 ci_token(::GitHubActions, env::AbstractDict=ENV) = env["GITHUB_TOKEN"]
+ci_token(::GitLabCI, env::AbstractDict=ENV) = env["GITLAB_TOKEN"]
 
 function get_api_and_repo(ci::GitHubActions, hostname_for_api::AbstractString)
     token = GitHub.Token(ci_token(ci))
@@ -23,21 +36,6 @@ function get_api_and_repo(ci::GitHubActions, hostname_for_api::AbstractString)
     repo, _ = @mock GitForge.get_repo(api, ci_repository(ci))
     return api, repo
 end
-
-struct GitLabCI <: CIService
-    username::String
-    email::String
-end
-
-function GitLabCI()
-    return GitLabCI("gitlab-ci[bot]", "gitlab-ci[bot]@gitlab.com")
-end
-
-api_hostname(::GitLabCI) = "https://gitlab.com/api/v4"
-clone_hostname(::GitLabCI) = "gitlab.com"
-
-ci_repository(::GitLabCI, env::AbstractDict=ENV) = env["CI_PROJECT_PATH"]
-ci_token(::GitLabCI, env::AbstractDict=ENV) = env["GITLAB_TOKEN"]
 
 function get_api_and_repo(ci::GitLabCI, hostname_for_api::AbstractString)
     token = GitLab.PersonalAccessToken(ci_token(ci))
