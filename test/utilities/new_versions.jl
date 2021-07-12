@@ -375,7 +375,6 @@ end
 
                 apply(patches) do
                     # HTTPS
-
                     # Make sure PRIVATE_SSH_ENVVAR is unset
                     if haskey(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
                         delete!(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
