@@ -47,9 +47,7 @@ end
 function get_api_and_repo(ci::Any, hostname_for_api::AbstractString)
     err = "Unknown CI Config: $(typeof(ci))"
     @error(err)
-    throw(ErrorException(err))
-
-    return nothing
+    return throw(ErrorException(err))
 end
 
 function auto_detect_ci_service(; env::AbstractDict=ENV)
