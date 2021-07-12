@@ -52,8 +52,7 @@ pr_titles_mock = @patch function CompatHelper.get_pr_titles(
     ::GitForge.Forge, ::GitHub.Repo, ::String
 )
     return [
-        "CompatHelper: bump compat for PackageA to\n    1 ,  (keep existing compat)",
-        "foo",
+        "CompatHelper: bump compat for PackageA to\n    1 ,  (keep existing compat)", "foo"
     ]
 end
 
@@ -125,21 +124,19 @@ gl_get_repo_patch = @patch function GitForge.get_repo(::GitForge.Forge, ::Abstra
 end
 
 gh_comment_patch = @patch function GitForge.create_pull_request_comment(
-    ::GitHub.GitHubAPI, ::AbstractString, ::AbstractString, ::Integer;
-    kwargs...,
+    ::GitHub.GitHubAPI, ::AbstractString, ::AbstractString, ::Integer; kwargs...
 )
     return GitHub.Comment(), nothing
 end
 
 gl_comment_patch = @patch function GitForge.create_pull_request_comment(
-    ::GitLab.GitLabAPI, ::Integer, ::Integer;
-    kwargs...,
+    ::GitLab.GitLabAPI, ::Integer, ::Integer; kwargs...
 )
     return GitLab.Note(), nothing
 end
 
 gl_unsub_patch = @patch function GitForge.unsubscribe_from_pull_request(
-    ::GitLab.GitLabAPI, ::Integer, ::Integer,
+    ::GitLab.GitLabAPI, ::Integer, ::Integer
 )
     return GitLab.MergeRequest(), nothing
 end

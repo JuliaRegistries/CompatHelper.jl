@@ -227,8 +227,7 @@ function make_pr_for_new_version(
     brand_new_compat = new_compat_entry(
         entry_type, dep.version_verbatim, compat_entry_for_latest_version
     )
-    new_pr_title,
-    new_pr_body = pr_info(
+    new_pr_title, new_pr_body = pr_info(
         dep.version_verbatim,
         dep.package.name,
         compat_entry_for_latest_version,
@@ -313,34 +312,23 @@ function make_pr_for_new_version(
 end
 
 function cc_mention_user(
-    api::GitHub.GitHubAPI, repo::GitHub.Repo, pr::GitHub.PullRequest;
-    env=ENV,
+    api::GitHub.GitHubAPI, repo::GitHub.Repo, pr::GitHub.PullRequest; env=ENV
 )
     username = env["GITHUB_ACTOR"]
     body = "cc @$username"
 
     return @mock GitForge.create_pull_request_comment(
-        api,
-        repo.owner.login,
-        repo.name,
-        pr.id;
-        body=body,
+        api, repo.owner.login, repo.name, pr.id; body=body
     )
 end
 
 function cc_mention_user(
-    api::GitLab.GitLabAPI, repo::GitLab.Project, pr::GitLab.MergeRequest;
-    env=ENV,
+    api::GitLab.GitLabAPI, repo::GitLab.Project, pr::GitLab.MergeRequest; env=ENV
 )
     username = env["GITLAB_USER_LOGIN"]
     body = "cc @$username"
 
-    return @mock GitForge.create_pull_request_comment(
-        api,
-        repo.id,
-        pr.iid;
-        body=body,
-    )
+    return @mock GitForge.create_pull_request_comment(api, repo.id, pr.iid; body=body)
 end
 
 function unsub_from_pr(api::GitHub.GitHubAPI, pr::GitHub.PullRequest)

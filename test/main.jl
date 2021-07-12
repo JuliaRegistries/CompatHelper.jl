@@ -4,7 +4,9 @@
         CompatHelper.api_hostname(::MockCI) = ""
         CompatHelper.clone_hostname(::MockCI) = ""
 
-        @test_throws ErrorException("Unknown CI Config: MockCI") CompatHelper.main(ENV, MockCI())
+        @test_throws ErrorException("Unknown CI Config: MockCI") CompatHelper.main(
+            ENV, MockCI()
+        )
     end
 
     @testset "successful run GitHub" begin
@@ -38,9 +40,16 @@
         mktempdir() do tmpdir
             cd(tmpdir) do
                 patches = [
-                    git_clone_patch, project_toml_patch, clone_all_registries_patch, rm_patch,
-                    pr_titles_mock, git_push_patch, gl_pr_patch, make_clone_https_patch(tmpdir),
-                    decode_pkey_patch, gl_get_repo_patch
+                    git_clone_patch,
+                    project_toml_patch,
+                    clone_all_registries_patch,
+                    rm_patch,
+                    pr_titles_mock,
+                    git_push_patch,
+                    gl_pr_patch,
+                    make_clone_https_patch(tmpdir),
+                    decode_pkey_patch,
+                    gl_get_repo_patch,
                 ]
 
                 apply(patches) do

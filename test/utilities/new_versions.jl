@@ -282,9 +282,7 @@ end
         apply(gl_comment_patch) do
             withenv("GITLAB_USER_LOGIN" => "username") do
                 result, n = CompatHelper.cc_mention_user(
-                    GitLab.GitLabAPI(),
-                    GitLab.Project(; id=1),
-                    GitLab.MergeRequest(; iid=1),
+                    GitLab.GitLabAPI(), GitLab.Project(; id=1), GitLab.MergeRequest(; iid=1)
                 )
 
                 @test isnothing(n)
@@ -296,17 +294,17 @@ end
 
 @testset "unsub_from_pr" begin
     @testset "GitHub" begin
-        @test_throws ErrorException("GitForge.GitHub.GitHubAPI has not implemented this function") CompatHelper.unsub_from_pr(
-            GitHub.GitHubAPI(),
-            GitHub.PullRequest(; repo=GitHub.Repo(; id=1), id=1),
+        @test_throws ErrorException(
+            "GitForge.GitHub.GitHubAPI has not implemented this function"
+        ) CompatHelper.unsub_from_pr(
+            GitHub.GitHubAPI(), GitHub.PullRequest(; repo=GitHub.Repo(; id=1), id=1)
         )
     end
 
     @testset "GitLab" begin
         apply(gl_unsub_patch) do
             result, n = CompatHelper.unsub_from_pr(
-                GitLab.GitLabAPI(),
-                GitLab.MergeRequest(; project_id=1, iid=1),
+                GitLab.GitLabAPI(), GitLab.MergeRequest(; project_id=1, iid=1)
             )
 
             @test isnothing(n)
@@ -383,7 +381,9 @@ end
                     CompatHelper.make_pr_for_new_version(
                         GitHub.GitHubAPI(; token=GitHub.Token("token")),
                         "hostname",
-                        GitHub.Repo(; owner=GitHub.User(; login="username"), name="PackageB"),
+                        GitHub.Repo(;
+                            owner=GitHub.User(; login="username"), name="PackageB"
+                        ),
                         CompatHelper.DepInfo(
                             CompatHelper.Package("PackageB", UUID(1));
                             latest_version=VersionNumber(2),
