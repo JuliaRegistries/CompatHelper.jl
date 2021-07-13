@@ -27,9 +27,8 @@ end
 function _generate_branch_name(name::AbstractString)
     timestamp = string(now())
     timestamp = replace(timestamp, ':' => '.')  # Git branches cannot have colons in them
-    b = "integration/$(timestamp)/$(rand(UInt32))/$(name)"
 
-    return b
+    return "integration/$(timestamp)/$(rand(UInt32))/$(name)"
 end
 
 function templates(parts...)

@@ -12,10 +12,6 @@ title_parenthetical(::KeepEntry) = " (keep existing compat)"
 title_parenthetical(::DropEntry) = " (drop existing compat)"
 title_parenthetical(::NewEntry) = ""
 
-function new_compat_entry(::EntryType, old_compat::Nothing, new_compat::AbstractString)
-    return "$(strip(new_compat))"
-end
-
 function new_compat_entry(
     ::KeepEntry, old_compat::AbstractString, new_compat::AbstractString
 )
