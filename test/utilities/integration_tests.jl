@@ -25,10 +25,7 @@ function _cleanup_old_branches(url)
 end
 
 function _generate_branch_name(name::AbstractString)
-    timestamp = string(now())
-    timestamp = replace(timestamp, ':' => '.')  # Git branches cannot have colons in them
-
-    return "integration/$(timestamp)/$(rand(UInt32))/$(name)"
+    return "integration/$(CompatHelper.get_random_string())/$(name)"
 end
 
 function templates(parts...)

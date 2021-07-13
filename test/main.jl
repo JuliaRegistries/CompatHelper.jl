@@ -9,24 +9,34 @@
         )
     end
 
-    @testset "successful run" begin
+    @testset "successful run GitHub" begin
         tmpdir = mktempdir()
 
         cd(tmpdir) do
             patches = [
-                git_clone_patch, project_toml_patch, clone_all_registries_patch, rm_patch,
-                pr_titles_mock, git_push_patch, gh_pr_patch, make_clone_https_patch(tmpdir),
-                decode_pkey_patch, gh_get_repo_patch, cd_patch, git_gmb_patch, git_checkout_patch
+                git_clone_patch,
+                project_toml_patch,
+                clone_all_registries_patch,
+                rm_patch,
+                pr_titles_mock,
+                git_push_patch,
+                gh_pr_patch,
+                make_clone_https_patch(tmpdir),
+                decode_pkey_patch,
+                gh_get_repo_patch,
+                cd_patch,
+                git_gmb_patch,
+                git_checkout_patch,
             ]
-                apply(patches) do
-                    withenv(
-                        "GITHUB_REPOSITORY" => "CompatHelper.jl", "GITHUB_TOKEN" => "token"
-                    ) do
-                        CompatHelper.main()
-                    end
+            apply(patches) do
+                withenv(
+                    "GITHUB_REPOSITORY" => "CompatHelper.jl", "GITHUB_TOKEN" => "token"
+                ) do
+                    CompatHelper.main()
                 end
             end
         end
+    end
 
     @testset "successful run GitLab" begin
         mktempdir() do tmpdir
@@ -42,6 +52,7 @@
                     make_clone_https_patch(tmpdir),
                     decode_pkey_patch,
                     gl_get_repo_patch,
+                    cd_patch,
                 ]
 
                 apply(patches) do
