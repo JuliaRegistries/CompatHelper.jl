@@ -141,8 +141,8 @@ function create_new_pull_request(
         repo.owner.login,
         repo.name;
         id=repo.id,
-        source_branch=new_branch_name,
-        target_branch=master_branch_name,
+        head=new_branch_name,
+        base=master_branch_name,
         title=title,
         body=body,
     )

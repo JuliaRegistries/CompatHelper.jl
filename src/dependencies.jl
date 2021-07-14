@@ -6,11 +6,17 @@ function get_project_deps(
     repo::Union{GitHub.Repo,GitLab.Project};
     subdir::AbstractString="",
     include_jll::Bool=false,
+    master_branch::Union{DefaultBranch,AbstractString}=DefaultBranch(),
 )
     mktempdir() do f
         url_with_auth = get_url_with_auth(api, clone_hostname, repo)
         local_path = joinpath(f, LOCAL_REPO_NAME)
         @mock git_clone(url_with_auth, local_path)
+
+        @mock cd(local_path) do
+            master_branch = @mock git_get_master_branch(master_branch)
+            @mock git_checkout(master_branch)
+        end
 
         # Get all the compat dependencies from the local Project.toml file
         project_file = @mock joinpath(local_path, subdir, "Project.toml")
