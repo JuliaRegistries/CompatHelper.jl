@@ -22,8 +22,7 @@
         "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN,
     )
     ci_cfg = CompatHelper.GitHubActions(
-        user.login,
-        "41898282+github-actions[bot]@users.noreply.github.com"
+        user.login, "41898282+github-actions[bot]@users.noreply.github.com"
     )
 
     @testset "master_1" begin
@@ -34,7 +33,7 @@
                     ci_cfg;
                     pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-1c] ",
                     master_branch=master_1,
-                    entry_type=KeepEntry()
+                    entry_type=KeepEntry(),
                 )
             end
         end
@@ -48,7 +47,7 @@
                     ci_cfg;
                     pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-2c] ",
                     master_branch=master_2,
-                    entry_type=KeepEntry()
+                    entry_type=KeepEntry(),
                 )
             end
         end
@@ -62,7 +61,7 @@
                     ci_cfg;
                     pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-3a] ",
                     master_branch=master_3,
-                    entry_type=DropEntry()
+                    entry_type=DropEntry(),
                 )
 
                 CompatHelper.main(
@@ -70,7 +69,7 @@
                     ci_cfg;
                     pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-3b] ",
                     master_branch=master_3,
-                    entry_type=KeepEntry()
+                    entry_type=KeepEntry(),
                 )
 
                 CompatHelper.main(
@@ -78,7 +77,7 @@
                     ci_cfg;
                     pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-3c] ",
                     master_branch=master_3,
-                    entry_type=KeepEntry()
+                    entry_type=KeepEntry(),
                 )
             end
         end
@@ -92,7 +91,7 @@
                     ci_cfg;
                     pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-4c] ",
                     master_branch=master_4,
-                    entry_type=KeepEntry()
+                    entry_type=KeepEntry(),
                 )
             end
         end
@@ -106,7 +105,7 @@
                     ci_cfg;
                     pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-5a] ",
                     master_branch=master_5,
-                    entry_type=DropEntry()
+                    entry_type=DropEntry(),
                 )
             end
         end
@@ -152,4 +151,4 @@
     end
 
     _cleanup_old_branches(url)
- end
+end
