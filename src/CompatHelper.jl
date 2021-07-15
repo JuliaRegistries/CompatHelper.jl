@@ -10,7 +10,7 @@ using TimeZones: TimeZones
 using TOML: TOML
 using UUIDs: UUIDs, UUID
 
-export  DropEntry, KeepEntry, NewEntry
+export DropEntry, KeepEntry, NewEntry
 
 @static if Base.VERSION >= v"1.7-"
     const VersionSpec = Pkg.Versions.VersionSpec

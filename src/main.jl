@@ -23,8 +23,12 @@ function main(
 
     for subdir in subdirs
         deps = @mock get_project_deps(
-            api, hostname_for_clone, repo;
-            subdir=subdir, include_jll=include_jll, master_branch=master_branch
+            api,
+            hostname_for_clone,
+            repo;
+            subdir=subdir,
+            include_jll=include_jll,
+            master_branch=master_branch,
         )
         @mock get_latest_version_from_registries!(deps, registries)
 

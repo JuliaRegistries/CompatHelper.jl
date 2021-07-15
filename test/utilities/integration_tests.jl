@@ -6,16 +6,21 @@ function _cleanup_old_branches(url)
         branches = String(read(`git branch -r`))  # Get all remote branches
         branches = strip.(split(branches, "\n "))  # Convert string into an array of branch names
 
-        branches = [b for b in branches if contains(b, "compathelper/new_version/") || contains(b, "integration/")]
+        branches = [
+            b for b in branches if
+            contains(b, "compathelper/new_version/") || contains(b, "integration/")
+        ]
 
         for branch in branches
             # Check if there is a commit within the last 3 hours
             # If there is, is_old will have the commit information
             # If there has not been, it will be empty
-            is_old = String(read(`git log -1 --since="$(DELETE_OLDER_THAN_HOURS) hours" -s $(branch)`))
+            is_old = String(
+                read(`git log -1 --since="$(DELETE_OLDER_THAN_HOURS) hours" -s $(branch)`)
+            )
 
             if isempty(is_old)
-                branch = replace(branch, "origin/"=>"")
+                branch = replace(branch, "origin/" => "")
                 run(`git push -d origin $(branch)`)  # Delete the branch on origin
             end
         end
@@ -37,7 +42,10 @@ function templates(parts...)
 end
 
 function with_master_branch(
-    f::Function, path_to_content::AbstractString, repo_url::AbstractString, parent_branch::AbstractString
+    f::Function,
+    path_to_content::AbstractString,
+    repo_url::AbstractString,
+    parent_branch::AbstractString,
 )
     b = generate_branch("master", path_to_content, repo_url, parent_branch)
     return f(b)
@@ -47,7 +55,7 @@ function generate_branch(
     name::AbstractString,
     path_to_content::AbstractString,
     repo_url::AbstractString,
-    parent_branch::AbstractString="master"
+    parent_branch::AbstractString="master",
 )
     b = _generate_branch_name(name)
     git_repo_dir = with_cloned_repo(repo_url)
@@ -65,7 +73,11 @@ function generate_branch(
         end
 
         CompatHelper.api_retry(() -> CompatHelper.git_add())
-        CompatHelper.api_retry(() -> CompatHelper.git_commit("Automatic commit - CompatHelper integration tests"))
+        CompatHelper.api_retry(
+            () -> CompatHelper.git_commit(
+                "Automatic commit - CompatHelper integration tests"
+            ),
+        )
         CompatHelper.api_retry(() -> CompatHelper.git_push("origin", b))
 
         rm(git_repo_dir; force=true, recursive=true)
