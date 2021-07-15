@@ -4,27 +4,40 @@
 # You should add the PAT as an encrypted Travis CI environment variable named `BCBI_TEST_USER_GITHUB_TOKEN`.
 # You should generate an SSH deploy key. Upload the public key as a deploy key for the testing repo.
 # You should make the private key an encrypted Travis CI environment variable named `COMPATHELPER_PRIV`. Probably you will want to Base64-encode it.
+const GLOBAL_PR_TITLE_PREFIX = Random.randstring(8)
 
-@testset "GitHub Integration Test" begin
-    GLOBAL_PR_TITLE_PREFIX = Random.randstring(8)
-    COMPATHELPER_INTEGRATION_TEST_REPO = ENV["COMPATHELPER_INTEGRATION_TEST_REPO"]
-    TEST_USER_GITHUB_TOKEN = ENV["BCBI_TEST_USER_GITHUB_TOKEN"]
+service_name(::GitHub) = "GITHUB"
+service_name(::GitLab) = "GITLAB"
 
-    api = GitHub.GitHubAPI(; token=GitHub.Token(TEST_USER_GITHUB_TOKEN))
+ci_config(::GitHub) = CompatHelper.GitHubActions()
+ci_config(::GitLab) = CompatHelper.GitLabCI()
+
+@testset "$(service)" for service in [GitHub, GitLab]
+    service_name = service_name(service)
+
+    personal_access_token = ENV["INTEGRATION_PAT_$(service_name)"]
+    test_repo = ENV["INTEGRATION_TEST_REPO_$(service_name)"]
+
+    api = GitLab.service(; token=service.Token(personal_access_token))
     user, _ = GitForge.get_user(api)
-    repo, _ = GitForge.get_repo(api, COMPATHELPER_INTEGRATION_TEST_REPO)
+    repo, _ = GitForge.get_repo(api, test_repo)
 
-    url = "https://$(user.login):$(TEST_USER_GITHUB_TOKEN)@github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
+    url = "https://$(user.login):$(personal_access_token)@$(lowercase(service_name)).com/$(test_repo)"
 
-    # Setup variables used in CompatHelper.main()
     env = Dict(
-        "GITHUB_REPOSITORY" => COMPATHELPER_INTEGRATION_TEST_REPO,
-        "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN,
-    )
-    ci_cfg = CompatHelper.GitHubActions(
-        user.login, "41898282+github-actions[bot]@users.noreply.github.com"
+        "$(service_name)_REPOSITORY" => test_repo,
+        "$(service_name)_TOKEN" => personal_access_token
     )
 
+    ci_cfg = ci_config(service)
+    run_integration_test(url, env, ci_cfg)
+end
+
+function run_integration_tests(
+    url::AbstractString,
+    env::AbstractDict,
+    ci_cfg::CIService
+)
     @testset "master_1" begin
         with_master_branch(templates("master_1"), url, "master") do master_1
             withenv(env...) do
