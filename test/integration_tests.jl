@@ -8,34 +8,6 @@ const GLOBAL_PR_TITLE_PREFIX = Random.randstring(8)
 const GITHUB = "GITHUB"
 const GITLAB = "GITLAB"
 
-function get_api(service_name, personal_access_token)
-    if service_name == GITHUB
-        token = GitHub.Token(personal_access_token)
-        return GitHub.GitHubAPI(; token=token)
-    elseif service_name == GITLAB
-        token = GitLab.PersonalAccessToken(personal_access_token)
-        return GitLab.GitLabAPI(; token=token)
-    end
-end
-
-function ci_config(service_name)
-    if service_name == GITHUB
-        return CompatHelper.GitHubActions()
-    elseif service_name == GITLAB
-        return CompatHelper.GitLabCI()
-    end
-end
-
-function get_url(service, user, personal_access_token, test_repo)
-    login = if service == GITHUB
-        user.login
-    elseif service == GITLAB
-        user.username
-    end
-
-    return "https://$(login):$(personal_access_token)@$(lowercase(service)).com/$(test_repo)"
-end
-
 function run_integration_tests(
     url::AbstractString,
     env::AbstractDict,
@@ -173,18 +145,25 @@ end
     personal_access_token = ENV["INTEGRATION_PAT_$(service)"]
     test_repo = ENV["INTEGRATION_TEST_REPO_$(service)"]
 
-    api = get_api(service, personal_access_token)
-    user, _ = GitForge.get_user(api)
-    repo, _ = GitForge.get_repo(api, test_repo)
-
-    url = get_url(service, user, personal_access_token, test_repo)
-
     env = Dict(
         "$(service)_REPOSITORY" => test_repo,
         "$(service)_TOKEN" => personal_access_token,
-        "CI_PROJECT_PATH" => "InveniaBot/compathelper_integration_test_repo.jl"
+        "CI_PROJECT_PATH" => ENV["INTEGRATION_TEST_REPO_GITLAB"]
     )
 
-    ci_cfg = ci_config(service)
+    # Otherwise auto_detect_ci_service() will think we're testing on GitHub
+    if service == GITLAB
+        delete!(env, "GITHUB_REPOSITORY")
+        env["GITLAB_CI"] = "true"
+    end
+
+    ci_cfg = CompatHelper.auto_detect_ci_service(env=env)
+
+    api_hostname = CompatHelper.api_hostname(ci_cfg)
+    api, repo = CompatHelper.get_api_and_repo(ci_cfg, api_hostname; env=env)
+
+    clone_hostname = CompatHelper.clone_hostname(ci_cfg)
+    url = CompatHelper.get_url_with_auth(api, clone_hostname, repo)
+
     run_integration_tests(url, env, ci_cfg)
 end
