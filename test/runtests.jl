@@ -2,6 +2,7 @@ using Aqua
 using Base64
 using CompatHelper
 using Dates
+using GitForge
 using GitForge: GitForge, GitHub, GitLab
 using Mocking
 using Pkg

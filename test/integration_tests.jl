@@ -5,38 +5,41 @@
 # You should generate an SSH deploy key. Upload the public key as a deploy key for the testing repo.
 # You should make the private key an encrypted Travis CI environment variable named `COMPATHELPER_PRIV`. Probably you will want to Base64-encode it.
 const GLOBAL_PR_TITLE_PREFIX = Random.randstring(8)
+const GITHUB = "GITHUB"
+const GITLAB = "GITLAB"
 
-service_name(::GitHub) = "GITHUB"
-service_name(::GitLab) = "GITLAB"
+function get_api(service_name, personal_access_token)
+    if service_name == GITHUB
+        token = GitHub.Token(personal_access_token)
+        return GitHub.GitHubAPI(; token=token)
+    elseif service_name == GITLAB
+        token = GitLab.PersonalAccessToken(personal_access_token)
+        return GitLab.GitLabAPI(; token=token)
+    end
+end
 
-ci_config(::GitHub) = CompatHelper.GitHubActions()
-ci_config(::GitLab) = CompatHelper.GitLabCI()
+function ci_config(service_name)
+    if service_name == GITHUB
+        return CompatHelper.GitHubActions()
+    elseif service_name == GITLAB
+        return CompatHelper.GitLabCI()
+    end
+end
 
-@testset "$(service)" for service in [GitHub, GitLab]
-    service_name = service_name(service)
+function get_url(service, user, personal_access_token, test_repo)
+    login = if service == GITHUB
+        user.login
+    elseif service == GITLAB
+        user.username
+    end
 
-    personal_access_token = ENV["INTEGRATION_PAT_$(service_name)"]
-    test_repo = ENV["INTEGRATION_TEST_REPO_$(service_name)"]
-
-    api = GitLab.service(; token=service.Token(personal_access_token))
-    user, _ = GitForge.get_user(api)
-    repo, _ = GitForge.get_repo(api, test_repo)
-
-    url = "https://$(user.login):$(personal_access_token)@$(lowercase(service_name)).com/$(test_repo)"
-
-    env = Dict(
-        "$(service_name)_REPOSITORY" => test_repo,
-        "$(service_name)_TOKEN" => personal_access_token
-    )
-
-    ci_cfg = ci_config(service)
-    run_integration_test(url, env, ci_cfg)
+    return "https://$(login):$(personal_access_token)@$(lowercase(service)).com/$(test_repo)"
 end
 
 function run_integration_tests(
     url::AbstractString,
     env::AbstractDict,
-    ci_cfg::CIService
+    ci_cfg::CompatHelper.CIService
 )
     @testset "master_1" begin
         with_master_branch(templates("master_1"), url, "master") do master_1
@@ -164,4 +167,24 @@ function run_integration_tests(
     end
 
     _cleanup_old_branches(url)
+end
+
+@testset "$(service)" for service in [GITHUB, GITLAB]
+    personal_access_token = ENV["INTEGRATION_PAT_$(service)"]
+    test_repo = ENV["INTEGRATION_TEST_REPO_$(service)"]
+
+    api = get_api(service, personal_access_token)
+    user, _ = GitForge.get_user(api)
+    repo, _ = GitForge.get_repo(api, test_repo)
+
+    url = get_url(service, user, personal_access_token, test_repo)
+
+    env = Dict(
+        "$(service)_REPOSITORY" => test_repo,
+        "$(service)_TOKEN" => personal_access_token,
+        "CI_PROJECT_PATH" => "InveniaBot/compathelper_integration_test_repo.jl"
+    )
+
+    ci_cfg = ci_config(service)
+    run_integration_tests(url, env, ci_cfg)
 end
