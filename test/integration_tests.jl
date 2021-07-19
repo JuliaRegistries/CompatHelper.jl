@@ -4,27 +4,15 @@
 # You should add the PAT as an encrypted Travis CI environment variable named `BCBI_TEST_USER_GITHUB_TOKEN`.
 # You should generate an SSH deploy key. Upload the public key as a deploy key for the testing repo.
 # You should make the private key an encrypted Travis CI environment variable named `COMPATHELPER_PRIV`. Probably you will want to Base64-encode it.
+const GLOBAL_PR_TITLE_PREFIX = Random.randstring(8)
+const GITHUB = "GITHUB"
+const GITLAB = "GITLAB"
 
-@testset "GitHub Integration Test" begin
-    GLOBAL_PR_TITLE_PREFIX = Random.randstring(8)
-    COMPATHELPER_INTEGRATION_TEST_REPO = ENV["COMPATHELPER_INTEGRATION_TEST_REPO"]
-    TEST_USER_GITHUB_TOKEN = ENV["BCBI_TEST_USER_GITHUB_TOKEN"]
-
-    api = GitHub.GitHubAPI(; token=GitHub.Token(TEST_USER_GITHUB_TOKEN))
-    user, _ = GitForge.get_user(api)
-    repo, _ = GitForge.get_repo(api, COMPATHELPER_INTEGRATION_TEST_REPO)
-
-    url = "https://$(user.login):$(TEST_USER_GITHUB_TOKEN)@github.com/$(COMPATHELPER_INTEGRATION_TEST_REPO)"
-
-    # Setup variables used in CompatHelper.main()
-    env = Dict(
-        "GITHUB_REPOSITORY" => COMPATHELPER_INTEGRATION_TEST_REPO,
-        "GITHUB_TOKEN" => TEST_USER_GITHUB_TOKEN,
-    )
-    ci_cfg = CompatHelper.GitHubActions(
-        user.login, "41898282+github-actions[bot]@users.noreply.github.com"
-    )
-
+function run_integration_tests(
+    url::AbstractString,
+    env::AbstractDict,
+    ci_cfg::CompatHelper.CIService
+)
     @testset "master_1" begin
         with_master_branch(templates("master_1"), url, "master") do master_1
             withenv(env...) do
@@ -151,4 +139,31 @@
     end
 
     _cleanup_old_branches(url)
+end
+
+@testset "$(service)" for service in [GITHUB, GITLAB]
+    personal_access_token = ENV["INTEGRATION_PAT_$(service)"]
+    test_repo = ENV["INTEGRATION_TEST_REPO_$(service)"]
+
+    env = Dict(
+        "$(service)_REPOSITORY" => test_repo,
+        "$(service)_TOKEN" => personal_access_token,
+        "CI_PROJECT_PATH" => ENV["INTEGRATION_TEST_REPO_GITLAB"]
+    )
+
+    # Otherwise auto_detect_ci_service() will think we're testing on GitHub
+    if service == GITLAB
+        delete!(env, "GITHUB_REPOSITORY")
+        env["GITLAB_CI"] = "true"
+    end
+
+    ci_cfg = CompatHelper.auto_detect_ci_service(env=env)
+
+    api_hostname = CompatHelper.api_hostname(ci_cfg)
+    api, repo = CompatHelper.get_api_and_repo(ci_cfg, api_hostname; env=env)
+
+    clone_hostname = CompatHelper.clone_hostname(ci_cfg)
+    url = CompatHelper.get_url_with_auth(api, clone_hostname, repo)
+
+    run_integration_tests(url, env, ci_cfg)
 end
