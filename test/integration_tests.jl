@@ -9,9 +9,7 @@ const GITHUB = "GITHUB"
 const GITLAB = "GITLAB"
 
 function run_integration_tests(
-    url::AbstractString,
-    env::AbstractDict,
-    ci_cfg::CompatHelper.CIService
+    url::AbstractString, env::AbstractDict, ci_cfg::CompatHelper.CIService
 )
     @testset "master_1" begin
         with_master_branch(templates("master_1"), url, "master") do master_1
@@ -138,7 +136,7 @@ function run_integration_tests(
         end
     end
 
-    _cleanup_old_branches(url)
+    return _cleanup_old_branches(url)
 end
 
 @testset "$(service)" for service in [GITHUB, GITLAB]
@@ -148,7 +146,7 @@ end
     env = Dict(
         "$(service)_REPOSITORY" => test_repo,
         "$(service)_TOKEN" => personal_access_token,
-        "CI_PROJECT_PATH" => ENV["INTEGRATION_TEST_REPO_GITLAB"]
+        "CI_PROJECT_PATH" => ENV["INTEGRATION_TEST_REPO_GITLAB"],
     )
 
     # Otherwise auto_detect_ci_service() will think we're testing on GitHub
@@ -157,7 +155,7 @@ end
         env["GITLAB_CI"] = "true"
     end
 
-    ci_cfg = CompatHelper.auto_detect_ci_service(env=env)
+    ci_cfg = CompatHelper.auto_detect_ci_service(; env=env)
 
     api_hostname = CompatHelper.api_hostname(ci_cfg)
     api, repo = CompatHelper.get_api_and_repo(ci_cfg, api_hostname; env=env)
