@@ -11,6 +11,7 @@ using TOML: TOML
 using UUIDs: UUIDs, UUID
 
 export DropEntry, KeepEntry, NewEntry
+export CIService, GitHubActions, GitLabCI
 
 @static if Base.VERSION >= v"1.7-"
     const VersionSpec = Pkg.Versions.VersionSpec
@@ -25,7 +26,6 @@ const PRIVATE_SSH_ENVVAR = "COMPATHELPER_PRIV"
 include(joinpath("utilities", "types.jl"))
 include(joinpath("utilities", "utilities.jl"))
 include(joinpath("utilities", "ci.jl"))
-include(joinpath("utilities", "rate_limiting.jl"))
 include(joinpath("utilities", "git.jl"))
 include(joinpath("utilities", "ssh.jl"))
 include(joinpath("utilities", "timestamps.jl"))
