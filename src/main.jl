@@ -18,6 +18,7 @@ function main(
     include_jll::Bool=false,
     unsub_from_prs=false,
     cc_user=false,
+    bump_version=false,
 )
     api, repo = get_api_and_repo(ci_cfg, hostname_for_api)
 
@@ -42,6 +43,7 @@ function main(
                 pr_title_prefix=pr_title_prefix,
                 unsub_from_prs=unsub_from_prs,
                 cc_user=cc_user,
+                bump_version=bump_version,
             )
         end
     end

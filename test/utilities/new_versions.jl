@@ -262,6 +262,32 @@ end
     end
 end
 
+@testset "bump_package_version" begin
+    @testset "minor bump" begin
+        mock_toml = Dict("version" => "1.4.5")
+
+        @test mock_toml["version"] == "1.4.5"
+        CompatHelper.bump_package_version!(mock_toml)
+        @test mock_toml["version"] == "1.5.0"
+    end
+
+    @testset "patch bump" begin
+        mock_toml = Dict("version" => "0.5.2")
+
+        @test mock_toml["version"] == "0.5.2"
+        CompatHelper.bump_package_version!(mock_toml)
+        @test mock_toml["version"] == "0.5.3"
+    end
+
+    @testset "dev prerelease" begin
+        mock_toml = Dict("version" => "1.2.3-DEV")
+
+        @test mock_toml["version"] == "1.2.3-DEV"
+        CompatHelper.bump_package_version!(mock_toml)
+        @test mock_toml["version"] == "1.2.3-DEV"
+    end
+end
+
 @testset "cc_mention_user" begin
     @testset "GitHub" begin
         apply(gh_comment_patch) do
