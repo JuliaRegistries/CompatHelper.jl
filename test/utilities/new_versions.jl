@@ -245,7 +245,7 @@ end
     end
 end
 
-@testset "add_compat_entry" begin
+@testset "modify_project_toml" begin
     mktempdir() do tmpdir
         # Lets copy our test Project.toml to the tmpdir for this test
         src = joinpath(@__DIR__, "..", "deps", "Project.toml")
@@ -255,7 +255,7 @@ end
         project = TOML.parsefile(dst)
         @test !haskey(project["compat"], "PackageA")
 
-        CompatHelper.add_compat_entry("PackageA", tmpdir, "= 1.2")
+        CompatHelper.modify_project_toml("PackageA", tmpdir, "= 1.2", false)
 
         project = TOML.parsefile(dst)
         @test project["compat"]["PackageA"] == "= 1.2"

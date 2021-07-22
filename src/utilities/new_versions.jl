@@ -275,12 +275,13 @@ function make_pr_for_new_version(
             new_branch_name = "compathelper/new_version/$(get_random_string())"
             git_branch(new_branch_name; checkout=true)
 
-            # Add new compat entry to project.toml and write it out
-            add_compat_entry(
+            # Add new compat entry to project.toml, bump the version if needed,
+            # and write it out
+            modify_project_toml(
                 dep.package.name,
                 joinpath(tmpdir, LOCAL_REPO_NAME, subdir),
-                brand_new_compat;
-                bump_version=bump_version,
+                brand_new_compat,
+                bump_version,
             )
             git_add()
 
@@ -341,20 +342,24 @@ function unsub_from_pr(api::GitLab.GitLabAPI, pr::GitLab.MergeRequest)
     return @mock GitForge.unsubscribe_from_pull_request(api, pr.project_id, pr.iid)
 end
 
-function add_compat_entry(
+function modify_project_toml(
     name::AbstractString,
     repo_path::AbstractString,
-    brand_new_compat::AbstractString;
-    bump_version::Bool=false,
+    brand_new_compat::AbstractString,
+    bump_version::Bool,
 )
+    # Open up Project.toml
     project_file = joinpath(repo_path, "Project.toml")
     project = TOML.parsefile(project_file)
 
+    # Add the new compat
     add_compat_section!(project)
     project["compat"][name] = brand_new_compat
 
+    # Bump the version if specified
     bump_version && bump_package_version!(project)
 
+    # Write the file back out
     open(project_file, "w") do io
         TOML.print(
             io, project; sorted=true, by=key -> (Pkg.Types.project_key_order(key), key)
