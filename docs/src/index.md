@@ -2,6 +2,10 @@
 CurrentModule = CompatHelper
 ```
 
+```@autodocs
+Modules = [CompatHelper]
+```
+
 # [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)
 
 CompatHelper is a Julia package that helps you keep your `[compat]` entries up-to-date.
