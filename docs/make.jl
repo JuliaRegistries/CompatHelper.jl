@@ -16,8 +16,6 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "Configuration Options" => "options.md",
-        "Troubleshooting" => "troubleshooting.md",
-        "Self-Hosting and Other Environments" => "other-environments.md",
         "Acknowledgements" => "acknowledgements.md",
     ],
     strict=true,
