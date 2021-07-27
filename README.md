@@ -23,10 +23,37 @@
 
 ## Setup
 ### GitHub
-TODO
+For GitHub you will want to copy the [GitHub Actions Workflow File](.github/workflows/CompatHelper.yml) from this repository to the `.github/workflows/CompatHelper.yml` location in your own project.
+
+If you need to use any special arguments for the `main` function, you can modify this file to add them.
 
 ### GitLab
-TODO
+For GitLab you will want to add CompatHelper as a job in your `.gitlab-ci.yml` file such as:
+
+```yaml
+CompatHelper:
+  image: julia:1.6 # Set to the Julia version you want to use
+  stage: compat # You can place this in any stage that makes sense for your setup
+  before_script:
+    - apt-get update -qq && apt-get install -y git
+    - |
+      julia --color=yes -e "
+        import Pkg
+        name = "CompatHelper"
+        uuid = "aa819f21-2bde-4658-8897-bab36330d9b7"
+        version = "3"
+        Pkg.add(; name, uuid, version)"
+  script:
+    - |
+      julia --color=yes -e "
+        import CompatHelper
+        CompatHelper.main()"
+```
+
+Similarly to the GitHub setup, you can modify the `main` call here if you need to change any of the default arguments.
+You must also remember to add the `GITLAB_TOKEN` and `COMPATHELPER_PRIV` CI secrets to the project so that CompatHelper can find them.
+
+
 ### Environment Variables
 
 | Name | Description |
