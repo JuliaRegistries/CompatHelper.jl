@@ -7,20 +7,34 @@ CurrentModule = CompatHelper
 It is possible to run CompatHelper on custom infrastructure.
 This includes GitHub Enterprise, public GitLab, or even private GitLab.
 To use any of these you need to just create and pass along the CI Configuration.
-The example below would be for a private GitLab server:
+The example below would be for GitHub Enterprise:
 
 ```julia
 using CompatHelper
 
-ENV["GITLAB_TOKEN"] = "GitLab Personal Access Token"
-ENV["CI_PROJECT_PATH"] = "GitLab Repo"
-ENV["GITLAB_CI"] = "true"
+ENV["GITHUB_TOKEN"] = "GitHub Enterprise Personal Access Token"
+ENV["GITHUB_REPOSITORY"] = "Organization/Repository"
 
-config = CompatHelper.GitLabCI(;
-    username="GitLab Username",
-    email="GitLab Email",
-    api_hostname="https://gitlab.company.com/api/v4",
-    clone_hostname="gitlab.company.com"
+config = CompatHelper.GitHubActions(;
+    username="GitHub Enterprise Username",
+    email="GitHub Enterprise Email",
+    api_hostname="https://github.company.com/api/v3",
+    clone_hostname="github.company.com"
+)
+
+CompatHelper.main(ENV, config)
+```
+
+You can also create your own configurations, for example TeamCity:
+
+```julia
+using CompatHelper
+
+config = CompatHelper.GitHubActions(;
+    username="TeamCity Username"
+    email="TeamCity Email",
+    api_hostname="http://<TeamCity Server host>:<port>/app/rest/server"
+    clone_hostname="http://<TeamCity Server host>"
 )
 
 CompatHelper.main(ENV, config)
