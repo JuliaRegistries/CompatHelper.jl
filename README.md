@@ -23,7 +23,20 @@
 
 ## Setup
 ### GitHub
-For GitHub you will want to copy the [GitHub Actions Workflow File](.github/workflows/CompatHelper.yml) from this repository to the `.github/workflows/CompatHelper.yml` location in your own project.
+Create a file at `.github/workflows/CompatHelper.yml` with the following contents,
+
+```@eval
+ import CompatHelper
+ import Markdown
+
+ const root_directory = dirname(dirname(pathof(CompatHelper)))
+ const workflow_dir = joinpath(root_directory, ".github", "workflows")
+ const workflow_filename = joinpath(workflow_dir, "CompatHelper.yml")
+ const workflow_filecontents = read(workflow_filename, String)
+ const str = string("```yaml\n", strip(workflow_filecontents), "\n```")
+ const md = Markdown.parse(str)
+ return md
+ ```
 
 If you need to use any special arguments for the `main` function, you can modify this file to add them.
 
@@ -61,6 +74,7 @@ You must also remember to add the `GITLAB_TOKEN` and `COMPATHELPER_PRIV` CI secr
 | ---- | ----------- |
 | GIT_COMMITTER_NAME | Name to associate commits with |
 | GIT_COMMITTER_EMAIL | Email to associate commits with |
+| COMPATHELPER_PRIV | Plain Text or Base64 Encoded SSH Public Key for git pushes and API calls |
 
 #### GitHub
 | Name | Description |

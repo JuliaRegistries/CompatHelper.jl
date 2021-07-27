@@ -17,24 +17,20 @@ If you would like to help with adding Julia support to Dependabot, join us in th
 ### GitHub
 Create a file at `.github/workflows/CompatHelper.yml` with the following contents,
 
-```yaml
-name: CompatHelper
-on:
-  schedule:
-    - cron: '0 0 * * *'  # Everyday at midnight
-  workflow_dispatch:
-jobs:
-  CompatHelper:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Pkg.add("CompatHelper")
-        run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
-      - name: CompatHelper.main()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMPATHELPER_PRIV: ${{ secrets.COMPATHELPER_PRIV }}
-        run: julia -e 'using CompatHelper; CompatHelper.main()'
-```
+```@eval
+ import CompatHelper
+ import Markdown
+
+ const root_directory = dirname(dirname(pathof(CompatHelper)))
+ const workflow_dir = joinpath(root_directory, ".github", "workflows")
+ const workflow_filename = joinpath(workflow_dir, "CompatHelper.yml")
+ const workflow_filecontents = read(workflow_filename, String)
+ const str = string("```yaml\n", strip(workflow_filecontents), "\n```")
+ const md = Markdown.parse(str)
+ return md
+ ```
+
+If you need to use any special arguments for the `main` function, you can modify this file to add them.
 
 #### Creating SSH Key
 If you use GitHub Actions to either test your packge using continuous integration, or build and deploy documentation you will need to create an SSH deploy key.
@@ -55,3 +51,14 @@ Otherwise follow the below instructions to generate a new key,
    4. Name the deploy key `COMPATHELPER_PUB`, paste in the copied public key
    5. Ensure that the key has `Write Access`
 4. Cleanup the SSH key from your computer, `rm -f compathelper_key compathelper_key.pub`
+
+##### Base64 SSH Public Key
+CompatHelper also supports Base64 encoded SSH Public Keys. One reason for this would be for GitLab usage. On GitLab, if you add an SSH privary key to the CI secrets, if for any reason it prints out, it will show up in the log in plain text. To fix this, you can encode the private key in Base64 which is a format that GitLab can mask in log files.
+
+Once you have created your SSH Public Key as mentioned above, before you delete it, you can convert it to Base64 like so:
+
+```bash
+openssl enc -base64 -in compathelper_key.pub -out compathelper_key.pub.base64
+```
+
+You can then use the Base64 version in your CI Secret rather than the plain text version. Once that is done, you can delete it from your computer.
