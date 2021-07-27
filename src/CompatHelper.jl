@@ -10,7 +10,6 @@ using TimeZones: TimeZones
 using TOML: TOML
 using UUIDs: UUIDs, UUID
 
-export main
 export DropEntry, KeepEntry, NewEntry
 export CIService, GitHubActions, GitLabCI
 
