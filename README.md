@@ -23,20 +23,7 @@
 
 ## Setup
 ### GitHub
-Create a file at `.github/workflows/CompatHelper.yml` with the following contents,
-
-```@eval
- import CompatHelper
- import Markdown
-
- const root_directory = dirname(dirname(pathof(CompatHelper)))
- const workflow_dir = joinpath(root_directory, ".github", "workflows")
- const workflow_filename = joinpath(workflow_dir, "CompatHelper.yml")
- const workflow_filecontents = read(workflow_filename, String)
- const str = string("```yaml\n", strip(workflow_filecontents), "\n```")
- const md = Markdown.parse(str)
- return md
- ```
+Create a file at `.github/workflows/CompatHelper.yml` with the contents of the [CompatHelper.yml](.github/workflows/CompatHelper.yml) that is included in this repository.
 
 If you need to use any special arguments for the `main` function, you can modify this file to add them.
 

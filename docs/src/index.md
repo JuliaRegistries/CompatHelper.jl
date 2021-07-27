@@ -15,22 +15,35 @@ If you would like to help with adding Julia support to Dependabot, join us in th
 
 ## Installation
 ### GitHub
-Create a file at `.github/workflows/CompatHelper.yml` with the following contents,
-
-```@eval
- import CompatHelper
- import Markdown
-
- const root_directory = dirname(dirname(pathof(CompatHelper)))
- const workflow_dir = joinpath(root_directory, ".github", "workflows")
- const workflow_filename = joinpath(workflow_dir, "CompatHelper.yml")
- const workflow_filecontents = read(workflow_filename, String)
- const str = string("```yaml\n", strip(workflow_filecontents), "\n```")
- const md = Markdown.parse(str)
- return md
- ```
+Create a file at `.github/workflows/CompatHelper.yml` with the contents of the [CompatHelper.yml](.github/workflows/CompatHelper.yml) that is included in this repository.
 
 If you need to use any special arguments for the `main` function, you can modify this file to add them.
+
+### GitLab
+For GitLab you will want to add CompatHelper as a job in your `.gitlab-ci.yml` file such as:
+
+```yaml
+CompatHelper:
+  image: julia:1.6 # Set to the Julia version you want to use
+  stage: compat # You can place this in any stage that makes sense for your setup
+  before_script:
+    - apt-get update -qq && apt-get install -y git
+    - |
+      julia --color=yes -e "
+        import Pkg
+        name = "CompatHelper"
+        uuid = "aa819f21-2bde-4658-8897-bab36330d9b7"
+        version = "3"
+        Pkg.add(; name, uuid, version)"
+  script:
+    - |
+      julia --color=yes -e "
+        import CompatHelper
+        CompatHelper.main()"
+```
+
+Similarly to the GitHub setup, you can modify the `main` call here if you need to change any of the default arguments.
+You must also remember to add the `GITLAB_TOKEN` and `COMPATHELPER_PRIV` CI secrets to the project so that CompatHelper can find them.
 
 #### Creating SSH Key
 If you use GitHub Actions to either test your packge using continuous integration, or build and deploy documentation you will need to create an SSH deploy key.
