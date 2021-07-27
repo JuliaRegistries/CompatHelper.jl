@@ -56,13 +56,22 @@ You must also remember to add the `GITLAB_TOKEN` and `COMPATHELPER_PRIV` CI secr
 
 ### Environment Variables
 
+#### GitHub & GitLab
 | Name | Description |
 | ---- | ----------- |
-| CI_PROJECT_PATH | Name on GitLab of the `organization/repo`, provided by default on GitLab |
 | GIT_COMMITTER_NAME | Name to associate commits with |
 | GIT_COMMITTER_EMAIL | Email to associate commits with |
-| GITHUB_ACTOR | Users on GitHub to CC on pull requests |
+
+#### GitHub
+| Name | Description |
+| ---- | ----------- |
+| GITHUB_TOKEN | GitHub Access Token, user for GitHub API Requests |
 | GITHUB_REPOSITORY | Name on GitHub of the `organization/repo`, provided by default on GitHub |
-| GITHUB_TOKEN | GitHub Access Token, provided by default by GitHub Actions |
-| GITLAB_TOKEN | GitLab Access Token, provided by default by GitLab CI |
-| GITLAB_USER_LOGIN | Users on GitLab to CC on pull requests |
+| GITHUB_ACTOR | GitHub Username that triggered the Action, provided by default by GitHub Actions. This is used to CC the user on the pull request if enabled |
+
+#### GitLab
+| Name | Description |
+| ---- | ----------- |
+| GITLAB_TOKEN | GitLab Access Token, used for GitLab API Requests |
+| CI_PROJECT_PATH | Name on GitLab of the `organization/repo`, provided by default on GitLab |
+| GITLAB_USER_LOGIN | GitLab Username that triggered the Pipeline, provided by defalt by GitLab CI. This is used to CC the user on pull request if enabled |
