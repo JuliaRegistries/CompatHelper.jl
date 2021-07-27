@@ -17,6 +17,8 @@ makedocs(;
         "Home" => "index.md",
         "Configuration Options" => "options.md",
         "Acknowledgements" => "acknowledgements.md",
+        "Other Environments" => "other-environments.md",
+        "TroubleShooting" => "troubleshooting.md"
     ],
     strict=true,
 )
