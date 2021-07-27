@@ -66,7 +66,7 @@ You must also remember to add the `GITLAB_TOKEN` and `COMPATHELPER_PRIV` CI secr
 #### GitHub
 | Name | Description |
 | ---- | ----------- |
-| GITHUB_TOKEN | GitHub Access Token, user for GitHub API Requests |
+| GITHUB_TOKEN | GitHub Access Token, user for GitHub API Requests, [provided by default on GitHub Actions](https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret) |
 | GITHUB_REPOSITORY | Name on GitHub of the `organization/repo`, provided by default on GitHub |
 | GITHUB_ACTOR | GitHub Username that triggered the Action, provided by default by GitHub Actions. This is used to CC the user on the pull request if enabled |
 
