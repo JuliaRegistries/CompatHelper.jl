@@ -59,8 +59,8 @@ You must also remember to add the `GITLAB_TOKEN` and `COMPATHELPER_PRIV` CI secr
 #### GitHub & GitLab
 | Name | Description |
 | ---- | ----------- |
-| GIT_COMMITTER_NAME | Name to associate commits with |
-| GIT_COMMITTER_EMAIL | Email to associate commits with |
+| GIT_COMMITTER_NAME | Name to associate commits with [Default: CompatHelper Julia] |
+| GIT_COMMITTER_EMAIL | Email to associate commits with [Default: compathelper_noreply@julialang.org] |
 | COMPATHELPER_PRIV | Plain Text or Base64 Encoded SSH Public Key for git pushes and API calls |
 
 #### GitHub
