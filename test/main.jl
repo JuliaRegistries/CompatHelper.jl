@@ -7,7 +7,7 @@
         )
     end
 
-    @testset "successful run GitHub" begin
+    @testset "no pr GitHub" begin
         tmpdir = mktempdir()
 
         cd(tmpdir) do
@@ -30,11 +30,46 @@
                 withenv(
                     "GITHUB_REPOSITORY" => "CompatHelper.jl", "GITHUB_TOKEN" => "token"
                 ) do
-                    CompatHelper.main()
+                    prs = CompatHelper.main()
+                    @test length(prs) == 0
                 end
             end
         end
     end
+
+    @testset "successful run GitHub" begin
+        tmpdir = mktempdir()
+
+        cd(tmpdir) do
+            patches = [
+                git_clone_patch,
+                project_toml_patch,
+                clone_all_registries_patch,
+                rm_patch,
+                pr_titles_mock,
+                git_push_patch,
+                gh_pr_patch,
+                make_clone_https_patch(tmpdir),
+                decode_pkey_patch,
+                gh_get_repo_patch,
+                cd_patch,
+                git_gmb_patch,
+                git_checkout_patch,
+                gh_make_pr_patch,
+            ]
+            apply(patches) do
+                withenv(
+                    "GITHUB_REPOSITORY" => "CompatHelper.jl", "GITHUB_TOKEN" => "token"
+                ) do
+                    prs = CompatHelper.main()
+                    @test length(prs) == 1
+                    @test prs[1] isa GitHub.PullRequest
+                end
+            end
+        end
+    end
+
+
 
     @testset "successful run GitLab" begin
         mktempdir() do tmpdir
@@ -51,6 +86,7 @@
                     decode_pkey_patch,
                     gl_get_repo_patch,
                     cd_patch,
+                    gl_make_pr_patch,
                 ]
 
                 apply(patches) do
@@ -61,7 +97,9 @@
                         "GITHUB_REPOSITORY" => "false",
                     ) do
                         delete!(ENV, "GITHUB_REPOSITORY")
-                        CompatHelper.main()
+                        prs = CompatHelper.main()
+                        @test length(prs) == 1
+                        @test prs[1] isa GitLab.MergeRequest
                     end
                 end
             end

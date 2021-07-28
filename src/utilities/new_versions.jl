@@ -247,6 +247,7 @@ function make_pr_for_new_version(
     end
 
     # Make a dir for our SSH PrivateKey which we will use only if it has been enabled
+    created_pr = nothing
     with_temp_dir(; cleanup=true) do ssh_private_key_dir
         ssh_envvar = has_ssh_private_key(; env=env)
 
@@ -306,11 +307,13 @@ function make_pr_for_new_version(
 
                 cc_user && cc_mention_user(forge, repo, new_pr; env=env)
                 unsub_from_prs && unsub_from_pr(forge, new_pr)
+
+                created_pr = new_pr
             end
         end
     end
 
-    return nothing
+    return created_pr
 end
 
 function cc_mention_user(

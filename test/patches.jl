@@ -143,3 +143,15 @@ gl_unsub_patch = @patch function GitForge.unsubscribe_from_pull_request(
 )
     return GitLab.MergeRequest(), nothing
 end
+
+gh_make_pr_patch = @patch function CompatHelper.make_pr_for_new_version(
+    ::GitHub.GitHubAPI, ::GitHub.Repo, ::DepInfo, ::EntryType, ::CIService; kwargs...
+)
+    return GitHub.PullRequest()
+end
+
+gl_make_pr_patch = @patch function CompatHelper.make_pr_for_new_version(
+    ::GitLab.GitLabAPI, ::GitLab.Project, ::DepInfo, ::EntryType, ::CIService; kwargs...
+)
+    return GitLab.MergeRequest()
+end
