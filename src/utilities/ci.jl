@@ -10,7 +10,7 @@ struct GitHubActions <: CIService
         username="github-actions[bot]",
         email="41898282+github-actions[bot]@users.noreply.github.com",
         api_hostname="https://api.github.com",
-        clone_hostname="github.com"
+        clone_hostname="github.com",
     )
         return new(username, email, api_hostname, clone_hostname)
     end
@@ -26,7 +26,7 @@ struct GitLabCI <: CIService
         username="gitlab-ci[bot]",
         email="gitlab-ci[bot]@gitlab.com",
         api_hostname="https://gitlab.com/api/v4",
-        clone_hostname="gitlab.com"
+        clone_hostname="gitlab.com",
     )
         return new(username, email, api_hostname, clone_hostname)
     end

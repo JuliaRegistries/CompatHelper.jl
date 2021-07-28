@@ -69,8 +69,6 @@
         end
     end
 
-
-
     @testset "successful run GitLab" begin
         mktempdir() do tmpdir
             cd(tmpdir) do
