@@ -249,7 +249,7 @@ end
     end
 end
 
-@testset "add_compat_entry" begin
+@testset "modify_project_toml" begin
     mktempdir() do tmpdir
         # Lets copy our test Project.toml to the tmpdir for this test
         src = joinpath(@__DIR__, "..", "deps", "Project.toml")
@@ -259,10 +259,36 @@ end
         project = TOML.parsefile(dst)
         @test !haskey(project["compat"], "PackageA")
 
-        CompatHelper.add_compat_entry("PackageA", tmpdir, "= 1.2")
+        CompatHelper.modify_project_toml("PackageA", tmpdir, "= 1.2", false)
 
         project = TOML.parsefile(dst)
         @test project["compat"]["PackageA"] == "= 1.2"
+    end
+end
+
+@testset "bump_package_version" begin
+    @testset "minor bump" begin
+        mock_toml = Dict("version" => "1.4.5")
+
+        @test mock_toml["version"] == "1.4.5"
+        CompatHelper.bump_package_version!(mock_toml)
+        @test mock_toml["version"] == "1.5.0"
+    end
+
+    @testset "patch bump" begin
+        mock_toml = Dict("version" => "0.5.2")
+
+        @test mock_toml["version"] == "0.5.2"
+        CompatHelper.bump_package_version!(mock_toml)
+        @test mock_toml["version"] == "0.5.3"
+    end
+
+    @testset "dev prerelease" begin
+        mock_toml = Dict("version" => "1.2.3-DEV")
+
+        @test mock_toml["version"] == "1.2.3-DEV"
+        CompatHelper.bump_package_version!(mock_toml)
+        @test mock_toml["version"] == "1.2.3-DEV"
     end
 end
 

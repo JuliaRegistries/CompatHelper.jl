@@ -216,6 +216,7 @@ function make_pr_for_new_version(
     pr_title_prefix::String="",
     unsub_from_prs=false,
     cc_user=false,
+    bump_version=false,
 )
     if !continue_with_pr(dep, bump_compat_containing_equality_specifier)
         return nothing
@@ -273,11 +274,13 @@ function make_pr_for_new_version(
             new_branch_name = "compathelper/new_version/$(get_random_string())"
             git_branch(new_branch_name; checkout=true)
 
-            # Add new compat entry to project.toml and write it out
-            add_compat_entry(
+            # Add new compat entry to project.toml, bump the version if needed,
+            # and write it out
+            modify_project_toml(
                 dep.package.name,
                 joinpath(tmpdir, LOCAL_REPO_NAME, subdir),
                 brand_new_compat,
+                bump_version,
             )
             git_add()
 
@@ -338,20 +341,54 @@ function unsub_from_pr(api::GitLab.GitLabAPI, pr::GitLab.MergeRequest)
     return @mock GitForge.unsubscribe_from_pull_request(api, pr.project_id, pr.iid)
 end
 
-function add_compat_entry(
-    name::AbstractString, repo_path::AbstractString, brand_new_compat::AbstractString
+function modify_project_toml(
+    name::AbstractString,
+    repo_path::AbstractString,
+    brand_new_compat::AbstractString,
+    bump_version::Bool,
 )
+    # Open up Project.toml
     project_file = joinpath(repo_path, "Project.toml")
     project = TOML.parsefile(project_file)
 
+    # Add the new compat
     add_compat_section!(project)
     project["compat"][name] = brand_new_compat
 
+    # Bump the version if specified
+    bump_version && bump_package_version!(project)
+
+    # Write the file back out
     open(project_file, "w") do io
         TOML.print(
             io, project; sorted=true, by=key -> (Pkg.Types.project_key_order(key), key)
         )
     end
+end
+
+function bump_package_version!(project::Dict)
+    version = VersionNumber(project["version"])
+
+    # Only bump the version if prerelease is empty
+    !isempty(version.prerelease) && return nothing
+
+    # Bump minor if version > 1.0, else bump patch
+    if version.major >= 1
+        version = VersionNumber(
+            version.major, version.minor + 1, 0, version.prerelease, version.build
+        )
+    else
+        version = VersionNumber(
+            version.major,
+            version.minor,
+            version.patch + 1,
+            version.prerelease,
+            version.build
+        )
+    end
+
+    project["version"] = string(version)
+    return project
 end
 
 function create_ssh_private_key(dir::AbstractString; env=ENV)
