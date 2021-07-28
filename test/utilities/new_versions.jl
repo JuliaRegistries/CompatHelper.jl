@@ -189,9 +189,7 @@ end
 
     @testset "GitLab" begin
         result = CompatHelper.get_url_for_ssh(
-            GitLab.GitLabAPI(),
-            gitlab,
-            GitLab.Project(; path_with_namespace="full_name"),
+            GitLab.GitLabAPI(), gitlab, GitLab.Project(; path_with_namespace="full_name")
         )
 
         @test result == "git@hostname:full_name.git"

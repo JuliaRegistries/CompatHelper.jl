@@ -148,9 +148,7 @@ function create_new_pull_request(
     )
 end
 
-function get_url_with_auth(
-    api::GitHub.GitHubAPI, ci::GitHubActions, repo::GitHub.Repo
-)
+function get_url_with_auth(api::GitHub.GitHubAPI, ci::GitHubActions, repo::GitHub.Repo)
     return "https://x-access-token:$(api.token.token)@$(ci.clone_hostname)/$(repo.full_name).git"
 end
 
@@ -158,9 +156,7 @@ function get_url_for_ssh(::GitHub.GitHubAPI, ci::GitHubActions, repo::GitHub.Rep
     return "git@$(ci.clone_hostname):$(repo.full_name).git"
 end
 
-function get_url_with_auth(
-    api::GitLab.GitLabAPI, ci::GitLabCI, repo::GitLab.Project
-)
+function get_url_with_auth(api::GitLab.GitLabAPI, ci::GitLabCI, repo::GitLab.Project)
     return "https://oauth2:$(api.token.token)@$(ci.clone_hostname)/$(repo.path_with_namespace).git"
 end
 
@@ -383,7 +379,7 @@ function bump_package_version!(project::Dict)
             version.minor,
             version.patch + 1,
             version.prerelease,
-            version.build
+            version.build,
         )
     end
 
