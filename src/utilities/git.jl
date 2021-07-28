@@ -70,7 +70,7 @@ function git_clone(
     withenv(
         "GIT_SSH_COMMAND" => isnothing(pkey_filename) ? "ssh" : "ssh -i $pkey_filename"
     ) do
-        run(`git clone $url $local_path`)
+        @mock run(`git clone $url $local_path`)
     end
 
     return nothing

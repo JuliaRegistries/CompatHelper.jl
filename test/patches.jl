@@ -155,3 +155,10 @@ gl_make_pr_patch = @patch function CompatHelper.make_pr_for_new_version(
 )
     return GitLab.MergeRequest()
 end
+
+function make_ssh_clone_patch(dir)
+    return @patch function Base.run(cmd)
+        mkdir(dir)
+        return run(`touch $dir/foo.txt`)
+    end
+end
