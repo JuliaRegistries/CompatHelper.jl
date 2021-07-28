@@ -4,33 +4,38 @@ CurrentModule = CompatHelper
 
 # Self-Hosting and Other Environments
 
-It's possible to run CompatHelper on your infrastructure in case of GitHub Enterprise or other setups.
+It is possible to run CompatHelper on custom infrastructure.
+This includes GitHub Enterprise, public GitLab, or even private GitLab.
+To use any of these you need to just create and pass along the CI Configuration.
+The example below would be for GitHub Enterprise:
 
-Basically it should be all configurable by passing values to `CompatHelper.main()` function.
-To run it on GitHub Enterprise, e.g. on address `github.company.com` you can do
 ```julia
 using CompatHelper
 
-ENV["GITHUB_TOKEN"] = "github access token"
-ENV["GITHUB_REPOSITORY"] = "org/repo"
-username = "github user name that matches the access token"
-email = "email address"
+ENV["GITHUB_TOKEN"] = "GitHub Enterprise Personal Access Token"
+ENV["GITHUB_REPOSITORY"] = "Organization/Repository"
 
-CompatHelper.main(
-    ENV,
-    CompatHelper.GitHubActions(username, email);
-    hostname_for_api = "https://github.company.com/api/v3",
-    hostname_for_clone = "github.company.com",
+config = CompatHelper.GitHubActions(;
+    username="GitHub Enterprise Username",
+    email="GitHub Enterprise Email",
+    api_hostname="https://github.company.com/api/v3",
+    clone_hostname="github.company.com"
 )
+
+CompatHelper.main(ENV, config)
 ```
 
-To run it on TeamCity instead of GitHub Actions, you need to specify the `ci_cfg` parameter, e.g. like this.
+You can also create your own configurations, for example TeamCity:
+
 ```julia
 using CompatHelper
-CompatHelper.main(
-    ENV,
-    CompatHelper.TeamCity("<your bot github account username>", "<your bot github email>"),
+
+config = CompatHelper.GitHubActions(;
+    username="TeamCity Username"
+    email="TeamCity Email",
+    api_hostname="http://<TeamCity Server host>:<port>/app/rest/server"
+    clone_hostname="http://<TeamCity Server host>"
 )
+
+CompatHelper.main(ENV, config)
 ```
-Because of high configurability of TeamCity it's advised to pass the TeamCity structure explicitly without usage of the
-`auto_detect_ci_service` function, which is suitable for some simpler setups.

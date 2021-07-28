@@ -8,7 +8,7 @@ CurrentModule = CompatHelper
 
 By default, CompatHelper expects your git repository to contain a single package, and that the `Project.toml` for that package exists in the top-level directory. You can indicate that you want CompatHelper to process one or many packages that exist in subdirectories of the git repository by passing the `subdirs` keyword to the main function. For example:
 ```julia
-CompatHelper.main(; subdirs = ["", "Subdir1", "very/deeply/nested/Subdir2"])
+CompatHelper.main(; subdirs=["", "Subdir1", "very/deeply/nested/Subdir2"])
 ```
 Note that the convention for specifying a top-level directory in the `subdirs` keyword is `[""]`
 
@@ -23,12 +23,44 @@ my_registries = [Pkg.RegistrySpec(name = "General",
                                   uuid = "ccbd2cc2-2954-11e9-1ccf-f3e7900901ca",
                                   url = "https://github.com/BioJulia/BioJuliaRegistry.git")]
 
-CompatHelper.main(; registries = my_registries)
+CompatHelper.main(; registries=my_registries)
 ```
 
 ## Overriding the default branch
 
 By default, CompatHelper will open pull requests against your repository's default branch. If you would like to override this behavior, set the `master_branch` keyword argument. For example:
 ```julia
-CompatHelper.main(; master_branch = "my-custom-branch")
+CompatHelper.main(; master_branch="my-custom-branch")
 ```
+
+## EntryType
+
+Define how you want to handle compat entries.
+
+- `KeepEntry`: Default value, this will keep the existing compat entry for a project and add the new one in addition.
+- `DropEntry`: Chose to drop the existing compat entry and replace it with the new one.
+
+`KeepEntry` is the default, but if you'd liek yo use `DropEntry` you can do the following:
+```julia
+CompatHelper.main(; entry_type=DropEntry())
+```
+
+## Unsubscribe from Pull Requests
+
+When a compat Pull Request is created, the user/bot that created the PR will be unsubscribed from the PR that it just created. This is needed in some situations to lower the amount of noise a bot may generate by being subscribed to a PR as any comments/activity will trigger an email/notification for that bot.
+
+Currently this only works for GitLab as it doesn't seem like the GitHub API has an endpoint for this.
+```julia
+CompatHelper.main(; ubsub_from_prs=true)
+```
+
+## CC User
+
+When a compat Pull Request is created, you might want the user that generated the PR to be notified which should subscribe them to the PR. This can be used in situations where a user manually triggers a CompatHelper run on GitLab, but has it set up so that the PR is created by a bot. In this case, the user would like to be subscribed to the new PRs.
+
+This will use the `GITHUB_ACTOR` or `GITLAB_USER_LOGIN` environment variables to determine which user to mention.
+
+```julia
+CompatHElper.main(; cc_user=true)
+```
+
