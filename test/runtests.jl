@@ -1,6 +1,7 @@
 using Aqua
 using Base64
 using CompatHelper
+using CompatHelper: DepInfo, EntryType
 using Dates
 using GitForge
 using GitForge: GitForge, GitHub, GitLab

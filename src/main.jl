@@ -50,10 +50,12 @@ function main(
     cc_user=false,
     bump_version=false,
 )
+    generated_prs = Vector{Union{GitHub.PullRequest,GitLab.MergeRequest}}()
+
     api, repo = get_api_and_repo(ci_cfg)
 
     for subdir in subdirs
-        deps = @mock get_project_deps(
+        deps = get_project_deps(
             api,
             ci_cfg,
             repo;
@@ -61,10 +63,10 @@ function main(
             include_jll=include_jll,
             master_branch=master_branch,
         )
-        @mock get_latest_version_from_registries!(deps, registries)
+        get_latest_version_from_registries!(deps, registries)
 
         for dep in deps
-            @mock make_pr_for_new_version(
+            pr = @mock make_pr_for_new_version(
                 api,
                 repo,
                 dep,
@@ -79,8 +81,12 @@ function main(
                 cc_user=cc_user,
                 bump_version=bump_version,
             )
+
+            if !isnothing(pr)
+                push!(generated_prs, pr)
+            end
         end
     end
 
-    return nothing
+    return generated_prs
 end

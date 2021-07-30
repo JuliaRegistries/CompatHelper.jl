@@ -243,13 +243,6 @@ end
     end
 end
 
-function make_ssh_clone_patch(dir)
-    return @patch function Base.run(cmd)
-        mkdir(dir)
-        return run(`touch $dir/foo.txt`)
-    end
-end
-
 @testset "git_clone" begin
     @testset "HTTPS" begin
         mktempdir() do f

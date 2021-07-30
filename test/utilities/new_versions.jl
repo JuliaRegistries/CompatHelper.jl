@@ -189,9 +189,7 @@ end
 
     @testset "GitLab" begin
         result = CompatHelper.get_url_for_ssh(
-            GitLab.GitLabAPI(),
-            gitlab,
-            GitLab.Project(; path_with_namespace="full_name"),
+            GitLab.GitLabAPI(), gitlab, GitLab.Project(; path_with_namespace="full_name")
         )
 
         @test result == "git@hostname:full_name.git"
@@ -406,7 +404,7 @@ end
                         delete!(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
                     end
 
-                    CompatHelper.make_pr_for_new_version(
+                    pr = CompatHelper.make_pr_for_new_version(
                         GitHub.GitHubAPI(; token=GitHub.Token("token")),
                         GitHub.Repo(;
                             owner=GitHub.User(; login="username"), name="PackageB"
@@ -419,10 +417,11 @@ end
                         CompatHelper.KeepEntry(),
                         CompatHelper.GitHubActions(),
                     )
+                    @test pr isa GitHub.PullRequest
 
                     # SSH
                     withenv(CompatHelper.PRIVATE_SSH_ENVVAR => "foo") do
-                        CompatHelper.make_pr_for_new_version(
+                        pr = CompatHelper.make_pr_for_new_version(
                             GitHub.GitHubAPI(; token=GitHub.Token("token")),
                             GitHub.Repo(;
                                 owner=GitHub.User(; login="username"), name="PackageC"
@@ -435,6 +434,7 @@ end
                             CompatHelper.KeepEntry(),
                             CompatHelper.GitHubActions(),
                         )
+                        @test pr isa GitHub.PullRequest
                     end
                 end
             end

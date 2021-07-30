@@ -143,3 +143,22 @@ gl_unsub_patch = @patch function GitForge.unsubscribe_from_pull_request(
 )
     return GitLab.MergeRequest(), nothing
 end
+
+gh_make_pr_patch = @patch function CompatHelper.make_pr_for_new_version(
+    ::GitHub.GitHubAPI, ::GitHub.Repo, ::DepInfo, ::EntryType, ::CIService; kwargs...
+)
+    return GitHub.PullRequest()
+end
+
+gl_make_pr_patch = @patch function CompatHelper.make_pr_for_new_version(
+    ::GitLab.GitLabAPI, ::GitLab.Project, ::DepInfo, ::EntryType, ::CIService; kwargs...
+)
+    return GitLab.MergeRequest()
+end
+
+function make_ssh_clone_patch(dir)
+    return @patch function Base.run(cmd)
+        mkdir(dir)
+        return run(`touch $dir/foo.txt`)
+    end
+end

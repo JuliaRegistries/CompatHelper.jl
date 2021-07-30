@@ -148,9 +148,7 @@ function create_new_pull_request(
     )
 end
 
-function get_url_with_auth(
-    api::GitHub.GitHubAPI, ci::GitHubActions, repo::GitHub.Repo
-)
+function get_url_with_auth(api::GitHub.GitHubAPI, ci::GitHubActions, repo::GitHub.Repo)
     return "https://x-access-token:$(api.token.token)@$(ci.clone_hostname)/$(repo.full_name).git"
 end
 
@@ -158,9 +156,7 @@ function get_url_for_ssh(::GitHub.GitHubAPI, ci::GitHubActions, repo::GitHub.Rep
     return "git@$(ci.clone_hostname):$(repo.full_name).git"
 end
 
-function get_url_with_auth(
-    api::GitLab.GitLabAPI, ci::GitLabCI, repo::GitLab.Project
-)
+function get_url_with_auth(api::GitLab.GitLabAPI, ci::GitLabCI, repo::GitLab.Project)
     return "https://oauth2:$(api.token.token)@$(ci.clone_hostname)/$(repo.path_with_namespace).git"
 end
 
@@ -247,6 +243,7 @@ function make_pr_for_new_version(
     end
 
     # Make a dir for our SSH PrivateKey which we will use only if it has been enabled
+    created_pr = nothing
     with_temp_dir(; cleanup=true) do ssh_private_key_dir
         ssh_envvar = has_ssh_private_key(; env=env)
 
@@ -306,11 +303,13 @@ function make_pr_for_new_version(
 
                 cc_user && cc_mention_user(forge, repo, new_pr; env=env)
                 unsub_from_prs && unsub_from_pr(forge, new_pr)
+
+                created_pr = new_pr
             end
         end
     end
 
-    return nothing
+    return created_pr
 end
 
 function cc_mention_user(
@@ -383,7 +382,7 @@ function bump_package_version!(project::Dict)
             version.minor,
             version.patch + 1,
             version.prerelease,
-            version.build
+            version.build,
         )
     end
 
