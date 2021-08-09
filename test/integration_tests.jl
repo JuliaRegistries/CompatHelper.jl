@@ -25,6 +25,8 @@ function run_integration_tests(
         end
     end
 
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
     @testset "master_2" begin
         with_master_branch(templates("master_2"), url, "master") do master_2
             withenv(env...) do
@@ -39,6 +41,8 @@ function run_integration_tests(
         end
     end
 
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
     @testset "master_3" begin
         with_master_branch(templates("master_3"), url, "master") do master_3
             withenv(env...) do
@@ -50,6 +54,8 @@ function run_integration_tests(
                     entry_type=DropEntry(),
                 )
 
+                sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
                 CompatHelper.main(
                     ENV,
                     ci_cfg;
@@ -57,6 +63,8 @@ function run_integration_tests(
                     master_branch=master_3,
                     entry_type=KeepEntry(),
                 )
+
+                sleep(1)  # Prevent hitting the GH Secondary Rate Limits
 
                 CompatHelper.main(
                     ENV,
@@ -68,6 +76,8 @@ function run_integration_tests(
             end
         end
     end
+
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
 
     @testset "master_4" begin
         with_master_branch(templates("master_4"), url, "master") do master_4
@@ -83,6 +93,8 @@ function run_integration_tests(
         end
     end
 
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
     @testset "master_5" begin
         with_master_branch(templates("master_5"), url, "master") do master_5
             withenv(env...) do
@@ -96,6 +108,8 @@ function run_integration_tests(
             end
         end
     end
+
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
 
     @testset "master_6" begin
         with_master_branch(templates("master_6"), url, "master") do master_6
@@ -112,6 +126,8 @@ function run_integration_tests(
         end
     end
 
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
     @testset "master_7" begin
         with_master_branch(templates("master_7"), url, "master") do master_7
             withenv(env...) do
@@ -123,6 +139,8 @@ function run_integration_tests(
                     entry_type=DropEntry(),
                     bump_compat_containing_equality_specifier=false,
                 )
+
+                sleep(1)  # Prevent hitting the GH Secondary Rate Limits
 
                 CompatHelper.main(
                     ENV,
