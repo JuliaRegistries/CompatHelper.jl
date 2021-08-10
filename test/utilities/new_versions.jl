@@ -139,11 +139,7 @@ end
         apply(gl_pr_patch) do
             result, n = CompatHelper.create_new_pull_request(
                 GitLab.GitLabAPI(),
-                GitLab.Project(;
-                    owner=GitLab.User(; name="username"),
-                    name="repo",
-                    path_with_namespace="owner/repo",
-                ),
+                GitLab.Project(; id=1),
                 "new_branch",
                 "master_brach",
                 "title",

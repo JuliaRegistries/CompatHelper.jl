@@ -42,7 +42,7 @@ gh_pr_patch = @patch function GitForge.create_pull_request(
 end
 
 gl_pr_patch = @patch function GitForge.create_pull_request(
-    ::GitLab.GitLabAPI, owner::AbstractString, repo::AbstractString; kwargs...
+    ::GitLab.GitLabAPI, id::Integer; kwargs...
 )
     return GitLab.MergeRequest(), nothing
 end
