@@ -341,6 +341,20 @@ end
     end
 end
 
+@testset "get_new_branch_name" begin
+    @testset "short" begin
+        nbn = CompatHelper.get_new_branch_name(true)
+        @test startswith(nbn, "ch/")
+        @test length(nbn) == 14
+    end
+
+    @testset "long" begin
+        nbn = CompatHelper.get_new_branch_name()
+        @test startswith(nbn, "compathelper/new_version/")
+        @test length(nbn) == 60
+    end
+end
+
 @testset "make_pr_for_new_version" begin
     @testset "latest_version === nothing" begin
         @test isnothing(

@@ -38,7 +38,11 @@ function add_compat_section!(project::Dict)
     return project
 end
 
-function get_random_string()
+function get_random_string(; short=false)
     randint = lpad(string(rand(UInt32)), 11, "0")
-    return string(utc_to_string(now_localzone()), "-", randint)
+    if short
+        return string(randint)
+    else
+        return string(utc_to_string(now_localzone()), "-", randint)
+    end
 end

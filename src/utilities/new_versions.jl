@@ -213,6 +213,7 @@ function make_pr_for_new_version(
     unsub_from_prs=false,
     cc_user=false,
     bump_version=false,
+    short_branch_name=false,
 )
     if !continue_with_pr(dep, bump_compat_containing_equality_specifier)
         return nothing
@@ -268,7 +269,7 @@ function make_pr_for_new_version(
             git_checkout(master_branch_name)
 
             # Create compathelper branch and check it out
-            new_branch_name = "compathelper/new_version/$(get_random_string())"
+            new_branch_name = get_new_branch_name(short_branch_name)
             git_branch(new_branch_name; checkout=true)
 
             # Add new compat entry to project.toml, bump the version if needed,
@@ -310,6 +311,15 @@ function make_pr_for_new_version(
     end
 
     return created_pr
+end
+
+function get_new_branch_name(short=false)
+    new_name = if short
+        "ch/$(get_random_string(; short=true))"
+    else
+        "compathelper/new_version/$(get_random_string())"
+    end
+    return new_name
 end
 
 function cc_mention_user(

@@ -17,6 +17,7 @@ const DEFAULT_REGISTRIES = Pkg.RegistrySpec[Pkg.RegistrySpec(;
         include_jll::Bool=false,
         unsub_from_prs=false,
         cc_user=false,
+        short_branch_name=false,
     )
 
 Main entry point for the package.
@@ -35,6 +36,7 @@ Main entry point for the package.
 - `include_jll::Bool=false`: Include JLL packages to bump
 - `unsub_from_prs=false`: Unsubscribe the user from the pull requests
 - `cc_user=false`: CC the user on the pull requests
+- `short_branch_name=false`: Use a shorter branch name for created PRs
 """
 function main(
     env::AbstractDict=ENV,
@@ -49,6 +51,7 @@ function main(
     unsub_from_prs=false,
     cc_user=false,
     bump_version=false,
+    short_branch_name=false,
 )
     generated_prs = Vector{Union{GitHub.PullRequest,GitLab.MergeRequest}}()
 
@@ -80,6 +83,7 @@ function main(
                 unsub_from_prs=unsub_from_prs,
                 cc_user=cc_user,
                 bump_version=bump_version,
+                short_branch_name=false,
             )
 
             if !isnothing(pr)

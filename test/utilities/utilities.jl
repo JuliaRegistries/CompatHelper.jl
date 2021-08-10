@@ -34,7 +34,13 @@ end
 end
 
 @testset "get_random_string" begin
-    @test length(CompatHelper.get_random_string()) == 35
+    @testset "long" begin
+        @test length(CompatHelper.get_random_string()) == 35
+    end
+
+    @testset "short" begin
+        @test length(CompatHelper.get_random_string(; short=true)) == 11
+    end
 end
 
 @testset "add_compat_section!" begin
