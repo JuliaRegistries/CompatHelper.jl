@@ -114,13 +114,9 @@ function create_new_pull_request(
     title::AbstractString,
     body::AbstractString,
 )
-    repo_owner = String(rsplit(repo.path_with_namespace, "/"; limit=2)[1])
-
     return @mock GitForge.create_pull_request(
         api,
-        repo_owner,
-        repo.name;
-        id=repo.id,
+        repo.id;
         source_branch=new_branch_name,
         target_branch=master_branch_name,
         title=title,
