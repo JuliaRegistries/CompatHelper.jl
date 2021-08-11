@@ -38,15 +38,15 @@ CompatHelper:
     - apt-get update -qq && apt-get install -y git
     - |
       julia --color=yes -e "
-        import Pkg
-        name = "CompatHelper"
-        uuid = "aa819f21-2bde-4658-8897-bab36330d9b7"
-        version = "3"
+        import Pkg;
+        name = \"CompatHelper\";
+        uuid = \"aa819f21-2bde-4658-8897-bab36330d9b7\";
+        version = \"3\";
         Pkg.add(; name, uuid, version)"
   script:
     - |
       julia --color=yes -e "
-        import CompatHelper
+        import CompatHelper;
         CompatHelper.main()"
 ```
 
