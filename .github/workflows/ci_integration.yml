@@ -9,7 +9,6 @@ on:
   push:
     branches:
       - master
-      - v3-dev
       - staging
       - trying
 jobs:
