@@ -1,11 +1,7 @@
 name: Git branch checks
 on:
-  pull_request:
-    branches:
-      - v3-dev
   push:
     branches:
-      - v3-dev
       - staging
       - trying
   workflow_dispatch:
