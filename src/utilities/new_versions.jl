@@ -362,6 +362,9 @@ function modify_project_toml(
 end
 
 function bump_package_version!(project::Dict)
+    # do nothing if version is not defined
+    !("version" in keys(project)) && return nothing
+    
     version = VersionNumber(project["version"])
 
     # Only bump the version if prerelease is empty
