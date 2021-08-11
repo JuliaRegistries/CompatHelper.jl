@@ -284,6 +284,12 @@ end
         CompatHelper.bump_package_version!(mock_toml)
         @test mock_toml["version"] == "1.2.3-DEV"
     end
+    
+    @testset "version undefined" begin
+        mock_toml = Dict()
+        CompatHelper.bump_package_version!(mock_toml)
+        @test isempty(mock_toml)
+    end
 end
 
 @testset "cc_mention_user" begin
