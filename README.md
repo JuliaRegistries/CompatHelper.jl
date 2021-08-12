@@ -40,7 +40,7 @@ CompatHelper:
       julia --color=yes -e "
         import Pkg;
         ENV["JULIA_PKG_SERVER"] = "";
-        Pkg.Registry.add("General");
+        Pkg.Registry.add("General");"
     - |
       julia --color=yes -e "
         import Pkg;
