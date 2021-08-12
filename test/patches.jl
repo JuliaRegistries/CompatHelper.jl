@@ -76,8 +76,8 @@ end
 gh_gpr_patch = @patch function CompatHelper.get_pull_requests(
     api::GitHub.GitHubAPI, repo::GitHub.Repo, state::String
 )
-    origin_repo = GitHub.Repo(; id=1)
-    fork_repo = GitHub.Repo(; id=2)
+    origin_repo = GitHub.Repo(; id=1, fork=false)
+    fork_repo = GitHub.Repo(; id=2, fork=true)
 
     pr_from_origin = GitHub.PullRequest(;
         head=GitHub.Head(; repo=origin_repo),
@@ -95,7 +95,7 @@ end
 gl_gpr_patch = @patch function CompatHelper.get_pull_requests(
     api::GitLab.GitLabAPI, repo::GitLab.Project, state::String
 )
-    origin_repo = GitLab.Project(; id=1)
+    origin_repo = GitLab.Project(; id=1, fork=false)
 
     pr_from_origin = GitLab.MergeRequest(;
         project_id=1, author=GitLab.User(; username="foobar"), title="title"
