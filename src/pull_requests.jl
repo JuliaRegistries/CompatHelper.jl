@@ -35,7 +35,7 @@ function get_pull_requests(
     return @mock unique(paginated_prs)
 end
 
-not_pr_fork(repo::GitHub.Repo, pr::GitHub.PullRequest) = repo == pr.head.repo
+not_pr_fork(repo::GitHub.Repo, pr::GitHub.PullRequest) = !pr.head.repo.fork
 not_pr_fork(repo::GitLab.Project, pr::GitLab.MergeRequest) = repo.id == pr.project_id
 
 my_prs(username::String, pr::GitHub.PullRequest) = lower(pr.user.login) == lower(username)

@@ -35,8 +35,8 @@ end
 
     @testset "no forks" begin
         @testset "GitHub" begin
-            origin_repo = GitHub.Repo(; id=1)
-            fork_repo = GitHub.Repo(; id=2)
+            origin_repo = GitHub.Repo(; id=1, fork=false)
+            fork_repo = GitHub.Repo(; id=2, fork=true)
 
             pr_from_origin = GitHub.PullRequest(;
                 head=GitHub.Head(; repo=origin_repo),
@@ -61,8 +61,8 @@ end
         end
 
         @testset "GitLab" begin
-            origin_repo = GitLab.Project(; id=1)
-            fork_repo = GitLab.Project(; id=2)
+            origin_repo = GitLab.Project(; id=1, fork=false)
+            fork_repo = GitLab.Project(; id=2, fork=true)
 
             pr_from_origin = GitLab.MergeRequest(;
                 id=1, project_id=1, author=GitLab.User(; username=username), title="PR A"
@@ -85,7 +85,7 @@ end
 
     @testset "only my prs" begin
         @testset "GitHub" begin
-            origin_repo = GitHub.Repo(; id=1)
+            origin_repo = GitHub.Repo(; id=1, fork=false)
 
             pr_from_me = GitHub.PullRequest(;
                 head=GitHub.Head(; repo=origin_repo),
@@ -110,7 +110,7 @@ end
         end
 
         @testset "GitLab" begin
-            origin_repo = GitLab.Project(; id=1)
+            origin_repo = GitLab.Project(; id=1, fork=false)
 
             pr_from_me = GitLab.MergeRequest(;
                 id=1, project_id=1, author=GitLab.User(; username=username), title="PR A"
@@ -134,7 +134,7 @@ end
     @testset "no forks and only my prs" begin
         @testset "GitHub" begin
             api = GitForge.GitHub.GitHubAPI()
-            repo = GitHub.Repo(; id=1)
+            repo = GitHub.Repo(; id=1, fork=false)
 
             apply(gh_gpr_patch) do
                 prs = CompatHelper.get_pr_titles(api, repo, "foobar")
