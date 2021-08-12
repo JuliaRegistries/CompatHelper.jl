@@ -39,6 +39,11 @@ CompatHelper:
     - |
       julia --color=yes -e "
         import Pkg;
+        ENV["JULIA_PKG_SERVER"] = "";
+        Pkg.Registry.add("General");
+    - |
+      julia --color=yes -e "
+        import Pkg;
         name = \"CompatHelper\";
         uuid = \"aa819f21-2bde-4658-8897-bab36330d9b7\";
         version = \"3\";
