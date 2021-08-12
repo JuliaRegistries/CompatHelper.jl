@@ -7,6 +7,11 @@ jobs:
   CompatHelper:
     runs-on: ubuntu-latest
     steps:
+      - name: "Add the General registry via Git"
+        run: |
+          import Pkg
+          ENV["JULIA_PKG_SERVER"] = ""
+          Pkg.Registry.add("General")
       - name: "Install CompatHelper"
         run: |
           import Pkg
