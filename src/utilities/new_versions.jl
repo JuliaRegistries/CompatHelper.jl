@@ -1,5 +1,5 @@
-title_parenthetical(::KeepEntry) = " (keep existing compat)"
-title_parenthetical(::DropEntry) = " (drop existing compat)"
+title_parenthetical(::KeepEntry) = ", (keep existing compat)"
+title_parenthetical(::DropEntry) = ", (drop existing compat)"
 title_parenthetical(::NewEntry) = ""
 
 function body_info(::KeepEntry, name::AbstractString)
@@ -54,16 +54,18 @@ function pr_info(
     pr_title_prefix::String,
 )
     new_pr_title = m"""
-        $(pr_title_prefix)CompatHelper: add new compat entry for $(name) at version
-        $(compat_entry_for_latest_version) $(subdir_string), $(pr_title_parenthetical)
+    $(pr_title_prefix)CompatHelper: add new compat entry for $(name) at version
+    $(compat_entry_for_latest_version)$(subdir_string)$(pr_title_parenthetical)
     """
 
     new_pr_body = m"""
-        This pull request sets the compat entry for the `$(name)` package to `$(compat_entry)` $(subdir_string). $(pr_body_keep_or_drop)
-        Note: I have not tested your package with this new compat entry.
-        It is your responsibility to make sure that your package tests pass before you merge this pull request.
-        Note: Consider registering a new release of your package immediately after merging this PR, as downstream packages may depend on this for tests to pass.
-    """
+    This pull request sets the compat entry for the `$(name)` package to `$(compat_entry)`$(subdir_string).
+    $(pr_body_keep_or_drop)
+
+    Note: I have not tested your package with this new compat entry.
+    It is your responsibility to make sure that your package tests pass before you merge this pull request.
+    Note: Consider registering a new release of your package immediately after merging this PR, as downstream packages may depend on this for tests to pass.
+    """ls
 
     return (strip(new_pr_title), strip(new_pr_body))
 end
@@ -79,15 +81,17 @@ function pr_info(
     pr_title_prefix::String,
 )
     new_pr_title = m"""
-        $(pr_title_prefix)CompatHelper: bump compat for $(name) to
-        $(compat_entry_for_latest_version) $(subdir_string), $(pr_title_parenthetical)
+    $(pr_title_prefix)CompatHelper: bump compat for $(name) to
+    $(compat_entry_for_latest_version)$(subdir_string)$(pr_title_parenthetical)
     """
 
     new_pr_body = m"""
-        This pull request changes the compat entry for the `$(name)` package from `$(compat_entry_verbatim)` to `$(compat_entry)` $(subdir_string). $(pr_body_keep_or_drop)
-        Note: I have not tested your package with this new compat entry.
-        It is your responsibility to make sure that your package tests pass before you merge this pull request.
-    """
+    This pull request changes the compat entry for the `$(name)` package from `$(compat_entry_verbatim)` to `$(compat_entry)`$(subdir_string).
+    $(pr_body_keep_or_drop)
+
+    Note: I have not tested your package with this new compat entry.
+    It is your responsibility to make sure that your package tests pass before you merge this pull request.
+    """ls
 
     return (strip(new_pr_title), strip(new_pr_body))
 end

@@ -54,9 +54,7 @@ end
 pr_titles_mock = @patch function CompatHelper.get_pr_titles(
     ::GitForge.Forge, ::GitHub.Repo, ::String
 )
-    return [
-        "CompatHelper: bump compat for PackageA to\n    1 ,  (keep existing compat)", "foo"
-    ]
+    return ["CompatHelper: bump compat for PackageA to 1, (keep existing compat)", "foo"]
 end
 
 function make_clone_https_patch(dir::AbstractString)
