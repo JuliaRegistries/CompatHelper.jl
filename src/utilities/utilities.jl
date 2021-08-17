@@ -1,7 +1,14 @@
 lower(str::AbstractString) = lowercase(strip(str))
 
 function has_ssh_private_key(; env::AbstractDict=ENV)
-    return haskey(env, PRIVATE_SSH_ENVVAR) && env[PRIVATE_SSH_ENVVAR] != "false"
+    value = strip(get(env, PRIVATE_SSH_ENVVAR, ""))
+
+    x1 = haskey(env, PRIVATE_SSH_ENVVAR)
+    x2 = value isa AbstractString
+    x3 = !isempty(value)
+    x4 = value != "false"
+
+    return x1 && x2 && x3 && x4
 end
 
 function api_retry(f::Function)
