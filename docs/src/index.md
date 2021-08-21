@@ -15,7 +15,7 @@ If you would like to help with adding Julia support to Dependabot, join us in th
 
 ## Installation
 ### GitHub
-Create a file at `.github/workflows/CompatHelper.yml` with the contents of the [CompatHelper.yml](.github/workflows/CompatHelper.yml) that is included in this repository.
+Create a file at `.github/workflows/CompatHelper.yml` with the contents of the [CompatHelper.yml](https://github.com/JuliaRegistries/CompatHelper.jl/blob/master/.github/workflows/CompatHelper.yml) that is included in this repository.
 
 If you need to use any special arguments for the `main` function, you can modify this file to add them.
 
