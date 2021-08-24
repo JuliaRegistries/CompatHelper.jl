@@ -137,14 +137,10 @@ end
             CompatHelper.git_add()
             @test CompatHelper.git_commit("Message2")
 
-            @show read(`git log`, String)
-
             hash = read(`git rev-parse HEAD`, String)
             CompatHelper.git_reset("HEAD~1"; soft=true)
             sleep(1)
             @test CompatHelper.git_commit("Message2")
-
-            @show read(`git log`, String)
 
             new_hash = read(`git rev-parse HEAD`, String)
             @test hash != new_hash

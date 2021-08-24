@@ -243,6 +243,80 @@ end
     end
 end
 
+@testset "force_ci_trigger" begin
+    @testset "GitLab" begin
+        mktempdir() do f
+            cd(f) do
+                run(`git init`)
+
+                run(`touch foobar.txt`)
+                CompatHelper.git_add()
+                @test CompatHelper.git_commit("Message")
+
+                run(`touch bazbar.txt`)
+                CompatHelper.git_add()
+                @test CompatHelper.git_commit("Message2")
+
+                hash = read(`git rev-parse HEAD`, String)
+
+                CompatHelper.force_ci_trigger(GitLab.GitLabAPI(), "title", "master", "pkey")
+                new_hash = read(`git rev-parse HEAD`, String)
+                @test hash == new_hash
+            end
+        end
+    end
+
+    @testset "GitHub" begin
+        @testset "with pkey" begin
+            mktempdir() do f
+                cd(f) do
+                    run(`git init`)
+
+                    run(`touch foobar.txt`)
+                    CompatHelper.git_add()
+                    @test CompatHelper.git_commit("Message")
+
+                    run(`touch bazbar.txt`)
+                    CompatHelper.git_add()
+                    @test CompatHelper.git_commit("Message2")
+
+                    hash = read(`git rev-parse HEAD`, String)
+
+                    apply(git_push_patch) do
+                        CompatHelper.force_ci_trigger(GitHub.GitHubAPI(), "title", "master", "pkey")
+                    end
+                    new_hash = read(`git rev-parse HEAD`, String)
+                    @test hash != new_hash
+                end
+            end
+        end
+
+        @testset "without pkey" begin
+            mktempdir() do f
+                cd(f) do
+                    run(`git init`)
+
+                    run(`touch foobar.txt`)
+                    CompatHelper.git_add()
+                    @test CompatHelper.git_commit("Message")
+
+                    run(`touch bazbar.txt`)
+                    CompatHelper.git_add()
+                    @test CompatHelper.git_commit("Message2")
+
+                    hash = read(`git rev-parse HEAD`, String)
+
+                    apply(git_push_patch) do
+                        CompatHelper.force_ci_trigger(GitHub.GitHubAPI(), "title", "master", nothing)
+                    end
+                    new_hash = read(`git rev-parse HEAD`, String)
+                    @test hash == new_hash
+                end
+            end
+        end
+    end
+end
+
 @testset "modify_project_toml" begin
     mktempdir() do tmpdir
         # Lets copy our test Project.toml to the tmpdir for this test

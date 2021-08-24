@@ -351,6 +351,8 @@ function force_ci_trigger(
             @mock git_push("origin", branch_name, pkey_filename; force=true, env=env)
         end
     end
+
+    return nothing
 end
 
 function cc_mention_user(
