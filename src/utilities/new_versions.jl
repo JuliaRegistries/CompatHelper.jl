@@ -335,6 +335,7 @@ function force_ci_trigger(
 )
     # If we are on GitHub we need to amend the comment and force push to trigger
     # the CI. We only do this if an SSH key has been provided
+    # https://github.com/JuliaRegistries/CompatHelper.jl/issues/387
     if !isnothing(pkey_filename)
         # Do a soft reset to the previous commit
         git_reset("HEAD~1"; soft=true)
