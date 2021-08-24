@@ -17,6 +17,7 @@ const DEFAULT_REGISTRIES = Pkg.RegistrySpec[Pkg.RegistrySpec(;
         include_jll::Bool=false,
         unsub_from_prs=false,
         cc_user=false,
+        bump_version=false,
     )
 
 Main entry point for the package.
@@ -35,6 +36,7 @@ Main entry point for the package.
 - `include_jll::Bool=false`: Include JLL packages to bump
 - `unsub_from_prs=false`: Unsubscribe the user from the pull requests
 - `cc_user=false`: CC the user on the pull requests
+- `bump_version=false`: When set to true, the version in Project.toml will be bumped if a pull request is made. Minor bump if >= 1.0, or patch bump if < 1.0
 """
 function main(
     env::AbstractDict=ENV,
