@@ -304,6 +304,26 @@ function make_pr_for_new_version(
                 cc_user && cc_mention_user(forge, repo, new_pr; env=env)
                 unsub_from_prs && unsub_from_pr(forge, new_pr)
 
+                # If we are on GitHub we need to amend the comment and force push to trigger
+                # the CI. We only do this if an SSH key has been provided
+                if forge isa GitHub.GitHubAPI && !isnothing(pkey_filename)
+                    # Do a soft reset to the previous commit
+                    git_reset("HEAD~1"; soft=true)
+
+                    # Sleep for 1 second to make sure the timestamp changes
+                    sleep(1)
+
+                    # Commit the changes once again to generate a new SHA
+                    git_commit(new_pr_title; env=env)
+
+                    # Force push the changes to trigger the PR
+                    api_retry() do
+                        @mock git_push(
+                            "origin", new_branch_name, pkey_filename; force=true, env=env
+                        )
+                    end
+                end
+
                 created_pr = new_pr
             end
         end

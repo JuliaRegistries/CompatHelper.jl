@@ -124,6 +124,34 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
     end
 end
 
+@testset "git_reset" begin
+    mktempdir() do f
+        cd(f) do
+            run(`git init`)
+
+            run(`touch foobar.txt`)
+            CompatHelper.git_add()
+            @test CompatHelper.git_commit("Message")
+
+            run(`touch bazbar.txt`)
+            CompatHelper.git_add()
+            @test CompatHelper.git_commit("Message2")
+
+            @show read(`git log`, String)
+
+            hash = read(`git rev-parse HEAD`, String)
+            CompatHelper.git_reset("HEAD~1"; soft=true)
+            sleep(1)
+            @test CompatHelper.git_commit("Message2")
+
+            @show read(`git log`, String)
+
+            new_hash = read(`git rev-parse HEAD`, String)
+            @test hash != new_hash
+        end
+    end
+end
+
 @testset "git_commit" begin
     @testset "success" begin
         mktempdir() do f
