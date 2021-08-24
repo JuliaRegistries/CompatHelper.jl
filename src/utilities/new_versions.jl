@@ -303,26 +303,9 @@ function make_pr_for_new_version(
 
                 cc_user && cc_mention_user(forge, repo, new_pr; env=env)
                 unsub_from_prs && unsub_from_pr(forge, new_pr)
-
-                # If we are on GitHub we need to amend the comment and force push to trigger
-                # the CI. We only do this if an SSH key has been provided
-                if forge isa GitHub.GitHubAPI && !isnothing(pkey_filename)
-                    # Do a soft reset to the previous commit
-                    git_reset("HEAD~1"; soft=true)
-
-                    # Sleep for 1 second to make sure the timestamp changes
-                    sleep(1)
-
-                    # Commit the changes once again to generate a new SHA
-                    git_commit(new_pr_title; env=env)
-
-                    # Force push the changes to trigger the PR
-                    api_retry() do
-                        @mock git_push(
-                            "origin", new_branch_name, pkey_filename; force=true, env=env
-                        )
-                    end
-                end
+                force_ci_trigger(
+                    forge, new_pr_title, new_branch_name, pkey_filename; env=env
+                )
 
                 created_pr = new_pr
             end
@@ -330,6 +313,43 @@ function make_pr_for_new_version(
     end
 
     return created_pr
+end
+
+function force_ci_trigger(
+    api::GitLab.GitLabAPI,
+    pr_title::AbstractString,
+    branch_name::AbstractString,
+    pkey_filename::Union{AbstractString,Nothing};
+    env=ENV,
+)
+    # This does not need to happen for GitLab
+    return nothing
+end
+
+function force_ci_trigger(
+    api::GitHub.GitHubAPI,
+    pr_title::AbstractString,
+    branch_name::AbstractString,
+    pkey_filename::Union{AbstractString,Nothing};
+    env=ENV,
+)
+    # If we are on GitHub we need to amend the comment and force push to trigger
+    # the CI. We only do this if an SSH key has been provided
+    if !isnothing(pkey_filename)
+        # Do a soft reset to the previous commit
+        git_reset("HEAD~1"; soft=true)
+
+        # Sleep for 1 second to make sure the timestamp changes
+        sleep(1)
+
+        # Commit the changes once again to generate a new SHA
+        git_commit(pr_title; env=env)
+
+        # Force push the changes to trigger the PR
+        api_retry() do
+            @mock git_push("origin", branch_name, pkey_filename; force=true, env=env)
+        end
+    end
 end
 
 function cc_mention_user(

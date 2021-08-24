@@ -41,10 +41,7 @@ function git_push(
     return nothing
 end
 
-function git_reset(
-    commit::AbstractString;
-    soft=false,
-)
+function git_reset(commit::AbstractString; soft=false)
     soft_flag = soft ? ["--soft"] : []
     run(`git reset $soft_flag "$commit"`)
 
