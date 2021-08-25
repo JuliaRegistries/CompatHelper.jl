@@ -41,6 +41,13 @@ function git_push(
     return nothing
 end
 
+function git_reset(commit::AbstractString; soft=false)
+    soft_flag = soft ? ["--soft"] : []
+    run(`git reset $soft_flag "$commit"`)
+
+    return nothing
+end
+
 function git_commit(message::AbstractString=""; env=ENV)
     name, email = get_git_name_and_email(; env=env)
     cmd = `git -c user.name="$name" -c user.email="$email" commit -m $message`

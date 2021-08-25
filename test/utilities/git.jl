@@ -124,6 +124,41 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
     end
 end
 
+@testset "git_reset" begin
+    mktempdir() do f
+        cd(f) do
+            run(`git init`)
+
+            @test !isfile("foobar.txt")
+
+            run(`touch foobar.txt`)
+            CompatHelper.git_add()
+            @test CompatHelper.git_commit("Message")
+
+            @test !isfile("bazbar.txt")
+
+            run(`touch bazbar.txt`)
+            CompatHelper.git_add()
+            @test CompatHelper.git_commit("Message2")
+
+            @test isfile("foobar.txt")
+            @test isfile("bazbar.txt")
+
+            hash = read(`git rev-parse HEAD`, String)
+            CompatHelper.git_reset("HEAD~1"; soft=true)
+
+            @test isfile("foobar.txt")
+            @test isfile("bazbar.txt")
+
+            sleep(1) # To make sure we get a new timestamp
+            @test CompatHelper.git_commit("Message2")
+
+            new_hash = read(`git rev-parse HEAD`, String)
+            @test hash != new_hash
+        end
+    end
+end
+
 @testset "git_commit" begin
     @testset "success" begin
         mktempdir() do f
