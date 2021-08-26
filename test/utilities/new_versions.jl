@@ -283,7 +283,9 @@ end
                     hash = read(`git rev-parse HEAD`, String)
 
                     apply(git_push_patch) do
-                        CompatHelper.force_ci_trigger(GitHub.GitHubAPI(), "title", "master", "pkey")
+                        CompatHelper.force_ci_trigger(
+                            GitHub.GitHubAPI(), "title", "master", "pkey"
+                        )
                     end
                     new_hash = read(`git rev-parse HEAD`, String)
                     @test hash != new_hash
@@ -307,7 +309,9 @@ end
                     hash = read(`git rev-parse HEAD`, String)
 
                     apply(git_push_patch) do
-                        CompatHelper.force_ci_trigger(GitHub.GitHubAPI(), "title", "master", nothing)
+                        CompatHelper.force_ci_trigger(
+                            GitHub.GitHubAPI(), "title", "master", nothing
+                        )
                     end
                     new_hash = read(`git rev-parse HEAD`, String)
                     @test hash == new_hash
