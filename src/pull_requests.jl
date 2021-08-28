@@ -35,7 +35,16 @@ function get_pull_requests(
     return @mock unique(paginated_prs)
 end
 
-not_pr_fork(repo::GitHub.Repo, pr::GitHub.PullRequest) = !pr.head.repo.fork
+function not_pr_fork(repo::GitHub.Repo, pr::GitHub.PullRequest)
+    head_repo = pr.head.repo
+
+    # [TODO] [FIXME] figure out why this can sometimes be `nothing`
+    # For now, we'll assume that this means the PR was made from a fork, but that fork
+    # has been deleted.
+    head_repo === nothing && return false # "true" means "not a fork", so "false" means "yes a fork"
+
+    return !head_repo.fork
+end
 not_pr_fork(repo::GitLab.Project, pr::GitLab.MergeRequest) = repo.id == pr.project_id
 
 my_prs(username::String, pr::GitHub.PullRequest) = lower(pr.user.login) == lower(username)
