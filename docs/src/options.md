@@ -38,9 +38,9 @@ CompatHelper.main(; master_branch="my-custom-branch")
 Define how you want to handle compat entries.
 
 - `KeepEntry`: Default value, this will keep the existing compat entry for a project and add the new one in addition.
-- `DropEntry`: Chose to drop the existing compat entry and replace it with the new one.
+- `DropEntry`: Choose this to drop the existing compat entry and replace it with the new one.
 
-`KeepEntry` is the default, but if you'd liek yo use `DropEntry` you can do the following:
+`KeepEntry` is the default, but if you like to use `DropEntry`, you can do the following:
 ```julia
 CompatHelper.main(; entry_type=DropEntry())
 ```
