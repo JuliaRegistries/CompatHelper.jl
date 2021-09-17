@@ -59,22 +59,22 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
     return project_deps
 end
 
-# function clone_all_registries(f::Function, registry_list::Vector{Pkg.RegistrySpec})
-#     registry_temp_dirs = Vector{String}()
+function clone_all_registries(f::Function, registry_list::Vector{Pkg.RegistrySpec})
+    registry_temp_dirs = Vector{String}()
 
-#     for registry in registry_list
-#         tmp_dir = @mock mktempdir(; cleanup=true)
-#         local_registry_path = joinpath(tmp_dir, registry.name)
-#         push!(registry_temp_dirs, local_registry_path)
-#         @mock git_clone(registry.url, local_registry_path)
-#     end
+    for registry in registry_list
+        tmp_dir = @mock mktempdir(; cleanup=true)
+        local_registry_path = joinpath(tmp_dir, registry.name)
+        push!(registry_temp_dirs, local_registry_path)
+        @mock git_clone(registry.url, local_registry_path)
+    end
 
-#     f(registry_temp_dirs)
+    f(registry_temp_dirs)
 
-#     for tmp_dir in registry_temp_dirs
-#         @mock rm(tmp_dir; force=true, recursive=true)
-#     end
-# end
+    for tmp_dir in registry_temp_dirs
+        @mock rm(tmp_dir; force=true, recursive=true)
+    end
+end
 
 function get_latest_version_from_registries!(
     deps::Set{DepInfo}, depot::String

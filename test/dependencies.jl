@@ -25,22 +25,22 @@
     end
 end
 
-# @testset "clone_all_registries" begin
-#     registry_1_name = "foobar"
-#     registry_2_name = "bizbaz"
+@testset "clone_all_registries" begin
+    registry_1_name = "foobar"
+    registry_2_name = "bizbaz"
 
-#     apply([mktempdir_patch, git_clone_patch]) do
-#         CompatHelper.clone_all_registries([
-#             Pkg.RegistrySpec(; name=registry_1_name, url=""),
-#             Pkg.RegistrySpec(; name=registry_2_name, url=""),
-#         ]) do resp
-#             @test length(resp) == 2
+    apply([mktempdir_patch, git_clone_patch]) do
+        CompatHelper.clone_all_registries([
+            Pkg.RegistrySpec(; name=registry_1_name, url=""),
+            Pkg.RegistrySpec(; name=registry_2_name, url=""),
+        ]) do resp
+            @test length(resp) == 2
 
-#             @test contains(resp[1], registry_1_name)
-#             @test contains(resp[2], registry_2_name)
-#         end
-#     end
-# end
+            @test contains(resp[1], registry_1_name)
+            @test contains(resp[2], registry_2_name)
+        end
+    end
+end
 
 @testset "get_latest_version_from_registries!" begin
     packageA = "PackageA"
