@@ -9,6 +9,8 @@ const DEFAULT_REGISTRIES = Pkg.RegistrySpec[Pkg.RegistrySpec(;
         env::AbstractDict=ENV,
         ci_cfg::CIService=auto_detect_ci_service(; env=env);
         entry_type::EntryType=KeepEntry(),
+        registries::Vector{Pkg.RegistrySpec}=DEFAULT_REGISTRIES,
+        use_existing_registries::Bool=false,
         depot::String=DEPOT_PATH[1],
         subdirs::AbstractVector{<:AbstractString}=[""],
         master_branch::Union{DefaultBranch,AbstractString}=DefaultBranch(),
@@ -28,6 +30,8 @@ Main entry point for the package.
 
 # Keywords
 - `entry_type::EntryType=KeepEntry()`: How to handle bumps for entry types
+- `registries::Vector{Pkg.RegistrySpec}=DEFAULT_REGISTRIES`: RegistrySpec of all registries to use
+- `use_existing_registries::Bool=false`: Specify whether to use the registries available at the `depot` location
 - `depot::String=DEPOT_PATH[1]`: The user depot path to use
 - `subdirs::AbstractVector{<:AbstractString}=[""]`: Subdirectories for nested packages
 - `master_branch::Union{DefaultBranch,AbstractString}=DefaultBranch()`: Name of the master branch
@@ -42,6 +46,8 @@ function main(
     env::AbstractDict=ENV,
     ci_cfg::CIService=auto_detect_ci_service(; env=env);
     entry_type::EntryType=KeepEntry(),
+    registries::Vector{Pkg.RegistrySpec}=DEFAULT_REGISTRIES,
+    use_existing_registries::Bool=false,
     depot::String=DEPOT_PATH[1],
     subdirs::AbstractVector{<:AbstractString}=[""],
     master_branch::Union{DefaultBranch,AbstractString}=DefaultBranch(),
@@ -65,7 +71,12 @@ function main(
             include_jll=include_jll,
             master_branch=master_branch,
         )
-        get_latest_version_from_registries!(deps, depot)
+
+        if use_existing_registries
+            get_existing_registries!(deps, depot)
+        else
+            get_latest_version_from_registries!(deps, registries)
+        end
 
         for dep in deps
             pr = @mock make_pr_for_new_version(
