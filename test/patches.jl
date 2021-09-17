@@ -27,13 +27,13 @@ mktempdir_patch = @patch Base.mktempdir(; cleanup::Bool=true) = Random.randstrin
 rm_patch = @patch Base.rm(tmp_dir; force=true, recursive=true) = nothing
 cd_patch = @patch Base.cd(f, path) = nothing
 
-clone_all_registries_patch = @patch function CompatHelper.clone_all_registries(
-    f::Function, registry_list::Vector{Pkg.RegistrySpec}
-)
-    return f([
-        joinpath(@__DIR__, "deps", "registry_1"), joinpath(@__DIR__, "deps", "registry_2")
-    ])
-end
+# clone_all_registries_patch = @patch function CompatHelper.clone_all_registries(
+#     f::Function, registry_list::Vector{Pkg.RegistrySpec}
+# )
+#     return f([
+#         joinpath(@__DIR__, "deps", "registries", "registry_1"), joinpath(@__DIR__, "deps", "registries", "registry_2")
+#     ])
+# end
 
 gh_pr_patch = @patch function GitForge.create_pull_request(
     ::GitHub.GitHubAPI, owner::AbstractString, repo::AbstractString; kwargs...

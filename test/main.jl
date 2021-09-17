@@ -14,7 +14,7 @@
             patches = [
                 git_clone_patch,
                 project_toml_patch,
-                clone_all_registries_patch,
+                # clone_all_registries_patch,
                 rm_patch,
                 pr_titles_mock,
                 git_push_patch,
@@ -44,7 +44,7 @@
             patches = [
                 git_clone_patch,
                 project_toml_patch,
-                clone_all_registries_patch,
+                # clone_all_registries_patch,
                 rm_patch,
                 pr_titles_mock,
                 git_push_patch,
@@ -75,7 +75,7 @@
                 patches = [
                     git_clone_patch,
                     project_toml_patch,
-                    clone_all_registries_patch,
+                    # clone_all_registries_patch,
                     rm_patch,
                     pr_titles_mock,
                     git_push_patch,
