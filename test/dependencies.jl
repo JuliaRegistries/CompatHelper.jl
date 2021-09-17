@@ -61,21 +61,20 @@ end
             CompatHelper.Package(packageC, UUID(2)); latest_version=VersionNumber("3")
         ),
     ])
-    apply([clone_all_registries_patch, rm_patch]) do
-        result = CompatHelper.get_latest_version_from_registries!(
-            deps, Vector{Pkg.RegistrySpec}()
-        )
 
-        @test length(result) == 3
+    result = CompatHelper.get_latest_version_from_registries!(
+        deps, joinpath(@__DIR__, "deps")
+    )
 
-        for res in result
-            if res.package.name == packageA
-                @test res.latest_version == VersionNumber("1")
-            elseif res.package.name == packageB
-                @test res.latest_version == VersionNumber("2")
-            elseif res.package.name == packageC
-                @test res.latest_version == VersionNumber("3")
-            end
+    @test length(result) == 3
+
+    for res in result
+        if res.package.name == packageA
+            @test res.latest_version == VersionNumber("1")
+        elseif res.package.name == packageB
+            @test res.latest_version == VersionNumber("2")
+        elseif res.package.name == packageC
+            @test res.latest_version == VersionNumber("3")
         end
     end
 end
