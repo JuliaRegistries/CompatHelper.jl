@@ -75,5 +75,5 @@ When a compat Pull Request is created, you might want the user that generated th
 This will use the `GITHUB_ACTOR` or `GITLAB_USER_LOGIN` environment variables to determine which user to mention.
 
 ```julia
-CompatHElper.main(; cc_user=true)
+CompatHelper.main(; cc_user=true)
 ```
