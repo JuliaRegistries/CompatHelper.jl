@@ -154,6 +154,23 @@ function run_integration_tests(
         end
     end
 
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
+    @testset "master_8" begin
+        with_master_branch(templates("master_8"), url, "master") do master_8
+            withenv(env...) do
+                CompatHelper.main(
+                    ENV,
+                    ci_cfg;
+                    pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-8a] ",
+                    master_branch=master_8,
+                    entry_type=DropEntry(),
+                    use_existing_registries = true,
+                )
+            end
+        end
+    end
+
     return _cleanup_old_branches(url)
 end
 
