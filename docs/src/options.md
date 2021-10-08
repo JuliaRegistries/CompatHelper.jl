@@ -26,6 +26,20 @@ my_registries = [Pkg.RegistrySpec(name = "General",
 CompatHelper.main(; registries=my_registries)
 ```
 
+Using the above option will clone the registries, but if you want to use already existing registries,
+you can use the `use_existing_registries` option. This will use all the registries present in the user depot,
+defined as the first entry of the `DEPOT_PATH` by the [Pkg manual](https://pkgdocs.julialang.org/v1/glossary/).
+```julia
+CompatHelper.main(; use_existing_registries=true)
+```
+
+If you want to use a different location, you can specify that using the `depot` keyword.
+Note that the directroy indicated by `depot` should contain a subdirectory named `registries` where the registries
+are stored in order to reproduce the structure of the Julia depot.
+
+!!! info
+    Using the above mentioned `use_existing_registries` can be used in conjunction with the [`add-julia-registry`](https://github.com/julia-actions/add-julia-registry) GitHub action to easily add custom private registries in GitHub Actions CI.
+
 ## Overriding the default branch
 
 By default, CompatHelper will open pull requests against your repository's default branch. If you would like to override this behavior, set the `master_branch` keyword argument. For example:
@@ -61,6 +75,5 @@ When a compat Pull Request is created, you might want the user that generated th
 This will use the `GITHUB_ACTOR` or `GITLAB_USER_LOGIN` environment variables to determine which user to mention.
 
 ```julia
-CompatHElper.main(; cc_user=true)
+CompatHelper.main(; cc_user=true)
 ```
-
