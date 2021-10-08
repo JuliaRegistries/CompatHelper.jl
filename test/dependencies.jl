@@ -101,9 +101,7 @@ end
         ),
     ])
 
-    result = CompatHelper.get_existing_registries!(
-        deps, joinpath(@__DIR__, "deps")
-    )
+    result = CompatHelper.get_existing_registries!(deps, joinpath(@__DIR__, "deps"))
 
     @test length(result) == 3
 

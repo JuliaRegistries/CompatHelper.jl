@@ -165,7 +165,7 @@ function run_integration_tests(
                     pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-8a] ",
                     master_branch=master_8,
                     entry_type=DropEntry(),
-                    use_existing_registries = true,
+                    use_existing_registries=true,
                 )
             end
         end
