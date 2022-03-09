@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   workflow_call:
     secrets:
-      DOCUMENTER_KEY:
+      COMPATHELPER_PRIV:
         description: 'An SSH deploy key. See docs for more info.'
 jobs:
   CompatHelper:
