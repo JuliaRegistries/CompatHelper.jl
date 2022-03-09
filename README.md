@@ -27,6 +27,23 @@ Create a file at `.github/workflows/CompatHelper.yml` with the contents of the [
 
 If you need to use any special arguments for the `main` function, you can modify this file to add them.
 
+You can also use a [reusable workflow](https://docs.github.com/en/actions/using-workflows/reusing-workflows):
+
+```yaml
+name: CompatHelper
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 1 * * # First day of each month
+
+jobs:
+  compathelper:
+    uses: JuliaRegistries/CompatHelper.jl/.github/workflows/CompatHelper.yml@sm/reusable-workflow
+    secrets:
+      DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+```
+
 ### GitLab
 For GitLab you will want to add CompatHelper as a job in your `.gitlab-ci.yml` file such as:
 
