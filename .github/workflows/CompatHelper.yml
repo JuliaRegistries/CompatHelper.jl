@@ -7,6 +7,7 @@ on:
     secrets:
       DOCUMENTER_KEY:
         description: 'An SSH deploy key. See docs for more info.'
+        required: true
 jobs:
   CompatHelper:
     runs-on: ubuntu-latest
