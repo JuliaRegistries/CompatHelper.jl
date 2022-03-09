@@ -3,6 +3,10 @@ on:
   schedule:
     - cron: 0 0 * * *
   workflow_dispatch:
+  workflow_call:
+    secrets:
+      DOCUMENTER_KEY:
+        description: 'An SSH deploy key. See docs for more info.'
 jobs:
   CompatHelper:
     runs-on: ubuntu-latest
