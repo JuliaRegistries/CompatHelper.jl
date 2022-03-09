@@ -39,7 +39,7 @@ on:
 
 jobs:
   compathelper:
-    uses: JuliaRegistries/CompatHelper.jl/.github/workflows/CompatHelper.yml@sm/reusable-workflow
+    uses: JuliaRegistries/CompatHelper.jl/.github/workflows/CompatHelper.yml@master
     secrets:
       DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
 ```
