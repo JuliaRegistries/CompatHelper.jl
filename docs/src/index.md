@@ -46,7 +46,7 @@ Similarly to the GitHub setup, you can modify the `main` call here if you need t
 You must also remember to add the `GITLAB_TOKEN` and `COMPATHELPER_PRIV` CI secrets to the project so that CompatHelper can find them.
 
 #### Creating SSH Key
-If you use GitHub Actions to either test your packge using continuous integration, or build and deploy documentation you will need to create an SSH deploy key.
+If you use GitHub Actions to either test your package using continuous integration, or build and deploy documentation you will need to create an SSH deploy key.
 If you wish to reuse an existing SSH key simplify modify the workflow above environment variable to use `COMPATHELPER_PRIV: ${{ secrets.DOCUMENTER_KEY }}`.
 Otherwise follow the below instructions to generate a new key,
 
