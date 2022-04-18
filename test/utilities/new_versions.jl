@@ -79,7 +79,7 @@ end
     @test CompatHelper.compat_version_number(vn) == expected
 end
 
-@testset "compat_version_number -- $(vn)" for (vn, expected) in [
+@testset "Strict compat_version_number -- $(vn)" for (vn, expected) in [
     (VersionNumber("1.0.0"), "= 1.0.0"),
     (VersionNumber("1.1.1"), "= 1.1.1"),
     (VersionNumber("1.1.0"), "= 1.1.0"),
@@ -88,8 +88,8 @@ end
     (VersionNumber("0.0.1"), "= 0.0.1"),
     (VersionNumber("0.0.0"), "= 0.0.0"),
 ]
-    strict_version=true
-    @test CompatHelper.compat_version_number(vn, strict_version) == expected
+    handle_equality_in_entries=true
+    @test CompatHelper.compat_version_number(vn, handle_equality_in_entries) == expected
 end
 #=
 @testset "subdir_string -- $(subdir)" for (subdir, expected) in [
