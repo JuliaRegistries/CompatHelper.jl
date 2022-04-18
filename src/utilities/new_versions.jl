@@ -28,7 +28,8 @@ function new_compat_entry(::EntryType, old_compat::Nothing, new_compat::Abstract
     return "$(strip(new_compat))"
 end
 
-function compat_version_number(ver::VersionNumber)
+function compat_version_number(ver::VersionNumber, strict_version::Bool=false)
+    strict_version && return "= $(ver.major).$(ver.minor).$(ver.patch)"
     (ver.major > 0) && return "$(ver.major)"
     (ver.minor > 0) && return "0.$(ver.minor)"
 
@@ -213,13 +214,14 @@ function make_pr_for_new_version(
     unsub_from_prs=false,
     cc_user=false,
     bump_version=false,
+    strict_version::Bool=false
 )
     if !continue_with_pr(dep, bump_compat_containing_equality_specifier)
         return nothing
     end
 
     # Get new compat entry version, pr title, and pr body text
-    compat_entry_for_latest_version = compat_version_number(dep.latest_version)
+    compat_entry_for_latest_version = compat_version_number(dep.latest_version, strict_version)
     brand_new_compat = new_compat_entry(
         entry_type, dep.version_verbatim, compat_entry_for_latest_version
     )

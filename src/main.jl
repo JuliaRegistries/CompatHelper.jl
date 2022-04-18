@@ -57,6 +57,7 @@ function main(
     unsub_from_prs=false,
     cc_user=false,
     bump_version=false,
+    strict_version::Bool=false
 )
     generated_prs = Vector{Union{GitHub.PullRequest,GitLab.MergeRequest}}()
 
@@ -93,6 +94,7 @@ function main(
                 unsub_from_prs=unsub_from_prs,
                 cc_user=cc_user,
                 bump_version=bump_version,
+                strict_version=strict_version
             )
 
             if !isnothing(pr)
