@@ -91,7 +91,7 @@ end
     handle_equality_in_entries=true
     @test CompatHelper.compat_version_number(vn, handle_equality_in_entries) == expected
 end
-#=
+
 @testset "subdir_string -- $(subdir)" for (subdir, expected) in [
     ("foobar", "foobar"), ("foo/bar", "bar"), ("1", "1"), ("", "")
 ]
