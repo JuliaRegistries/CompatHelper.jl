@@ -167,7 +167,7 @@ end
 function continue_with_pr(dep::DepInfo, bump_compat_containing_equality_specifier::Bool)
     # Determine if we need to make a new PR
     if (!isnothing(dep.version_spec) && !isnothing(dep.latest_version)) &&
-       dep.latest_version in dep.version_spec
+        dep.latest_version in dep.version_spec
         @info(
             "latest_version in version_spec",
             dep.latest_version,
