@@ -37,9 +37,7 @@ Main entry point for the package.
 - `bump_version=false`: When set to true, the version in Project.toml will be bumped if a pull request is made. Minor bump if >= 1.0, or patch bump if < 1.0
 """
 function main(
-    env::AbstractDict=ENV,
-    ci_cfg::CIService=auto_detect_ci_service(; env=env);
-    kwargs...,
+    env::AbstractDict=ENV, ci_cfg::CIService=auto_detect_ci_service(; env=env); kwargs...
 )
     options = Options(; kwargs...)
 
@@ -48,13 +46,7 @@ function main(
     api, repo = get_api_and_repo(ci_cfg)
 
     for subdir in options.subdirs
-        deps = get_project_deps(
-            api,
-            ci_cfg,
-            repo;
-            options,
-            subdir,
-        )
+        deps = get_project_deps(api, ci_cfg, repo; options, subdir)
 
         if options.use_existing_registries
             get_existing_registries!(deps, options.depot)
@@ -64,13 +56,7 @@ function main(
 
         for dep in deps
             pr = @mock make_pr_for_new_version(
-                api,
-                repo,
-                dep,
-                options.entry_type,
-                ci_cfg;
-                options,
-                subdir,
+                api, repo, dep, options.entry_type, ci_cfg; options, subdir
             )
 
             if !isnothing(pr)
