@@ -14,6 +14,7 @@
         unsub_from_prs=false,
         cc_user=false,
         bump_version=false,
+        include_yanked=false,
     )
 
 Main entry point for the package.
@@ -35,6 +36,7 @@ Main entry point for the package.
 - `unsub_from_prs=false`: Unsubscribe the user from the pull requests
 - `cc_user=false`: CC the user on the pull requests
 - `bump_version=false`: When set to true, the version in Project.toml will be bumped if a pull request is made. Minor bump if >= 1.0, or patch bump if < 1.0
+- `include_yanked=false`: When set to true, yanked versions will be included when calculating what the latest version of a package is
 """
 function main(
     env::AbstractDict=ENV,
@@ -57,9 +59,9 @@ function main(
         )
 
         if options.use_existing_registries
-            get_existing_registries!(deps, options.depot)
+            get_existing_registries!(deps, options.depot; options)
         else
-            get_latest_version_from_registries!(deps, options.registries)
+            get_latest_version_from_registries!(deps, options.registries; options)
         end
 
         for dep in deps

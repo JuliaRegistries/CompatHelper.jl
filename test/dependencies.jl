@@ -73,7 +73,8 @@ end
 
     apply([clone_all_registries_patch, rm_patch]) do
         result = CompatHelper.get_latest_version_from_registries!(
-            deps, Vector{Pkg.RegistrySpec}()
+            deps, Vector{Pkg.RegistrySpec}();
+            options = CompatHelper.Options()
         )
 
         @test length(result) == 3
@@ -110,7 +111,7 @@ end
         ),
     ])
 
-    result = CompatHelper.get_existing_registries!(deps, joinpath(@__DIR__, "deps"))
+    result = CompatHelper.get_existing_registries!(deps, joinpath(@__DIR__, "deps"); options = CompatHelper.Options())
 
     @test length(result) == 3
 
