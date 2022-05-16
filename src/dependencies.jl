@@ -75,7 +75,7 @@ function clone_all_registries(f::Function, registry_list::Vector{Pkg.RegistrySpe
     end
 end
 
-function get_latest_version!(deps, registries)
+function get_latest_version!(deps, registries; options::Options)
     for registry in registries
         registry_toml_path = joinpath(registry, "Registry.toml")
         registry_toml = TOML.parsefile(registry_toml_path)
@@ -88,7 +88,13 @@ function get_latest_version!(deps, registries)
                 versions_toml_path = joinpath(
                     registry, packages[uuid]["path"], "Versions.toml"
                 )
-                versions = VersionNumber.(collect(keys(TOML.parsefile(versions_toml_path))))
+                versions_dict = TOML.parsefile(versions_toml_path)
+                include_yanked = options.include_yanked
+                exclude_yanked = !include_yanked
+                if exclude_yanked
+                    filter!(pair -> !get(pair[2], "yanked", false), versions_dict)
+                end
+                versions = VersionNumber.(collect(keys(versions_dict)))
 
                 max_version = maximum(versions)
                 dep.latest_version = _max(dep.latest_version, max_version)
@@ -97,18 +103,18 @@ function get_latest_version!(deps, registries)
     end
 end
 
-function get_existing_registries!(deps::Set{DepInfo}, depot::String)
+function get_existing_registries!(deps::Set{DepInfo}, depot::String; options::Options)
     registries = readdir(joinpath(depot, "registries"); join=true)
-    get_latest_version!(deps, registries)
+    get_latest_version!(deps, registries; options)
 
     return deps
 end
 
 function get_latest_version_from_registries!(
-    deps::Set{DepInfo}, registry_list::Vector{Pkg.RegistrySpec}
+    deps::Set{DepInfo}, registry_list::Vector{Pkg.RegistrySpec}; options::Options
 )
     @mock clone_all_registries(registry_list) do registry_temp_dirs
-        get_latest_version!(deps, registry_temp_dirs)
+        get_latest_version!(deps, registry_temp_dirs; options)
     end
 
     return deps

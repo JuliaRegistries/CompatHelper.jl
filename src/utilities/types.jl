@@ -55,4 +55,5 @@ Base.@kwdef struct Options
     unsub_from_prs::Bool                               = false
     cc_user::Bool                                      = false
     bump_version::Bool                                 = false
+    include_yanked::Bool                               = false
 end
