@@ -205,16 +205,11 @@ function make_pr_for_new_version(
     dep::DepInfo,
     entry_type::EntryType,
     ci_cfg::CIService;
-    subdir::AbstractString="",
-    master_branch::Union{DefaultBranch,AbstractString}=DefaultBranch(),
-    env::AbstractDict=ENV,
-    bump_compat_containing_equality_specifier::Bool=true,
-    pr_title_prefix::String="",
-    unsub_from_prs=false,
-    cc_user=false,
-    bump_version=false,
+    env = ENV,
+    options::Options,
+    subdir::String,
 )
-    if !continue_with_pr(dep, bump_compat_containing_equality_specifier)
+    if !continue_with_pr(dep, options.bump_compat_containing_equality_specifier)
         return nothing
     end
 
@@ -231,7 +226,7 @@ function make_pr_for_new_version(
         subdir_string(subdir),
         body_info(entry_type, dep.package.name),
         title_parenthetical(entry_type),
-        pr_title_prefix,
+        options.pr_title_prefix,
     )
 
     # Make sure we haven't already created the same PR
@@ -264,7 +259,7 @@ function make_pr_for_new_version(
             cd(joinpath(tmpdir, LOCAL_REPO_NAME))
 
             # Checkout master branch
-            master_branch_name = git_get_master_branch(master_branch)
+            master_branch_name = git_get_master_branch(options.master_branch)
             git_checkout(master_branch_name)
 
             # Create compathelper branch and check it out
@@ -277,7 +272,7 @@ function make_pr_for_new_version(
                 dep.package.name,
                 joinpath(tmpdir, LOCAL_REPO_NAME, subdir),
                 brand_new_compat,
-                bump_version,
+                options.bump_version,
             )
             git_add()
 
@@ -301,8 +296,8 @@ function make_pr_for_new_version(
                     new_pr_body,
                 )
 
-                cc_user && cc_mention_user(forge, repo, new_pr; env=env)
-                unsub_from_prs && unsub_from_pr(forge, new_pr)
+                options.cc_user && cc_mention_user(forge, repo, new_pr; env=env)
+                options.unsub_from_prs && unsub_from_pr(forge, new_pr)
                 force_ci_trigger(
                     forge, new_pr_title, new_branch_name, pkey_filename; env=env
                 )

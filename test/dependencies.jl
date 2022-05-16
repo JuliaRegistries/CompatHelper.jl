@@ -1,10 +1,14 @@
 @testset "get_project_deps" begin
     @testset "no jll" begin
         apply([git_clone_patch, project_toml_patch, cd_patch]) do
+            options = CompatHelper.Options()
+            subdir = options.subdirs |> only
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
                 GitHubActions(),
-                GitHub.Repo(; full_name="foobar"),
+                GitHub.Repo(; full_name="foobar");
+                options = options,
+                subdir = subdir,
             )
 
             @test length(deps) == 1
@@ -13,11 +17,16 @@
 
     @testset "include_jll" begin
         apply([git_clone_patch, project_toml_patch, cd_patch]) do
+            options = CompatHelper.Options(;
+                include_jll = true,
+            )
+            subdir = options.subdirs |> only
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
                 GitHubActions(),
                 GitHub.Repo(; full_name="foobar");
-                include_jll=true,
+                options = options,
+                subdir = subdir,
             )
 
             @test length(deps) == 2
