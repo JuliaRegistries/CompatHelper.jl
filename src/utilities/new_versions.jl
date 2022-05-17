@@ -205,7 +205,7 @@ function make_pr_for_new_version(
     dep::DepInfo,
     entry_type::EntryType,
     ci_cfg::CIService;
-    env = ENV,
+    env=ENV,
     options::Options,
     subdir::String,
 )

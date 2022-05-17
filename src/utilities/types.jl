@@ -43,17 +43,17 @@ const DEFAULT_REGISTRIES = Pkg.RegistrySpec[Pkg.RegistrySpec(;
 )]
 
 Base.@kwdef struct Options
-    entry_type::EntryType                              = KeepEntry()
-    registries::Vector{Pkg.RegistrySpec}               = DEFAULT_REGISTRIES
-    use_existing_registries::Bool                      = false
-    depot::String                                      = DEPOT_PATH[1]
-    subdirs::Vector{String}                            = [""]
+    entry_type::EntryType = KeepEntry()
+    registries::Vector{Pkg.RegistrySpec} = DEFAULT_REGISTRIES
+    use_existing_registries::Bool = false
+    depot::String = DEPOT_PATH[1]
+    subdirs::Vector{String} = [""]
     master_branch::Union{DefaultBranch,AbstractString} = DefaultBranch()
-    bump_compat_containing_equality_specifier::Bool    = true
-    pr_title_prefix::String                            = ""
-    include_jll::Bool                                  = false
-    unsub_from_prs::Bool                               = false
-    cc_user::Bool                                      = false
-    bump_version::Bool                                 = false
-    include_yanked::Bool                               = false
+    bump_compat_containing_equality_specifier::Bool = true
+    pr_title_prefix::String = ""
+    include_jll::Bool = false
+    unsub_from_prs::Bool = false
+    cc_user::Bool = false
+    bump_version::Bool = false
+    include_yanked::Bool = false
 end
