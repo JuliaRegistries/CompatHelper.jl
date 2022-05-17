@@ -2,7 +2,7 @@
     @testset "no jll" begin
         apply([git_clone_patch, project_toml_patch, cd_patch]) do
             options = CompatHelper.Options()
-            subdir = options.subdirs |> only
+            subdir = only(options.subdirs)
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
                 GitHubActions(),
@@ -20,7 +20,7 @@
             options = CompatHelper.Options(;
                 include_jll = true,
             )
-            subdir = options.subdirs |> only
+            subdir = only(options.subdirs)
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
                 GitHubActions(),
