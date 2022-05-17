@@ -7,8 +7,8 @@
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
                 GitHubActions(),
                 GitHub.Repo(; full_name="foobar");
-                options = options,
-                subdir = subdir,
+                options=options,
+                subdir=subdir,
             )
 
             @test length(deps) == 1
@@ -17,16 +17,14 @@
 
     @testset "include_jll" begin
         apply([git_clone_patch, project_toml_patch, cd_patch]) do
-            options = CompatHelper.Options(;
-                include_jll = true,
-            )
+            options = CompatHelper.Options(; include_jll=true)
             subdir = only(options.subdirs)
             deps = CompatHelper.get_project_deps(
                 GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
                 GitHubActions(),
                 GitHub.Repo(; full_name="foobar");
-                options = options,
-                subdir = subdir,
+                options=options,
+                subdir=subdir,
             )
 
             @test length(deps) == 2
@@ -73,8 +71,7 @@ end
 
     apply([clone_all_registries_patch, rm_patch]) do
         result = CompatHelper.get_latest_version_from_registries!(
-            deps, Vector{Pkg.RegistrySpec}();
-            options = CompatHelper.Options()
+            deps, Vector{Pkg.RegistrySpec}(); options=CompatHelper.Options()
         )
 
         @test length(result) == 3
@@ -111,7 +108,9 @@ end
         ),
     ])
 
-    result = CompatHelper.get_existing_registries!(deps, joinpath(@__DIR__, "deps"); options = CompatHelper.Options())
+    result = CompatHelper.get_existing_registries!(
+        deps, joinpath(@__DIR__, "deps"); options=CompatHelper.Options()
+    )
 
     @test length(result) == 3
 
