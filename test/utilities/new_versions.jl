@@ -424,7 +424,7 @@ end
 @testset "make_pr_for_new_version" begin
     @testset "latest_version === nothing" begin
         options = CompatHelper.Options()
-        subdir = options.subdirs |> only
+        subdir = only(options.subdirs)
         @test isnothing(
             CompatHelper.make_pr_for_new_version(
                 GitHub.GitHubAPI(),
@@ -441,7 +441,7 @@ end
     @testset "pr_title exists" begin
         apply(pr_titles_mock) do
             options = CompatHelper.Options()
-            subdir = options.subdirs |> only
+            subdir = only(options.subdirs)
             @test isnothing(
                 CompatHelper.make_pr_for_new_version(
                     GitHub.GitHubAPI(; token=GitHub.Token("token")),
@@ -493,7 +493,7 @@ end
                     end
 
                     options = CompatHelper.Options()
-                    subdir = options.subdirs |> only
+                    subdir = only(options.subdirs)
                     pr = CompatHelper.make_pr_for_new_version(
                         GitHub.GitHubAPI(; token=GitHub.Token("token")),
                         GitHub.Repo(;
@@ -514,7 +514,7 @@ end
                     # SSH
                     withenv(CompatHelper.PRIVATE_SSH_ENVVAR => "foo") do
                         options = CompatHelper.Options()
-                        subdir = options.subdirs |> only
+                        subdir = only(options.subdirs)
                         pr = CompatHelper.make_pr_for_new_version(
                             GitHub.GitHubAPI(; token=GitHub.Token("token")),
                             GitHub.Repo(;
