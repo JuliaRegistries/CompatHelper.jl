@@ -436,19 +436,25 @@ end
 
 @testset "make_pr_for_new_version" begin
     @testset "latest_version === nothing" begin
+        options = CompatHelper.Options()
+        subdir = only(options.subdirs)
         @test isnothing(
             CompatHelper.make_pr_for_new_version(
                 GitHub.GitHubAPI(),
                 GitHub.Repo(),
                 CompatHelper.DepInfo(CompatHelper.Package("PackageA", UUID(1))),
                 CompatHelper.KeepEntry(),
-                CompatHelper.GitHubActions(),
+                CompatHelper.GitHubActions();
+                options,
+                subdir,
             ),
         )
     end
 
     @testset "pr_title exists" begin
         apply(pr_titles_mock) do
+            options = CompatHelper.Options()
+            subdir = only(options.subdirs)
             @test isnothing(
                 CompatHelper.make_pr_for_new_version(
                     GitHub.GitHubAPI(; token=GitHub.Token("token")),
@@ -459,7 +465,9 @@ end
                         version_verbatim="0.9",
                     ),
                     CompatHelper.KeepEntry(),
-                    CompatHelper.GitHubActions(),
+                    CompatHelper.GitHubActions();
+                    options,
+                    subdir,
                 ),
             )
         end
@@ -497,6 +505,8 @@ end
                         delete!(ENV, CompatHelper.PRIVATE_SSH_ENVVAR)
                     end
 
+                    options = CompatHelper.Options()
+                    subdir = only(options.subdirs)
                     pr = CompatHelper.make_pr_for_new_version(
                         GitHub.GitHubAPI(; token=GitHub.Token("token")),
                         GitHub.Repo(;
@@ -508,12 +518,16 @@ end
                             version_verbatim="1.2",
                         ),
                         CompatHelper.KeepEntry(),
-                        CompatHelper.GitHubActions(),
+                        CompatHelper.GitHubActions();
+                        options,
+                        subdir,
                     )
                     @test pr isa GitHub.PullRequest
 
                     # SSH
                     withenv(CompatHelper.PRIVATE_SSH_ENVVAR => "foo") do
+                        options = CompatHelper.Options()
+                        subdir = only(options.subdirs)
                         pr = CompatHelper.make_pr_for_new_version(
                             GitHub.GitHubAPI(; token=GitHub.Token("token")),
                             GitHub.Repo(;
@@ -525,7 +539,9 @@ end
                                 version_verbatim="2.1",
                             ),
                             CompatHelper.KeepEntry(),
-                            CompatHelper.GitHubActions(),
+                            CompatHelper.GitHubActions();
+                            options,
+                            subdir,
                         )
                         @test pr isa GitHub.PullRequest
                     end

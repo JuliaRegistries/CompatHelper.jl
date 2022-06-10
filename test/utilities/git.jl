@@ -341,7 +341,7 @@ end
                 CompatHelper.git_checkout(branch)
 
                 @test CompatHelper.git_get_master_branch(CompatHelper.DefaultBranch()) ==
-                      branch
+                    branch
             end
         end
     end

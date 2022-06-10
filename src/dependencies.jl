@@ -4,9 +4,8 @@ function get_project_deps(
     api::Forge,
     ci::CIService,
     repo::Union{GitHub.Repo,GitLab.Project};
-    subdir::AbstractString="",
-    include_jll::Bool=false,
-    master_branch::Union{DefaultBranch,AbstractString}=DefaultBranch(),
+    options::Options,
+    subdir::AbstractString,
 )
     mktempdir() do f
         url_with_auth = get_url_with_auth(api, ci, repo)
@@ -14,13 +13,13 @@ function get_project_deps(
         @mock git_clone(url_with_auth, local_path)
 
         @mock cd(local_path) do
-            master_branch = @mock git_get_master_branch(master_branch)
+            master_branch = @mock git_get_master_branch(options.master_branch)
             @mock git_checkout(master_branch)
         end
 
         # Get all the compat dependencies from the local Project.toml file
         project_file = @mock joinpath(local_path, subdir, "Project.toml")
-        deps = get_project_deps(project_file; include_jll=include_jll)
+        deps = get_project_deps(project_file; include_jll=options.include_jll)
 
         return deps
     end
@@ -41,7 +40,7 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
 
             # Ignore STDLIB packages and JLL ones if flag set
             if !Pkg.Types.is_stdlib(uuid) &&
-               (!endswith(lowercase(strip(name)), "_jll") || include_jll)
+                (!endswith(lowercase(strip(name)), "_jll") || include_jll)
                 package = Package(name, uuid)
                 compat_entry = DepInfo(package)
                 dep_entry = convert(String, strip(get(compat, name, "")))
@@ -76,7 +75,7 @@ function clone_all_registries(f::Function, registry_list::Vector{Pkg.RegistrySpe
     end
 end
 
-function get_latest_version!(deps, registries)
+function get_latest_version!(deps, registries; options::Options)
     for registry in registries
         registry_toml_path = joinpath(registry, "Registry.toml")
         registry_toml = TOML.parsefile(registry_toml_path)
@@ -89,7 +88,13 @@ function get_latest_version!(deps, registries)
                 versions_toml_path = joinpath(
                     registry, packages[uuid]["path"], "Versions.toml"
                 )
-                versions = VersionNumber.(collect(keys(TOML.parsefile(versions_toml_path))))
+                versions_dict = TOML.parsefile(versions_toml_path)
+                include_yanked = options.include_yanked
+                exclude_yanked = !include_yanked
+                if exclude_yanked
+                    filter!(pair -> !get(pair[2], "yanked", false), versions_dict)
+                end
+                versions = VersionNumber.(collect(keys(versions_dict)))
 
                 max_version = maximum(versions)
                 dep.latest_version = _max(dep.latest_version, max_version)
@@ -98,18 +103,18 @@ function get_latest_version!(deps, registries)
     end
 end
 
-function get_existing_registries!(deps::Set{DepInfo}, depot::String)
+function get_existing_registries!(deps::Set{DepInfo}, depot::String; options::Options)
     registries = readdir(joinpath(depot, "registries"); join=true)
-    get_latest_version!(deps, registries)
+    get_latest_version!(deps, registries; options)
 
     return deps
 end
 
 function get_latest_version_from_registries!(
-    deps::Set{DepInfo}, registry_list::Vector{Pkg.RegistrySpec}
+    deps::Set{DepInfo}, registry_list::Vector{Pkg.RegistrySpec}; options::Options
 )
     @mock clone_all_registries(registry_list) do registry_temp_dirs
-        get_latest_version!(deps, registry_temp_dirs)
+        get_latest_version!(deps, registry_temp_dirs; options)
     end
 
     return deps

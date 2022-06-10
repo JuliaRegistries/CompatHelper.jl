@@ -35,3 +35,25 @@ function Base.in(p::Package, s::Set{DepInfo})
 
     return false
 end
+
+const DEFAULT_REGISTRIES = Pkg.RegistrySpec[Pkg.RegistrySpec(;
+    name="General",
+    uuid="23338594-aafe-5451-b93e-139f81909106",
+    url="https://github.com/JuliaRegistries/General.git",
+)]
+
+Base.@kwdef struct Options
+    entry_type::EntryType = KeepEntry()
+    registries::Vector{Pkg.RegistrySpec} = DEFAULT_REGISTRIES
+    use_existing_registries::Bool = false
+    depot::String = DEPOT_PATH[1]
+    subdirs::Vector{String} = [""]
+    master_branch::Union{DefaultBranch,AbstractString} = DefaultBranch()
+    bump_compat_containing_equality_specifier::Bool = true
+    pr_title_prefix::String = ""
+    include_jll::Bool = false
+    unsub_from_prs::Bool = false
+    cc_user::Bool = false
+    bump_version::Bool = false
+    include_yanked::Bool = false
+end
