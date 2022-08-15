@@ -18,7 +18,7 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: '1'
-          # arch: ${{ runner.arch }}
+          arch: ${{ runner.arch }}
         if: steps.julia_in_path.outcome != 'success'
       - name: "Add the General registry via Git"
         run: |
