@@ -96,7 +96,7 @@ end
 gl_gpr_patch = @patch function CompatHelper.get_pull_requests(
     api::GitLab.GitLabAPI, repo::GitLab.Project, state::String
 )
-    origin_repo = GitLab.Project(; id=1, fork=false)
+    origin_repo = GitLab.Project(; id=1)
 
     pr_from_origin = GitLab.MergeRequest(;
         project_id=1, author=GitLab.User(; username="foobar"), title="title"
