@@ -11,6 +11,9 @@ on:
       - master
       - staging
       - trying
+concurrency:
+  group: integration-tests-global-lock
+  cancel-in-progress: false
 jobs:
   integration:
     if: github.event_name == 'push'
