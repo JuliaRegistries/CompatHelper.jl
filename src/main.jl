@@ -39,7 +39,7 @@ Main entry point for the package.
 - `include_yanked=false`: When set to true, yanked versions will be included when calculating what the latest version of a package is
 """
 function main(
-    env::AbstractDict=ENV, ci_cfg::CIService=auto_detect_ci_service(; env=env); kwargs...
+    env::AbstractDict=ENV, ci_cfg::CIService=auto_detect_ci_service(; env=env); strict_version::Bool=false, kwargs...
 )
     options = Options(; kwargs...)
 
@@ -58,7 +58,7 @@ function main(
 
         for dep in deps
             pr = @mock make_pr_for_new_version(
-                api, repo, dep, options.entry_type, ci_cfg; options, subdir
+                api, repo, dep, options.entry_type, ci_cfg; strict_version, options, subdir
             )
 
             if !isnothing(pr)
