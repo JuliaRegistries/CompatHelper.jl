@@ -61,8 +61,8 @@ end
         end
 
         @testset "GitLab" begin
-            origin_repo = GitLab.Project(; id=1, fork=false)
-            fork_repo = GitLab.Project(; id=2, fork=true)
+            origin_repo = GitLab.Project(; id=1)
+            fork_repo = GitLab.Project(; id=2)
 
             pr_from_origin = GitLab.MergeRequest(;
                 id=1, project_id=1, author=GitLab.User(; username=username), title="PR A"
@@ -110,7 +110,7 @@ end
         end
 
         @testset "GitLab" begin
-            origin_repo = GitLab.Project(; id=1, fork=false)
+            origin_repo = GitLab.Project(; id=1)
 
             pr_from_me = GitLab.MergeRequest(;
                 id=1, project_id=1, author=GitLab.User(; username=username), title="PR A"

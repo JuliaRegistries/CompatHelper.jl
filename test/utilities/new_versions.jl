@@ -402,10 +402,14 @@ end
 
 @testset "unsub_from_pr" begin
     @testset "GitHub" begin
-        @test_throws ErrorException(
-            "GitForge.GitHub.GitHubAPI has not implemented this function"
+        api = GitHub.GitHubAPI()
+        @test_throws GitForge.ForgeAPINotImplemented(
+            GitForge.unsubscribe_from_pull_request,
+            (1, 1),
+            true,
+            api
         ) CompatHelper.unsub_from_pr(
-            GitHub.GitHubAPI(), GitHub.PullRequest(; repo=GitHub.Repo(; id=1), id=1)
+            api, GitHub.PullRequest(; repo=GitHub.Repo(; id=1), id=1)
         )
     end
 
