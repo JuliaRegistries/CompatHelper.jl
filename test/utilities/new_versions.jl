@@ -404,10 +404,7 @@ end
     @testset "GitHub" begin
         api = GitHub.GitHubAPI()
         @test_throws GitForge.ForgeAPINotImplemented(
-            GitForge.unsubscribe_from_pull_request,
-            (1, 1),
-            true,
-            api
+            GitForge.unsubscribe_from_pull_request, (1, 1), true, api
         ) CompatHelper.unsub_from_pr(
             api, GitHub.PullRequest(; repo=GitHub.Repo(; id=1), id=1)
         )
