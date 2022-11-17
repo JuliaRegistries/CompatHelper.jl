@@ -1,29 +1,23 @@
 const LOCAL_REPO_NAME = "REPO"
 
-function get_project_deps(
+function get_local_clone(
     api::Forge,
     ci::CIService,
     repo::Union{GitHub.Repo,GitLab.Project};
-    options::Options,
-    subdir::AbstractString,
 )
-    mktempdir() do f
-        url_with_auth = get_url_with_auth(api, ci, repo)
-        local_path = joinpath(f, LOCAL_REPO_NAME)
-        @mock git_clone(url_with_auth, local_path)
+    f = mktempdir()
+    url_with_auth = get_url_with_auth(api, ci, repo)
+    local_path = joinpath(f, LOCAL_REPO_NAME)
+    @mock git_clone(url_with_auth, local_path)
 
-        @mock cd(local_path) do
-            master_branch = @mock git_get_master_branch(options.master_branch)
-            @mock git_checkout(master_branch)
-        end
-
-        # Get all the compat dependencies from the local Project.toml file
-        project_file = @mock joinpath(local_path, subdir, "Project.toml")
-        deps = get_project_deps(project_file; include_jll=options.include_jll)
-
-        return deps
+    @mock cd(local_path) do
+        master_branch = @mock git_get_master_branch(options.master_branch)
+        @mock git_checkout(master_branch)
     end
+
+    return local_path
 end
+
 
 function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
     project_deps = Set{DepInfo}()

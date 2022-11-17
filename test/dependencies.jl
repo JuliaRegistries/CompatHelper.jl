@@ -1,35 +1,23 @@
+@testset "get_local_clone" begin
+    apply([git_clone_patch, cd_patch]) do
+        options = CompatHelper.Options()
+        subdir = only(options.subdirs)
+        local_path = CompatHelper.get_local_clone(
+            GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
+            GitHubActions(),
+            GitHub.Repo(; full_name="foobar")
+        )
+        @test local_path isa String
+    end
+end
+
 @testset "get_project_deps" begin
-    @testset "no jll" begin
-        apply([git_clone_patch, project_toml_patch, cd_patch]) do
-            options = CompatHelper.Options()
-            subdir = only(options.subdirs)
-            deps = CompatHelper.get_project_deps(
-                GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
-                GitHubActions(),
-                GitHub.Repo(; full_name="foobar");
-                options=options,
-                subdir=subdir,
-            )
+    project = joinpath(@__DIR__, "deps", "Project.toml")
 
-            @test length(deps) == 1
-        end
-    end
-
-    @testset "include_jll" begin
-        apply([git_clone_patch, project_toml_patch, cd_patch]) do
-            options = CompatHelper.Options(; include_jll=true)
-            subdir = only(options.subdirs)
-            deps = CompatHelper.get_project_deps(
-                GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
-                GitHubActions(),
-                GitHub.Repo(; full_name="foobar");
-                options=options,
-                subdir=subdir,
-            )
-
-            @test length(deps) == 2
-        end
-    end
+    deps = CompatHelper.get_project_deps(project; include_jll=true)
+    @test length(deps) == 2
+    deps = CompatHelper.get_project_deps(project; include_jll=false)
+    @test length(deps) == 1
 end
 
 @testset "clone_all_registries" begin

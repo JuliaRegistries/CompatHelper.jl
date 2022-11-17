@@ -47,8 +47,11 @@ function main(
 
     api, repo = get_api_and_repo(ci_cfg)
 
+    local_path = get_local_clone(api, ci_cfg, repo)
+
     for subdir in options.subdirs
-        deps = get_project_deps(api, ci_cfg, repo; options, subdir)
+        project_file = @mock joinpath(local_path, subdir, "Project.toml")
+        deps = get_project_deps(project_file; include_jll=options.include_jll)
 
         if options.use_existing_registries
             get_existing_registries!(deps, options.depot; options)
