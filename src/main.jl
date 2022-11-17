@@ -47,10 +47,10 @@ function main(
 
     api, repo = get_api_and_repo(ci_cfg)
 
-    local_path = get_local_clone(api, ci_cfg, repo; options)
+    local_clone_path = get_local_clone(api, ci_cfg, repo; options)
 
     for subdir in options.subdirs
-        project_file = @mock joinpath(local_path, subdir, "Project.toml")
+        project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
         deps = get_project_deps(project_file; include_jll=options.include_jll)
 
         if options.use_existing_registries
@@ -61,7 +61,14 @@ function main(
 
         for dep in deps
             pr = @mock make_pr_for_new_version(
-                api, repo, dep, options.entry_type, ci_cfg; options, subdir
+                api,
+                repo,
+                dep,
+                options.entry_type,
+                ci_cfg;
+                options,
+                subdir,
+                local_clone_path,
             )
 
             if !isnothing(pr)

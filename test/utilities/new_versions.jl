@@ -435,6 +435,7 @@ end
                 CompatHelper.GitHubActions();
                 options,
                 subdir,
+                local_clone_path=mktempdir(),
             ),
         )
     end
@@ -456,6 +457,7 @@ end
                     CompatHelper.GitHubActions();
                     options,
                     subdir,
+                    local_clone_path=mktempdir(),
                 ),
             )
         end
@@ -509,6 +511,7 @@ end
                         CompatHelper.GitHubActions();
                         options,
                         subdir,
+                        local_clone_path=tmpdir,
                     )
                     @test pr isa GitHub.PullRequest
 
@@ -530,6 +533,7 @@ end
                             CompatHelper.GitHubActions();
                             options,
                             subdir,
+                            local_clone_path=tmpdir,
                         )
                         @test pr isa GitHub.PullRequest
                     end

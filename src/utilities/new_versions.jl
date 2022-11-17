@@ -208,6 +208,7 @@ function make_pr_for_new_version(
     env=ENV,
     options::Options,
     subdir::String,
+    local_clone_path::AbstractString,
 )
     if !continue_with_pr(dep, options.bump_compat_containing_equality_specifier)
         return nothing
@@ -250,60 +251,50 @@ function make_pr_for_new_version(
             repo_git_url = @mock get_url_with_auth(forge, ci_cfg, repo)
         end
 
-        # In a temp dir, grab the repo, make the changes, push and make a PR
-        with_temp_dir(; cleanup=true) do tmpdir
-            # Clone Repo Locally
-            api_retry() do
-                git_clone(repo_git_url, LOCAL_REPO_NAME, pkey_filename)
-            end
-            cd(joinpath(tmpdir, LOCAL_REPO_NAME))
+        # Go to our local clone
+        cd(local_clone_path)
 
-            # Checkout master branch
-            master_branch_name = git_get_master_branch(options.master_branch)
+        # Checkout master branch
+        master_branch_name = git_get_master_branch(options.master_branch)
+        git_checkout(master_branch_name)
+
+        # Create compathelper branch and check it out
+        new_branch_name = "compathelper/new_version/$(get_random_string())"
+        git_branch(new_branch_name; checkout=true)
+
+        # Add new compat entry to project.toml, bump the version if needed,
+        # and write it out
+        modify_project_toml(
+            dep.package.name,
+            joinpath(local_clone_path, subdir),
+            brand_new_compat,
+            options.bump_version,
+        )
+        git_add()
+
+        # Commit changes and make PR
+        @info("Attempting to commit...")
+        commit_was_success = git_commit(new_pr_title; env=env)
+        if commit_was_success
+            @info("Commit was a success")
+            api_retry() do
+                @mock git_push(
+                    "origin", new_branch_name, pkey_filename; force=true, env=env
+                )
+            end
+
+            new_pr, _ = create_new_pull_request(
+                forge, repo, new_branch_name, master_branch_name, new_pr_title, new_pr_body
+            )
+
+            options.cc_user && cc_mention_user(forge, repo, new_pr; env=env)
+            options.unsub_from_prs && unsub_from_pr(forge, new_pr)
+            force_ci_trigger(forge, new_pr_title, new_branch_name, pkey_filename; env=env)
+
+            # Return to the master branch
             git_checkout(master_branch_name)
 
-            # Create compathelper branch and check it out
-            new_branch_name = "compathelper/new_version/$(get_random_string())"
-            git_branch(new_branch_name; checkout=true)
-
-            # Add new compat entry to project.toml, bump the version if needed,
-            # and write it out
-            modify_project_toml(
-                dep.package.name,
-                joinpath(tmpdir, LOCAL_REPO_NAME, subdir),
-                brand_new_compat,
-                options.bump_version,
-            )
-            git_add()
-
-            # Commit changes and make PR
-            @info("Attempting to commit...")
-            commit_was_success = git_commit(new_pr_title; env=env)
-            if commit_was_success
-                @info("Commit was a success")
-                api_retry() do
-                    @mock git_push(
-                        "origin", new_branch_name, pkey_filename; force=true, env=env
-                    )
-                end
-
-                new_pr, _ = create_new_pull_request(
-                    forge,
-                    repo,
-                    new_branch_name,
-                    master_branch_name,
-                    new_pr_title,
-                    new_pr_body,
-                )
-
-                options.cc_user && cc_mention_user(forge, repo, new_pr; env=env)
-                options.unsub_from_prs && unsub_from_pr(forge, new_pr)
-                force_ci_trigger(
-                    forge, new_pr_title, new_branch_name, pkey_filename; env=env
-                )
-
-                created_pr = new_pr
-            end
+            created_pr = new_pr
         end
     end
 
