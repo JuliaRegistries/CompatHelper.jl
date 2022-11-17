@@ -47,7 +47,7 @@ function main(
 
     api, repo = get_api_and_repo(ci_cfg)
 
-    local_path = get_local_clone(api, ci_cfg, repo)
+    local_path = get_local_clone(api, ci_cfg, repo; options)
 
     for subdir in options.subdirs
         project_file = @mock joinpath(local_path, subdir, "Project.toml")
