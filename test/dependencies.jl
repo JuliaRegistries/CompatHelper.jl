@@ -5,7 +5,7 @@
         local_path = CompatHelper.get_local_clone(
             GitForge.GitHub.GitHubAPI(; token=GitHub.Token("token")),
             GitHubActions(),
-            GitHub.Repo(; full_name="foobar")
+            GitHub.Repo(; full_name="foobar"),
         )
         @test local_path isa String
     end

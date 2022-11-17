@@ -1,9 +1,7 @@
 const LOCAL_REPO_NAME = "REPO"
 
 function get_local_clone(
-    api::Forge,
-    ci::CIService,
-    repo::Union{GitHub.Repo,GitLab.Project};
+    api::Forge, ci::CIService, repo::Union{GitHub.Repo,GitLab.Project};
 )
     f = mktempdir()
     url_with_auth = get_url_with_auth(api, ci, repo)
@@ -17,7 +15,6 @@ function get_local_clone(
 
     return local_path
 end
-
 
 function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
     project_deps = Set{DepInfo}()
