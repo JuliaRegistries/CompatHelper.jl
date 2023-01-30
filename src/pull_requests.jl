@@ -36,7 +36,12 @@ function get_pull_requests(
 end
 
 function not_pr_fork(::GitHub.Repo, pr::GitHub.PullRequest)
-    # [TODO] [FIXME] figure out why this can sometimes be `nothing`
+    # Some logging messages for cases that we hope that we never hit
+    (pr.base === nothing) && @error "pr.base is nothing"
+    (pr.head === nothing) && @error "pr.head is nothing"
+    (pr.base.repo === nothing) && @error "pr.base.repo is nothing"
+
+    # [TODO] [FIXME] figure out why `pr.head.repo` can sometimes be `nothing`
     # For now, we'll assume that this means the PR was made from a fork, but that fork
     # has been deleted.
     (pr.head.repo === nothing) && return false # "true" means "not a fork", so "false" means "yes a fork"
