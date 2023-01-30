@@ -39,11 +39,13 @@ end
             fork_repo = GitHub.Repo(; id=2, fork=true)
 
             pr_from_origin = GitHub.PullRequest(;
+                base=GitHub.Head(; repo=origin_repo),
                 head=GitHub.Head(; repo=origin_repo),
                 user=GitHub.User(; login=username),
                 title="PR A",
             )
             pr_from_fork = GitHub.PullRequest(;
+                base=GitHub.Head(; repo=origin_repo),
                 head=GitHub.Head(; repo=fork_repo),
                 user=GitHub.User(; login=username),
                 title="PR B",
