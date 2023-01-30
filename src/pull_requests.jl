@@ -46,7 +46,6 @@ function not_pr_fork(::GitHub.Repo, pr::GitHub.PullRequest)
     # has been deleted.
     (pr.head.repo === nothing) && return false # "true" means "not a fork", so "false" means "yes a fork"
 
-    @info "TODO: delete this debugging line before merging the PR" pr pr.base pr.head
     return pr.base.repo.id == pr.head.repo.id
 end
 not_pr_fork(repo::GitLab.Project, pr::GitLab.MergeRequest) = repo.id == pr.project_id
