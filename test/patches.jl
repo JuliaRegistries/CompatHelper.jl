@@ -81,14 +81,19 @@ gh_gpr_patch = @patch function CompatHelper.get_pull_requests(
     fork_repo = GitHub.Repo(; id=2, fork=true)
 
     pr_from_origin = GitHub.PullRequest(;
+        base=GitHub.Head(; repo=origin_repo),
         head=GitHub.Head(; repo=origin_repo),
         user=GitHub.User(; login="foobar"),
         title="title",
     )
     pr_from_origin_2 = GitHub.PullRequest(;
-        head=GitHub.Head(; repo=origin_repo), user=GitHub.User(; login="bizbaz")
+        base=GitHub.Head(; repo=origin_repo),
+        head=GitHub.Head(; repo=origin_repo),
+        user=GitHub.User(; login="bizbaz"),
     )
-    pr_from_fork = GitHub.PullRequest(; head=GitHub.Head(; repo=fork_repo))
+    pr_from_fork = GitHub.PullRequest(;
+        base=GitHub.Head(; repo=origin_repo), head=GitHub.Head(; repo=fork_repo)
+    )
 
     return [(pr_from_origin, nothing), (pr_from_origin_2, nothing), (pr_from_fork, nothing)]
 end
