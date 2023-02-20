@@ -82,7 +82,7 @@ function get_latest_version!(deps::Set{DepInfo}, registries::Vector{RegistryInst
         packages = registry_instance.pkgs
 
         for dep in deps
-            uuid = (dep.package.uuid)::Base.UUID
+            uuid = (dep.package.uuid)::UUIDs.UUID
 
             if uuid in keys(packages)
                 pkginfo = RegistryInstances.registry_info(packages[uuid])
