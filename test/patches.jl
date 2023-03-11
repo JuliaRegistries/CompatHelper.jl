@@ -30,10 +30,8 @@ cd_patch = @patch Base.cd(f, path) = nothing
 clone_all_registries_patch = @patch function CompatHelper.clone_all_registries(
     f::Function, registry_list::Vector{Pkg.RegistrySpec}
 )
-    return f([
-        joinpath(@__DIR__, "deps", "registries", "registry_1"),
-        joinpath(@__DIR__, "deps", "registries", "registry_2"),
-    ])
+    registries = RegistryInstances.reachable_registries(; depots=joinpath(@__DIR__, "deps"))
+    return f(registries)
 end
 
 gh_pr_patch = @patch function GitForge.create_pull_request(

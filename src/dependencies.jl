@@ -64,7 +64,7 @@ function clone_all_registries(f::Function, registry_list::Vector{Pkg.RegistrySpe
     tmp_dir = @mock mktempdir(; cleanup=true)
 
     for registry in registry_list
-        local_registry_path = joinpath(tmp_dir, registry.name)
+        local_registry_path = joinpath(tmp_dir, "registries", registry.name)
         @mock git_clone(registry.url, local_registry_path)
     end
 
