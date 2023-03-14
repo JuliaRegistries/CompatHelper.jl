@@ -33,7 +33,8 @@
 end
 
 @testset "clone_all_registries" begin
-    registry_1_url, registry_1_name = "https://github.com/JuliaRegistries/General", "General"
+    registry_1_url, registry_1_name = "https://github.com/JuliaRegistries/General",
+    "General"
     registry_2_url, registry_2_name = "https://github.com/JuliaRegistries/Test", "Test"
 
     # Use temporary DEPOT_PATH
@@ -45,7 +46,6 @@ end
         Pkg.RegistrySpec(; name=registry_1_name, url=registry_1_url),
         Pkg.RegistrySpec(; name=registry_2_name, url=registry_2_url),
     ]) do registries
-
         @test length(registries) == 2
         @test contains(registry_1_name, registries[1].name)
         @test contains(registry_2_name, registries[2].name)

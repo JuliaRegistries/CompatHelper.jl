@@ -68,16 +68,20 @@ function clone_all_registries(f::Function, registry_list::Vector{Pkg.RegistrySpe
         @mock git_clone(registry.url, local_registry_path)
     end
 
-    registries = RegistryInstances.reachable_registries(; depots = tmp_dir)
+    registries = RegistryInstances.reachable_registries(; depots=tmp_dir)
 
     f(registries)
 
     @mock rm(tmp_dir; force=true, recursive=true)
 
-    nothing
+    return nothing
 end
 
-function get_latest_version!(deps::Set{DepInfo}, registries::Vector{RegistryInstances.RegistryInstance}; options::Options)
+function get_latest_version!(
+    deps::Set{DepInfo},
+    registries::Vector{RegistryInstances.RegistryInstance};
+    options::Options,
+)
     for registry_instance in registries
         packages = registry_instance.pkgs
 
@@ -86,7 +90,10 @@ function get_latest_version!(deps::Set{DepInfo}, registries::Vector{RegistryInst
 
             if uuid in keys(packages)
                 pkginfo = RegistryInstances.registry_info(packages[uuid])
-                versions = [k for (k, v) in pkginfo.version_info if options.include_yanked || !v.yanked]
+                versions = [
+                    k for
+                    (k, v) in pkginfo.version_info if options.include_yanked || !v.yanked
+                ]
 
                 max_version = maximum(versions)
                 dep.latest_version = _max(dep.latest_version, max_version)
@@ -96,7 +103,7 @@ function get_latest_version!(deps::Set{DepInfo}, registries::Vector{RegistryInst
 end
 
 function get_existing_registries!(deps::Set{DepInfo}, depot::String; options::Options)
-    registries = RegistryInstances.reachable_registries(; depots = depot)
+    registries = RegistryInstances.reachable_registries(; depots=depot)
     get_latest_version!(deps, registries; options)
 
     return deps
