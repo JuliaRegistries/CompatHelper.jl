@@ -33,20 +33,27 @@
 end
 
 @testset "clone_all_registries" begin
-    registry_1_name = "foobar"
-    registry_2_name = "bizbaz"
+    registry_1_url, registry_1_name = "https://github.com/JuliaRegistries/General", "General"
+    registry_2_url, registry_2_name = "https://github.com/JuliaRegistries/Test", "Test"
 
-    apply([mktempdir_patch, git_clone_patch]) do
-        CompatHelper.clone_all_registries([
-            Pkg.RegistrySpec(; name=registry_1_name, url=""),
-            Pkg.RegistrySpec(; name=registry_2_name, url=""),
-        ]) do resp
-            @test length(resp) == 2
+    # Use temporary DEPOT_PATH
+    old_DEPOT_PATH = copy(DEPOT_PATH)
+    empty!(DEPOT_PATH)
+    push!(DEPOT_PATH, tempdir())
 
-            @test contains(resp[1], registry_1_name)
-            @test contains(resp[2], registry_2_name)
-        end
+    CompatHelper.clone_all_registries([
+        Pkg.RegistrySpec(; name=registry_1_name, url=registry_1_url),
+        Pkg.RegistrySpec(; name=registry_2_name, url=registry_2_url),
+    ]) do registries
+
+        @test length(registries) == 2
+        @test contains(registry_1_name, registries[1].name)
+        @test contains(registry_2_name, registries[2].name)
     end
+
+    # Reset DEPOT_PATH
+    empty!(DEPOT_PATH)
+    append!(DEPOT_PATH, old_DEPOT_PATH)
 end
 
 @testset "get_latest_version_from_registries!" begin

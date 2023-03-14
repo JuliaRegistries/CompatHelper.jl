@@ -9,6 +9,7 @@ using Pkg: Pkg
 using TimeZones: TimeZones
 using TOML: TOML
 using UUIDs: UUIDs, UUID
+using RegistryInstances: RegistryInstances
 
 export DropEntry, KeepEntry, NewEntry
 export CIService, GitHubActions, GitLabCI

@@ -1,4 +1,5 @@
 name = "Registry2"
+uuid = "00000002-0000-0000-0000-000000000000"
 
 [packages]
 00000000-0000-0000-0000-000000000002 = { name = "PackageC", path = "PackageC" }

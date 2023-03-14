@@ -61,40 +61,32 @@ end
 function clone_all_registries(f::Function, registry_list::Vector{Pkg.RegistrySpec})
     registry_temp_dirs = Vector{String}()
 
+    tmp_dir = @mock mktempdir(; cleanup=true)
+
     for registry in registry_list
-        tmp_dir = @mock mktempdir(; cleanup=true)
-        local_registry_path = joinpath(tmp_dir, registry.name)
-        push!(registry_temp_dirs, local_registry_path)
+        local_registry_path = joinpath(tmp_dir, "registries", registry.name)
         @mock git_clone(registry.url, local_registry_path)
     end
 
-    f(registry_temp_dirs)
+    registries = RegistryInstances.reachable_registries(; depots = tmp_dir)
 
-    for tmp_dir in registry_temp_dirs
-        @mock rm(tmp_dir; force=true, recursive=true)
-    end
+    f(registries)
+
+    @mock rm(tmp_dir; force=true, recursive=true)
+
+    nothing
 end
 
-function get_latest_version!(deps, registries; options::Options)
-    for registry in registries
-        registry_toml_path = joinpath(registry, "Registry.toml")
-        registry_toml = TOML.parsefile(registry_toml_path)
-        packages = registry_toml["packages"]
+function get_latest_version!(deps::Set{DepInfo}, registries::Vector{RegistryInstances.RegistryInstance}; options::Options)
+    for registry_instance in registries
+        packages = registry_instance.pkgs
 
         for dep in deps
-            uuid = string(dep.package.uuid)
+            uuid = (dep.package.uuid)::UUIDs.UUID
 
             if uuid in keys(packages)
-                versions_toml_path = joinpath(
-                    registry, packages[uuid]["path"], "Versions.toml"
-                )
-                versions_dict = TOML.parsefile(versions_toml_path)
-                include_yanked = options.include_yanked
-                exclude_yanked = !include_yanked
-                if exclude_yanked
-                    filter!(pair -> !get(pair[2], "yanked", false), versions_dict)
-                end
-                versions = VersionNumber.(collect(keys(versions_dict)))
+                pkginfo = RegistryInstances.registry_info(packages[uuid])
+                versions = [k for (k, v) in pkginfo.version_info if options.include_yanked || !v.yanked]
 
                 max_version = maximum(versions)
                 dep.latest_version = _max(dep.latest_version, max_version)
@@ -104,7 +96,7 @@ function get_latest_version!(deps, registries; options::Options)
 end
 
 function get_existing_registries!(deps::Set{DepInfo}, depot::String; options::Options)
-    registries = readdir(joinpath(depot, "registries"); join=true)
+    registries = RegistryInstances.reachable_registries(; depots = depot)
     get_latest_version!(deps, registries; options)
 
     return deps

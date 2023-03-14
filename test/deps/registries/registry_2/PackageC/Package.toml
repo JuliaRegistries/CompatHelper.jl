@@ -1,0 +1,3 @@
+name = "PackageC"
+uuid = "00000000-0000-0000-0000-000000000002"
+repo = "https://github.com/Xxx/PackageC.jl.git"
