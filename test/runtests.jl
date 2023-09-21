@@ -13,6 +13,7 @@ using Test
 using TimeZones
 using TOML
 using UUIDs
+using RegistryInstances: RegistryInstances
 
 Mocking.activate()
 
