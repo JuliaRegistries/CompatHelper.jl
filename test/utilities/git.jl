@@ -22,7 +22,7 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
 @testset "git_push" begin
     function create_local_remote(dir::AbstractString)
         remote_path = joinpath(dir, "localremote.git")
-        run(`git init --bare $remote_path`)
+        run(`git init --initial-branch=master --bare $remote_path`)
 
         return remote_path
     end
@@ -35,7 +35,7 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
                 local_remote_path = create_local_remote(local_remote_dir)
 
                 cd(f) do
-                    run(`git init`)
+                    run(`git init --initial-branch=master`)
                     run(`git remote add origin $local_remote_path`)
 
                     run(`touch foobar.txt`)
@@ -60,7 +60,7 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
                 local_remote_path = create_local_remote(local_remote_dir)
 
                 cd(f) do
-                    run(`git init`)
+                    run(`git init --initial-branch=master`)
                     run(`git remote add origin $local_remote_path`)
 
                     run(`touch foobar.txt`)
@@ -104,7 +104,7 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
                 local_remote_path = create_local_remote(local_remote_dir)
 
                 cd(f) do
-                    run(`git init`)
+                    run(`git init --initial-branch=master`)
                     run(`git remote add origin $local_remote_path`)
 
                     run(`touch foobar.txt`)
@@ -127,7 +127,7 @@ end
 @testset "git_reset" begin
     mktempdir() do f
         cd(f) do
-            run(`git init`)
+            run(`git init --initial-branch=master`)
 
             @test !isfile("foobar.txt")
 
@@ -163,7 +163,7 @@ end
     @testset "success" begin
         mktempdir() do f
             cd(f) do
-                run(`git init`)
+                run(`git init --initial-branch=master`)
                 run(`touch foobar.txt`)
                 CompatHelper.git_add()
 
@@ -175,7 +175,7 @@ end
     @testset "failure" begin
         mktempdir() do f
             cd(f) do
-                run(`git init`)
+                run(`git init --initial-branch=master`)
                 run(`touch foobar.txt`)
                 CompatHelper.git_add()
 
@@ -194,7 +194,7 @@ end
     @testset "no checkout" begin
         mktempdir() do f
             cd(f) do
-                run(`git init`)
+                run(`git init --initial-branch=master`)
                 run(`touch foobar.txt`)
                 CompatHelper.git_add()
                 CompatHelper.git_commit("Message")
@@ -218,7 +218,7 @@ end
     @testset "with checkout" begin
         mktempdir() do f
             cd(f) do
-                run(`git init`)
+                run(`git init --initial-branch=master`)
                 run(`touch foobar.txt`)
                 CompatHelper.git_add()
                 CompatHelper.git_commit("Message")
@@ -241,7 +241,7 @@ end
 
     mktempdir() do f
         cd(f) do
-            run(`git init`)
+            run(`git init --initial-branch=master`)
             run(`touch foo.txt`)
             run(`touch bar.txt`)
 
@@ -314,7 +314,7 @@ end
 
     mktempdir() do f
         cd(f) do
-            run(`git init`)
+            run(`git init --initial-branch=master`)
             # Need to create a commit before hand, see below
             # https://stackoverflow.com/a/63480330/1327636
             run(`touch foobar.txt`)
@@ -334,7 +334,7 @@ end
         branch = "master"
         mktempdir() do f
             cd(f) do
-                run(`git init`)
+                run(`git init --initial-branch=$(branch)`)
                 run(`touch foobar.txt`)
                 CompatHelper.git_add()
                 CompatHelper.git_commit("Message")
@@ -350,7 +350,7 @@ end
         branch = "main"
         mktempdir() do f
             cd(f) do
-                run(`git init`)
+                run(`git init --initial-branch=master`)
                 run(`git branch -m $branch`)
                 run(`touch foobar.txt`)
                 CompatHelper.git_add()
