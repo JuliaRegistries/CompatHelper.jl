@@ -50,29 +50,37 @@ function main(
     local_clone_path = get_local_clone(api, ci_cfg, repo; options)
 
     for subdir in options.subdirs
-        project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
-        deps = get_project_deps(project_file; include_jll=options.include_jll)
+        for project in ["", "docs", "test"]
+            is_main_project = project == ""
+            subdir = joinpath(subdir, project)
+            project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
+            if !isfile(project_file) && !is_main_project
+                continue
+            end
+            deps = get_project_deps(project_file; include_jll=options.include_jll)
 
-        if options.use_existing_registries
-            get_existing_registries!(deps, options.depot; options)
-        else
-            get_latest_version_from_registries!(deps, options.registries; options)
-        end
+            if options.use_existing_registries
+                get_existing_registries!(deps, options.depot; options)
+            else
+                get_latest_version_from_registries!(deps, options.registries; options)
+            end
 
-        for dep in deps
-            pr = @mock make_pr_for_new_version(
-                api,
-                repo,
-                dep,
-                options.entry_type,
-                ci_cfg;
-                options,
-                subdir,
-                local_clone_path,
-            )
+            for dep in deps
+                pr = @mock make_pr_for_new_version(
+                    api,
+                    repo,
+                    dep,
+                    options.entry_type,
+                    ci_cfg;
+                    options,
+                    subdir,
+                    local_clone_path,
+                    is_main_project
+                )
 
-            if !isnothing(pr)
-                push!(generated_prs, pr)
+                if !isnothing(pr)
+                    push!(generated_prs, pr)
+                end
             end
         end
     end

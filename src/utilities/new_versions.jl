@@ -209,8 +209,14 @@ function make_pr_for_new_version(
     options::Options,
     subdir::String,
     local_clone_path::AbstractString,
+    is_main_project::Bool=true
 )
     if !continue_with_pr(dep, options.bump_compat_containing_equality_specifier)
+        return nothing
+    end
+
+    # Don't create new compat entries in docs/ and test/, only update existing ones
+    if isnothing(dep.version_verbatim) && !is_main_project
         return nothing
     end
 
@@ -268,7 +274,7 @@ function make_pr_for_new_version(
             dep.package.name,
             joinpath(local_clone_path, subdir),
             brand_new_compat,
-            options.bump_version,
+            options.bump_version && is_main_project,
         )
         git_add()
 
