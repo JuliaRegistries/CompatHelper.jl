@@ -8,7 +8,7 @@ Modules = [CompatHelper]
 
 # [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)
 
-CompatHelper is a Julia package that helps you keep your `[compat]` entries up-to-date.
+CompatHelper is a Julia package that helps you keep your `[compat]` entries up-to-date in your `Project.toml`, `docs/Project.toml`, and `test/Project.toml` (if they exist).
 Whenever one of your package's dependencies releases a new breaking version, CompatHelper opens a pull request on your repository that modifies your `[compat]` entry to reflect the newly released version.
 We would like to eventually add Julia support to [Dependabot](https://dependabot.com).
 If you would like to help with adding Julia support to Dependabot, join us in the `#dependabot` channel on the [Julia Language Slack](https://julialang.org/slack/).
