@@ -115,7 +115,7 @@ end
     title, body = CompatHelper.pr_info(verbatim, "", section, "", "", "", "", "", "")
 
     @test contains(title, expected_title)
-    @test contains(title, " $section")
+    @test contains(title, " [$section]")
     @test contains(body, expected_body)
 end
 

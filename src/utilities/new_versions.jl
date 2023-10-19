@@ -55,7 +55,7 @@ function pr_info(
     pr_title_prefix::String,
 )
     new_pr_title = m"""
-    $(pr_title_prefix)CompatHelper: add new compat entry for $(name) in $(section) at version
+    $(pr_title_prefix)CompatHelper: add new compat entry for $(name) in [$(section)] at version
     $(compat_entry_for_latest_version)$(subdir_string)$(pr_title_parenthetical)
     """
 
@@ -83,7 +83,7 @@ function pr_info(
     pr_title_prefix::String,
 )
     new_pr_title = m"""
-    $(pr_title_prefix)CompatHelper: bump compat for $(name) in $(section) to
+    $(pr_title_prefix)CompatHelper: bump compat for $(name) in [$(section)] to
     $(compat_entry_for_latest_version)$(subdir_string)$(pr_title_parenthetical)
     """
 

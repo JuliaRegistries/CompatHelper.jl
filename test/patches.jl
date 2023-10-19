@@ -54,7 +54,8 @@ pr_titles_mock = @patch function CompatHelper.get_pr_titles(
     ::GitForge.Forge, ::GitHub.Repo, ::String
 )
     return [
-        "CompatHelper: bump compat for PackageA in deps to 1, (keep existing compat)", "foo"
+        "CompatHelper: bump compat for PackageA in [deps] to 1, (keep existing compat)",
+        "foo",
     ]
 end
 
