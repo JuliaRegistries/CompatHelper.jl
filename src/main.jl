@@ -51,7 +51,7 @@ function main(
 
     for subdir in options.subdirs
         project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
-        deps, dep_section = get_project_deps(project_file; include_jll=options.include_jll)
+        deps, dep_sections = get_project_deps(project_file; include_jll=options.include_jll)
 
         if options.use_existing_registries
             get_existing_registries!(deps, options.depot; options)
@@ -60,6 +60,7 @@ function main(
         end
 
         for dep in deps
+            dep_section = dep_sections[dep]
             pr = @mock make_pr_for_new_version(
                 api,
                 repo,
@@ -69,7 +70,7 @@ function main(
                 options,
                 subdir,
                 local_clone_path,
-                dep_section[dep],
+                dep_section,
             )
 
             if !isnothing(pr)
