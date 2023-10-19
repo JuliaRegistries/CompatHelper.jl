@@ -74,6 +74,7 @@ end
 function pr_info(
     compat_entry_verbatim::AbstractString,
     name::AbstractString,
+    section::AbstractString,
     compat_entry_for_latest_version::AbstractString,
     compat_entry::AbstractString,
     subdir_string::AbstractString,
@@ -82,7 +83,7 @@ function pr_info(
     pr_title_prefix::String,
 )
     new_pr_title = m"""
-    $(pr_title_prefix)CompatHelper: bump compat for $(name) to
+    $(pr_title_prefix)CompatHelper: bump compat for $(name) in $(section) to
     $(compat_entry_for_latest_version)$(subdir_string)$(pr_title_parenthetical)
     """
 
