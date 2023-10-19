@@ -171,6 +171,106 @@ function run_integration_tests(
         end
     end
 
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
+    @testset "master_9" begin
+        with_master_branch(templates("master_9"), url, "master") do master_9
+            withenv(env...) do
+                CompatHelper.main(
+                    ENV,
+                    ci_cfg;
+                    pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-9c] ",
+                    master_branch=master_9,
+                    entry_type=KeepEntry(),
+                )
+            end
+        end
+    end
+
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
+    @testset "master_10" begin
+        with_master_branch(templates("master_10"), url, "master") do master_10
+            withenv(env...) do
+                CompatHelper.main(
+                    ENV,
+                    ci_cfg;
+                    pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-10a] ",
+                    master_branch=master_10,
+                    entry_type=DropEntry(),
+                )
+
+                sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
+                CompatHelper.main(
+                    ENV,
+                    ci_cfg;
+                    pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-10b] ",
+                    master_branch=master_10,
+                    entry_type=KeepEntry(),
+                )
+
+                sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
+                CompatHelper.main(
+                    ENV,
+                    ci_cfg;
+                    pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-10c] ",
+                    master_branch=master_10,
+                    entry_type=KeepEntry(),
+                )
+            end
+        end
+    end
+
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
+    @testset "master_11" begin
+        with_master_branch(templates("master_11"), url, "master") do master_11
+            withenv(env...) do
+                CompatHelper.main(
+                    ENV,
+                    ci_cfg;
+                    pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-11c] ",
+                    master_branch=master_11,
+                    entry_type=KeepEntry(),
+                )
+            end
+        end
+    end
+
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
+    @testset "master_12" begin
+        with_master_branch(templates("master_12"), url, "master") do master_12
+            withenv(env...) do
+                CompatHelper.main(
+                    ENV,
+                    ci_cfg;
+                    pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-12a] ",
+                    master_branch=master_12,
+                    entry_type=DropEntry(),
+                )
+            end
+        end
+    end
+
+    sleep(1)  # Prevent hitting the GH Secondary Rate Limits
+
+    @testset "master_13" begin
+        with_master_branch(templates("master_13"), url, "master") do master_13
+            withenv(env...) do
+                CompatHelper.main(
+                    ENV,
+                    ci_cfg;
+                    pr_title_prefix="$(GLOBAL_PR_TITLE_PREFIX) [test-13a] ",
+                    master_branch=master_13,
+                    entry_type=DropEntry(),
+                )
+            end
+        end
+    end
+
     return _cleanup_old_branches(url)
 end
 

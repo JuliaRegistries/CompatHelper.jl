@@ -1,0 +1,20 @@
+name = "compathelper_integration_test_repo"
+uuid = "0e97b93d-f6aa-40c8-b749-d2f6bf239ed7"
+authors = ["Brown Center for Biomedical Informatics"]
+description = "Test Project.toml with weak dependency where package does not exist"
+version = "0.1.0"
+
+[weakdeps]
+ThisPackageDoesNotExist = "2c58d03c-75de-479c-aa0b-96bf0b358d76"
+
+[extensions]
+Ext = "ThisPackageDoesNotExist"
+
+[compat]
+julia = "1.2"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
