@@ -108,13 +108,14 @@ end
 end
 
 @testset "pr_info -- $(typeof(case[1]))" for case in [
-    (nothing, "add new compat entry for", "pull request sets the compat")
-    ("", "bump compat for", "pull request changes the compat")
+    (nothing, "add new compat entry for", "pull request sets the compat", "deps")
+    ("", "bump compat for", "pull request changes the compat", "weakdeps")
 ]
-    verbatim, expected_title, expected_body = case
-    title, body = CompatHelper.pr_info(verbatim, "", "", "", "", "", "", "")
+    verbatim, expected_title, expected_body, section = case
+    title, body = CompatHelper.pr_info(verbatim, "", section, "", "", "", "", "", "")
 
     @test contains(title, expected_title)
+    @test contains(title, " $section")
     @test contains(body, expected_body)
 end
 
@@ -436,6 +437,7 @@ end
                 options,
                 subdir,
                 local_clone_path=mktempdir(),
+                dep_section="deps",
             ),
         )
     end
@@ -458,6 +460,7 @@ end
                     options,
                     subdir,
                     local_clone_path=mktempdir(),
+                    dep_section="deps",
                 ),
             )
         end
@@ -512,6 +515,7 @@ end
                         options,
                         subdir,
                         local_clone_path=tmpdir,
+                        dep_section="deps",
                     )
                     @test pr isa GitHub.PullRequest
 
@@ -534,6 +538,7 @@ end
                             options,
                             subdir,
                             local_clone_path=tmpdir,
+                            dep_section="deps",
                         )
                         @test pr isa GitHub.PullRequest
                     end
