@@ -69,6 +69,7 @@ function main(
                 options,
                 subdir,
                 local_clone_path,
+                dep_section[dep],
             )
 
             if !isnothing(pr)
