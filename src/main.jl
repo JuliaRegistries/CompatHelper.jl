@@ -51,7 +51,7 @@ function main(
 
     for subdir in options.subdirs
         project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
-        deps = get_project_deps(project_file; include_jll=options.include_jll)
+        deps, dep_section = get_project_deps(project_file; include_jll=options.include_jll)
 
         if options.use_existing_registries
             get_existing_registries!(deps, options.depot; options)
