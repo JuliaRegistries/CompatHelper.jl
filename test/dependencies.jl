@@ -14,9 +14,9 @@ end
 @testset "get_project_deps" begin
     project = joinpath(@__DIR__, "deps", "Project.toml")
 
-    deps = CompatHelper.get_project_deps(project; include_jll=true)
+    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=true)
     @test length(deps) == 2
-    deps = CompatHelper.get_project_deps(project; include_jll=false)
+    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=false)
     @test length(deps) == 1
 end
 
