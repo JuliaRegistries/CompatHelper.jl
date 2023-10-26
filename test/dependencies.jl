@@ -15,9 +15,9 @@ end
     project = joinpath(@__DIR__, "deps", "Project.toml")
 
     deps = CompatHelper.get_project_deps(project; include_jll=true)
-    @test length(deps) == 2
+    @test length(deps) == 3
     deps = CompatHelper.get_project_deps(project; include_jll=false)
-    @test length(deps) == 1
+    @test length(deps) == 2
 end
 
 @testset "clone_all_registries" begin
