@@ -89,6 +89,11 @@ end
     end
 end
 
+@testset "section_string -- $(section)" for (section, expected) in
+                                            [("deps", ""), ("weakdeps", " in [weakdeps]")]
+    @test CompatHelper.section_string(section) == expected
+end
+
 @testset "skip_equality_specifiers" begin
     cases = [
         (false, "=", true)
@@ -112,10 +117,11 @@ end
     ("", "bump compat for", "pull request changes the compat", "weakdeps")
 ]
     verbatim, expected_title, expected_body, section = case
-    title, body = CompatHelper.pr_info(verbatim, "", section, "", "", "", "", "", "")
+    section_str = section == "deps" ? "" : " in [$section]"
+    title, body = CompatHelper.pr_info(verbatim, "", section_str, "", "", "", "", "", "")
 
     @test contains(title, expected_title)
-    @test contains(title, " [$section]")
+    section === "weakdeps" && @test contains(title, section_str)
     @test contains(body, expected_body)
 end
 
