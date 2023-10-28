@@ -31,9 +31,9 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
                 name = dep[1]
                 uuid = UUIDs.UUID(dep[2])
 
-                # Ignore STDLIB packages and JLL ones if flag set
-                if !Pkg.Types.is_stdlib(uuid) &&
-                    (!endswith(lowercase(strip(name)), "_jll") || include_jll)
+                # Ignore JLL packages if flag set
+                # Do NOT ignore stdlib packages.
+                if !endswith(lowercase(strip(name)), "_jll") || include_jll
                     package = Package(name, uuid)
                     compat_entry = DepInfo(package)
                     dep_entry = convert(String, strip(get(compat, name, "")))

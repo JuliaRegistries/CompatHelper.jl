@@ -1,7 +1,7 @@
 name = "CompatHelper"
 uuid = "aa819f21-2bde-4658-8897-bab36330d9b7"
 authors = ["Dilum Aluthge", "Brown Center for Biomedical Informatics", "contributors"]
-version = "3.7.0"
+version = "3.8.0"
 
 [deps]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -17,11 +17,17 @@ TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [compat]
+Base64 = "1"
+Dates = "1"
 GitForge = "0.4"
 Mocking = "0.7"
 MultilineStrings = "0.1"
+Pkg = "1"
 RegistryInstances = "0.1"
+SHA = "0.7, 1"
+TOML = "1"
 TimeZones = "1"
+UUIDs = "1"
 julia = "1.6"
 
 [extras]
