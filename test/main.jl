@@ -62,7 +62,7 @@
                     "GITHUB_REPOSITORY" => "CompatHelper.jl", "GITHUB_TOKEN" => "token"
                 ) do
                     prs = CompatHelper.main()
-                    @test length(prs) == 2
+                    @test length(prs) == 3
                     @test prs[1] isa GitHub.PullRequest
                     @test prs[2] isa GitHub.PullRequest
                 end
@@ -97,7 +97,7 @@
                     ) do
                         delete!(ENV, "GITHUB_REPOSITORY")
                         prs = CompatHelper.main()
-                        @test length(prs) == 2
+                        @test length(prs) == 3
                         @test prs[1] isa GitLab.MergeRequest
                         @test prs[2] isa GitLab.MergeRequest
                     end
