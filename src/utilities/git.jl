@@ -29,13 +29,15 @@ function git_push(
 )
     force_flag = force ? ["-f"] : []
     name, email = get_git_name_and_email(; env=env)
+    enable_ssh_verbose_str = get(ENV, "JULIA_COMPATHELPER_ENABLE_SSH_VERBOSE", "false")
+    enable_ssh_verbose_b = parse(Bool, enable_ssh_verbose_str)::Bool
+    ssh = enable_ssh_verbose_b ? "ssh -vvvv" : "ssh"
+    git_ssh_command = isnothing(pkey_filename) ? ssh : "$(ssh) -i $pkey_filename"
 
-    withenv(
-        "GIT_SSH_COMMAND" => isnothing(pkey_filename) ? "ssh" : "ssh -i $pkey_filename"
-    ) do
-        run(
-            `git -c user.name="$name" -c user.email="$email" -c committer.name="$name" -c committer.email="$email" push $force_flag $remote $branch`,
-        )
+    withenv("GIT_SSH_COMMAND" => git_ssh_command) do
+        cmd = `git -c user.name="$name" -c user.email="$email" -c committer.name="$name" -c committer.email="$email" push $force_flag $remote $branch`
+        @debug "Attempting to run Git push command" cmd
+        run(cmd)
     end
 
     return nothing
