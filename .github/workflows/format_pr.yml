@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
+  # workflow_dispatch: # intentionally disabled
 jobs:
   format_pr:
     runs-on: ubuntu-latest
@@ -23,7 +23,8 @@ jobs:
           commit-message: '🤖 Automatically format the source code files'
           title: '🤖 Automatically format the source code files'
           body: 'This pull request formats the source code files using the JuliaFormatter package.'
-          branch: bot/format_pr/${{ github.ref }}
+          # branch: bot/format_pr/${{ github.ref }} # broken, for some reason
+          branch: bot/format_pr/master # okay to hardcode master, since we disabled workflow_dispatch
           delete-branch: true
       - run: echo "The pull request number is ${{ steps.create_pr.outputs.pull-request-number }}"
       - run: echo "The pull request URL is ${{ steps.create_pr.outputs.pull-request-url }}"
