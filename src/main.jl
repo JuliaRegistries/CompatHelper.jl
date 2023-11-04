@@ -35,7 +35,8 @@ Main entry point for the package.
 - `include_jll::Bool=false`: Include JLL packages to bump
 - `unsub_from_prs=false`: Unsubscribe the user from the pull requests
 - `cc_user=false`: CC the user on the pull requests
-- `bump_version=false`: When set to true, the version in Project.toml will be bumped if a pull request is made. Minor bump if >= 1.0, or patch bump if < 1.0
+- `bump_version=false`: When set to true, the version in Project.toml will be bumped if a pull request to the main Project.toml of the package is made.
+  Minor bump if >= 1.0, or patch bump if < 1.0
 - `include_yanked=false`: When set to true, yanked versions will be included when calculating what the latest version of a package is
 """
 function main(
@@ -50,29 +51,37 @@ function main(
     local_clone_path = get_local_clone(api, ci_cfg, repo; options)
 
     for subdir in options.subdirs
-        project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
-        deps = get_project_deps(project_file; include_jll=options.include_jll)
+        for project in ["", "docs", "test"]
+            is_main_project = project == ""
+            subdir = joinpath(subdir, project)
+            project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
+            if !isfile(project_file) && !is_main_project
+                continue
+            end
+            deps = get_project_deps(project_file; include_jll=options.include_jll)
 
-        if options.use_existing_registries
-            get_existing_registries!(deps, options.depot; options)
-        else
-            get_latest_version_from_registries!(deps, options.registries; options)
-        end
+            if options.use_existing_registries
+                get_existing_registries!(deps, options.depot; options)
+            else
+                get_latest_version_from_registries!(deps, options.registries; options)
+            end
 
-        for dep in deps
-            pr = @mock make_pr_for_new_version(
-                api,
-                repo,
-                dep,
-                options.entry_type,
-                ci_cfg;
-                options,
-                subdir,
-                local_clone_path,
-            )
+            for dep in deps
+                pr = @mock make_pr_for_new_version(
+                    api,
+                    repo,
+                    dep,
+                    options.entry_type,
+                    ci_cfg;
+                    options,
+                    subdir,
+                    local_clone_path,
+                    is_main_project
+                )
 
-            if !isnothing(pr)
-                push!(generated_prs, pr)
+                if !isnothing(pr)
+                    push!(generated_prs, pr)
+                end
             end
         end
     end
