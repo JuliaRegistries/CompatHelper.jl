@@ -332,16 +332,19 @@ function force_ci_trigger(
     # https://github.com/JuliaRegistries/CompatHelper.jl/issues/387
     if !isnothing(pkey_filename)
         # Do a soft reset to the previous commit
+        @debug "force_ci_trigger: doing a soft reset to the previous commit"
         git_reset("HEAD~1"; soft=true)
 
         # Sleep for 1 second to make sure the timestamp changes
         sleep(1)
 
         # Commit the changes once again to generate a new SHA
+        @debug "force_ci_trigger: commiting again, in order to generate a new SHA"
         git_commit(pr_title; env=env)
 
         # Force push the changes to trigger the PR
         api_retry() do
+            @debug "force_ci_trigger: force-pushing the changes to trigger CI on the PR"
             @mock git_push("origin", branch_name, pkey_filename; force=true, env=env)
         end
     end
