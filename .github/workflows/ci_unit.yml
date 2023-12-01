@@ -1,11 +1,12 @@
 name: CI (unit tests)
 on:
+  merge_group: # GitHub merge queue
   pull_request:
   push:
     branches:
       - master
-      - staging
-      - trying
+      # - staging # Bors
+      # - trying # Bors
     tags: '*'
   workflow_dispatch:
 jobs:
