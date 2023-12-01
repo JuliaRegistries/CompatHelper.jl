@@ -6,11 +6,12 @@ name: CI (integration tests)
 # GitHub's abuse rate limits.
 
 on:
+  merge_group: # GitHub merge queue
   push:
     branches:
       - master
-      - staging
-      - trying
+      # - staging # Bors
+      # - trying # Bors
 concurrency:
   group: integration-tests-global-lock
   cancel-in-progress: false
