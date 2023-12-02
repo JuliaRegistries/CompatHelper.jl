@@ -6,11 +6,11 @@ coverage:
         branches:
           - main
         target: auto
-      minimum:
-        target: "100%"
+        minimum:
+          target: "100%"
       # on PRs, we allow some leniency since integration tests haven't run yet
       default:
         target: auto
-      minimum:
-        target: "100%"
-        threshold: 2%  # the leniency in hitting the target
+        minimum:
+          target: "100%"
+          threshold: 2%  # the leniency in hitting the target
