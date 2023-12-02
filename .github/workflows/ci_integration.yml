@@ -19,7 +19,7 @@ jobs:
     # We don't actually want to run integration tests on pull requests,
     # because we want to avoid hitting rate limits.
     # So, if this is a PR build, mark the integration tests as "skipped".
-    if: github.event_name != 'pull_request'
+    # if: github.event_name != 'pull_request'
     name: Integration
     runs-on: ${{ matrix.os }}
     strategy:
