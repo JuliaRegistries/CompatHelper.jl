@@ -10,8 +10,6 @@ on:
   push:
     branches:
       - master
-      # - staging # Bors
-      # - trying # Bors
 concurrency:
   group: integration-tests-global-lock
   cancel-in-progress: false
