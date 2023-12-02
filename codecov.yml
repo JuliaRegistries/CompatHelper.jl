@@ -1,10 +1,11 @@
 coverage:
   status:
     project:
-      # no leniency on `main`
+      # no leniency on `main` (or in GitHub Merge Queue jobs)
       main:
         branches:
           - main
+          # for GitHub merge queue
           - gh-readonly-queue/main/*
         target: 100%
       # on PRs, we allow some leniency since integration tests haven't run yet
