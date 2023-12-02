@@ -7,7 +7,7 @@ name: CI (integration tests)
 
 on:
   merge_group: # GitHub merge queue
-  pull_request: # but we will auto-error on PR builds, to avoid hitting rate limits
+  pull_request: # but we will skip the integration tests on PR builds, to avoid hitting rate limits
   push:
     branches:
       - master
