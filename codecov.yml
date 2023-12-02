@@ -9,5 +9,8 @@ coverage:
           - gh-readonly-queue/master/*
         target: 100%
       # on PRs, we allow some leniency since integration tests haven't run yet
-      default:
+      other:
+        branches:
+        # branches that don't include `master` have a lower target
+          - ^(?!.*(master)).*
         target: 99%
