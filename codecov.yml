@@ -5,12 +5,8 @@ coverage:
       main:
         branches:
           - main
-        target: auto
-        minimum:
-          target: "100%"
+          - gh-readonly-queue/main/*
+        target: 100%
       # on PRs, we allow some leniency since integration tests haven't run yet
       default:
-        target: auto
-        minimum:
-          target: "100%"
-          threshold: 2%  # the leniency in hitting the target
+        target: 98%
