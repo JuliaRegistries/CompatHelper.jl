@@ -9,4 +9,4 @@ coverage:
         target: 100%
       # on PRs, we allow some leniency since integration tests haven't run yet
       default:
-        target: 98%
+        target: 99%
