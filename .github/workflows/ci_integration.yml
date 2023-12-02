@@ -15,7 +15,6 @@ concurrency:
   cancel-in-progress: false
 jobs:
   integration:
-    if: github.event_name == 'push'
     name: Integration/Julia ${{ matrix.version }}/${{ matrix.os }}/${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
     strategy:
