@@ -20,7 +20,7 @@ jobs:
     # because we want to avoid hitting rate limits.
     # So, if this is a PR build, mark the integration tests as "skipped".
     if: github.event_name != 'pull_request'
-    name: Integration/Julia ${{ matrix.version }}/${{ matrix.os }}/${{ matrix.arch }}
+    name: Integration
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 1
