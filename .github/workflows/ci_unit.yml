@@ -1,11 +1,12 @@
 name: CI (unit tests)
 on:
+  merge_group: # GitHub merge queue
   pull_request:
   push:
     branches:
       - master
-      - staging
-      - trying
+      # - staging # Bors
+      # - trying # Bors
     tags: '*'
   workflow_dispatch:
 jobs:
@@ -44,6 +45,11 @@ jobs:
       - uses: julia-actions/julia-runtest@v1
         env:
           COMPATHELPER_RUN_INTEGRATION_TESTS: "false"
+      - uses: julia-actions/julia-processcoverage@v1
+      - uses: codecov/codecov-action@v3
+        with:
+          file: lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
   documentation:
     name: Documentation
     runs-on: ubuntu-latest
