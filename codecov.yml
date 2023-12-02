@@ -1,6 +1,14 @@
 coverage:
   status:
     project:
+      # no leniency on `main`
+      main:
+        branches:
+          - main
+        target: auto
+      minimum:
+        target: "100%"
+      # on PRs, we allow some leniency since integration tests haven't run yet
       default:
         target: auto
       minimum:
