@@ -122,7 +122,7 @@ end
 
 @testset "populate_dep_versions_from_reg!" begin
     # For this test, we will just use CompatHelper's own `Project.toml` file.
-    project_file = pkgdir(CompatHelper, "Project.toml")
+    project_file = joinpath(pkgdir(CompatHelper), "Project.toml")
 
     # Just for this test, we hardcode this list
     unregistered_stdlibs = [
