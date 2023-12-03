@@ -119,3 +119,35 @@ end
         end
     end
 end
+
+@testset "populate_dep_versions_from_reg!" begin
+    # For this test, we will just use CompatHelper's own `Project.toml` file.
+    project_file = joinpath(pkgdir(CompatHelper), "Project.toml")
+
+    # Just for this test, we hardcode this list
+    unregistered_stdlibs = [
+        "Base64",
+        "Dates",
+        "Pkg",
+        "UUIDs",
+    ]
+
+    @test ispath(project_file)
+    @test isfile(project_file)
+    for use_existing_registries in [true, false]
+        options = CompatHelper.Options(;
+            use_existing_registries,
+        )
+        deps = CompatHelper.get_project_deps(project_file)
+        for dep in deps
+            @test dep.latest_version === nothing
+        end
+        CompatHelper.populate_dep_versions_from_reg!(deps; options)
+        for dep in deps
+            if !(dep.package.name in unregistered_stdlibs)
+                @test dep.latest_version isa VersionNumber
+                @test dep.latest_version > v"0"
+            end
+        end
+    end
+end
