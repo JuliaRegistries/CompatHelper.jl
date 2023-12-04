@@ -1,16 +1,7 @@
 coverage:
   status:
     project:
-      # no leniency on `main` (or in GitHub Merge Queue jobs)
-      master:
-        branches:
-          - master
-          # for GitHub merge queue
-          - gh-readonly-queue/master/*
-        target: 100%
-      # on PRs, we allow some leniency since integration tests haven't run yet
-      other:
-        branches:
-        # branches that don't include `master` have a lower target
-          - ^(?!.*(master)).*
-        target: 99%
+      default:
+        target: auto
+      minimum:
+        target: "100%"
