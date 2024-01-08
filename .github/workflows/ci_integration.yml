@@ -6,35 +6,28 @@ name: CI (integration tests)
 # GitHub's abuse rate limits.
 
 on:
+  merge_group: # GitHub merge queue
+  pull_request: # but we will skip the integration tests on PR builds, to avoid hitting rate limits
   push:
     branches:
       - master
-      - staging
-      - trying
 concurrency:
   group: integration-tests-global-lock
   cancel-in-progress: false
 jobs:
   integration:
-    if: github.event_name == 'push'
-    name: Integration/Julia ${{ matrix.version }}/${{ matrix.os }}/${{ matrix.arch }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-      matrix:
-        arch:
-          - x64
-        os:
-          - ubuntu-latest
-        version:
-          - '1'
+    # We don't actually want to run integration tests on pull requests,
+    # because we want to avoid hitting rate limits.
+    # So, if this is a PR build, mark the integration tests as "skipped".
+    if: github.event_name != 'pull_request'
+    name: Integration
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v1
         with:
-          version: ${{ matrix.version }}
-          arch: ${{ matrix.arch }}
+          version: '1'
+          arch: x64
       - uses: actions/cache@v3
         env:
           cache-name: cache-artifacts
