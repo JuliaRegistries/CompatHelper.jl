@@ -148,7 +148,7 @@ end
     @test isfile(project_file)
     for use_existing_registries in [true, false]
         options = CompatHelper.Options(; use_existing_registries)
-        deps = CompatHelper.get_project_deps(project_file)
+        deps, _ = CompatHelper.get_project_deps(project_file)
         for dep in deps
             @test dep.latest_version === nothing
         end
