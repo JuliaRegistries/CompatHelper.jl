@@ -34,7 +34,7 @@ function git_push(
     ssh = enable_ssh_verbose_b ? "ssh -vvvv" : "ssh"
     git_ssh_command = isnothing(pkey_filename) ? ssh : "$(ssh) -i $pkey_filename"
 
-    env2 = copy(ENV);
+    env2 = copy(ENV)
     env2["GIT_SSH_COMMAND"] = git_ssh_command
     cmd = `git -c user.name="$name" -c user.email="$email" -c committer.name="$name" -c committer.email="$email" push $force_flag $remote $branch`
     @debug "Attempting to run Git push command" cmd env2["GIT_SSH_COMMAND"]
