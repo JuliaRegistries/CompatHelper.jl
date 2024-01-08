@@ -43,9 +43,14 @@ function subdir_string(subdir::AbstractString)
     end
 end
 
+function section_string(section::AbstractString)
+    return section == "deps" ? "" : " in [$(section)]"
+end
+
 function pr_info(
     compat_entry_verbatim::Nothing,
     name::AbstractString,
+    section_str::AbstractString,
     compat_entry_for_latest_version::AbstractString,
     compat_entry::AbstractString,
     subdir_string::AbstractString,
@@ -54,7 +59,7 @@ function pr_info(
     pr_title_prefix::String,
 )
     new_pr_title = m"""
-    $(pr_title_prefix)CompatHelper: add new compat entry for $(name) at version
+    $(pr_title_prefix)CompatHelper: add new compat entry for $(name)$(section_str) at version
     $(compat_entry_for_latest_version)$(subdir_string)$(pr_title_parenthetical)
     """
 
@@ -73,6 +78,7 @@ end
 function pr_info(
     compat_entry_verbatim::AbstractString,
     name::AbstractString,
+    section_str::AbstractString,
     compat_entry_for_latest_version::AbstractString,
     compat_entry::AbstractString,
     subdir_string::AbstractString,
@@ -81,7 +87,7 @@ function pr_info(
     pr_title_prefix::String,
 )
     new_pr_title = m"""
-    $(pr_title_prefix)CompatHelper: bump compat for $(name) to
+    $(pr_title_prefix)CompatHelper: bump compat for $(name)$(section_str) to
     $(compat_entry_for_latest_version)$(subdir_string)$(pr_title_parenthetical)
     """
 
@@ -209,6 +215,7 @@ function make_pr_for_new_version(
     options::Options,
     subdir::String,
     local_clone_path::AbstractString,
+    dep_section::String,
 )
     if !continue_with_pr(dep, options.bump_compat_containing_equality_specifier)
         return nothing
@@ -222,6 +229,7 @@ function make_pr_for_new_version(
     new_pr_title, new_pr_body = pr_info(
         dep.version_verbatim,
         dep.package.name,
+        section_string(dep_section),
         compat_entry_for_latest_version,
         brand_new_compat,
         subdir_string(subdir),

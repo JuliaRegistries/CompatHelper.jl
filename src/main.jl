@@ -51,11 +51,12 @@ function main(
 
     for subdir in options.subdirs
         project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
-        deps = get_project_deps(project_file; include_jll=options.include_jll)
+        deps, dep_sections = get_project_deps(project_file; include_jll=options.include_jll)
 
         populate_dep_versions_from_reg!(deps; options)
 
         for dep in deps
+            dep_section = dep_sections[dep]
             pr = @mock make_pr_for_new_version(
                 api,
                 repo,
@@ -65,6 +66,7 @@ function main(
                 options,
                 subdir,
                 local_clone_path,
+                dep_section,
             )
 
             if !isnothing(pr)

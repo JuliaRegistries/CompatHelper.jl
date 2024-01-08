@@ -1,16 +1,13 @@
 name = "compathelper_integration_test_repo"
 uuid = "0e97b93d-f6aa-40c8-b749-d2f6bf239ed7"
 authors = ["Brown Center for Biomedical Informatics"]
-description = "Test Project.toml with weak dependencies and no compat entries"
+description = "Test Project.toml with dependencies and no compat entries"
 version = "0.1.0"
 
-[weakdeps]
+[deps]
 BioSequences = "7e6ae17a-c86d-528c-b3b9-7f778a29fe59"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
-
-[extensions]
-Ext = ["BioSequences", "DataFrames", "Flux"]
 
 [compat]
 DataFrames = "0.19"

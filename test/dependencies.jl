@@ -14,10 +14,27 @@ end
 @testset "get_project_deps" begin
     project = joinpath(@__DIR__, "deps", "Project.toml")
 
-    deps = CompatHelper.get_project_deps(project; include_jll=true)
+    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=true)
+    @test length(deps) == 5
+    @test issetequal(keys(dep_section), deps)
+    for (k, s) in pairs(dep_section)
+        if k.package.name ∈ ["Bex_jll", "Skix"]
+            @test s == "weakdeps"
+        else
+            @test s == "deps"
+        end
+    end
+
+    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=false)
     @test length(deps) == 3
-    deps = CompatHelper.get_project_deps(project; include_jll=false)
-    @test length(deps) == 2
+    @test issetequal(keys(dep_section), deps)
+    for (k, s) in pairs(dep_section)
+        if k.package.name == "Skix"
+            @test s == "weakdeps"
+        else
+            @test s == "deps"
+        end
+    end
 end
 
 @testset "clone_all_registries" begin
@@ -131,7 +148,7 @@ end
     @test isfile(project_file)
     for use_existing_registries in [true, false]
         options = CompatHelper.Options(; use_existing_registries)
-        deps = CompatHelper.get_project_deps(project_file)
+        deps, _ = CompatHelper.get_project_deps(project_file)
         for dep in deps
             @test dep.latest_version === nothing
         end

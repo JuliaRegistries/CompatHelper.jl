@@ -18,35 +18,39 @@ end
 
 function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
     project_deps = Set{DepInfo}()
+    dep_section = Dict{DepInfo,String}()
     project = TOML.parsefile(project_file)
 
-    if haskey(project, "deps")
-        deps = project["deps"]
-        add_compat_section!(project)
-        compat = project["compat"]
+    for section in ["deps", "weakdeps"]
+        if haskey(project, section)
+            deps = project[section]
+            add_compat_section!(project)
+            compat = project["compat"]
 
-        for dep in deps
-            name = dep[1]
-            uuid = UUIDs.UUID(dep[2])
+            for dep in deps
+                name = dep[1]
+                uuid = UUIDs.UUID(dep[2])
 
-            # Ignore JLL packages if flag set
-            # Do NOT ignore stdlib packages.
-            if !endswith(lowercase(strip(name)), "_jll") || include_jll
-                package = Package(name, uuid)
-                compat_entry = DepInfo(package)
-                dep_entry = convert(String, strip(get(compat, name, "")))
+                # Ignore JLL packages if flag set
+                # Do NOT ignore stdlib packages.
+                if !endswith(lowercase(strip(name)), "_jll") || include_jll
+                    package = Package(name, uuid)
+                    compat_entry = DepInfo(package)
+                    dep_entry = convert(String, strip(get(compat, name, "")))
 
-                if !isempty(dep_entry)
-                    compat_entry.version_spec = semver_spec(dep_entry)
-                    compat_entry.version_verbatim = dep_entry
+                    if !isempty(dep_entry)
+                        compat_entry.version_spec = semver_spec(dep_entry)
+                        compat_entry.version_verbatim = dep_entry
+                    end
+
+                    push!(project_deps, compat_entry)
+                    get!(dep_section, compat_entry, section)
                 end
-
-                push!(project_deps, compat_entry)
             end
         end
     end
 
-    return project_deps
+    return project_deps, dep_section
 end
 
 function clone_all_registries(f::Function, registry_list::Vector{Pkg.RegistrySpec})

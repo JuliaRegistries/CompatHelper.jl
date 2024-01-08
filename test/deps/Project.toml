@@ -7,7 +7,16 @@ Foobar_jll = "6ca821de-e512-569d-89d9-0b16ce691416"
 Baz = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
+[weakdeps]
+Bex_jll = "3db6da90-6ed3-11ee-0779-f549c8e3e90d"
+Skix = "3db6da90-6ed3-11ee-0779-f549c8e3e90d"
+
+[extensions]
+Ext = ["Bex_jll", "Skix"]
+
 [compat]
 Foobar_jll = "1"
 Baz = "1"
+Bex_jll = "1"
+Skix = "1"
 julia = "1.6"

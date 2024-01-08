@@ -89,6 +89,11 @@ end
     end
 end
 
+@testset "section_string -- $(section)" for (section, expected) in
+                                            [("deps", ""), ("weakdeps", " in [weakdeps]")]
+    @test CompatHelper.section_string(section) == expected
+end
+
 @testset "skip_equality_specifiers" begin
     cases = [
         (false, "=", true)
@@ -108,13 +113,15 @@ end
 end
 
 @testset "pr_info -- $(typeof(case[1]))" for case in [
-    (nothing, "add new compat entry for", "pull request sets the compat")
-    ("", "bump compat for", "pull request changes the compat")
+    (nothing, "add new compat entry for", "pull request sets the compat", "deps")
+    ("", "bump compat for", "pull request changes the compat", "weakdeps")
 ]
-    verbatim, expected_title, expected_body = case
-    title, body = CompatHelper.pr_info(verbatim, "", "", "", "", "", "", "")
+    verbatim, expected_title, expected_body, section = case
+    section_str = section == "deps" ? "" : " in [$section]"
+    title, body = CompatHelper.pr_info(verbatim, "", section_str, "", "", "", "", "", "")
 
     @test contains(title, expected_title)
+    section === "weakdeps" && @test contains(title, section_str)
     @test contains(body, expected_body)
 end
 
@@ -436,6 +443,7 @@ end
                 options,
                 subdir,
                 local_clone_path=mktempdir(),
+                dep_section="deps",
             ),
         )
     end
@@ -458,6 +466,7 @@ end
                     options,
                     subdir,
                     local_clone_path=mktempdir(),
+                    dep_section="deps",
                 ),
             )
         end
@@ -512,6 +521,7 @@ end
                         options,
                         subdir,
                         local_clone_path=tmpdir,
+                        dep_section="deps",
                     )
                     @test pr isa GitHub.PullRequest
 
@@ -534,6 +544,7 @@ end
                             options,
                             subdir,
                             local_clone_path=tmpdir,
+                            dep_section="deps",
                         )
                         @test pr isa GitHub.PullRequest
                     end
