@@ -4,4 +4,10 @@ coverage:
       default:
         target: auto
       minimum:
-        target: "100%"
+        # We want to enforce 100%.
+        # The Unit Tests + Integration Tests hit 100%.
+        # But the Unit Tests alone only hit 99.49%.
+        # And so, because of GitHub Merge Queue limitations,
+        # we need to set this threshold to 99%.
+        # target: "100%"
+        target: "99%"
