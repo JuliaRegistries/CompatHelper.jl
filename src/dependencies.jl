@@ -113,3 +113,13 @@ function get_latest_version_from_registries!(
 
     return deps
 end
+
+function populate_dep_versions_from_reg!(deps; options)
+    if options.use_existing_registries
+        get_existing_registries!(deps, options.depot; options)
+    else
+        get_latest_version_from_registries!(deps, options.registries; options)
+    end
+
+    return nothing
+end

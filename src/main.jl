@@ -53,11 +53,7 @@ function main(
         project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
         deps, dep_sections = get_project_deps(project_file; include_jll=options.include_jll)
 
-        if options.use_existing_registries
-            get_existing_registries!(deps, options.depot; options)
-        else
-            get_latest_version_from_registries!(deps, options.registries; options)
-        end
+        populate_dep_versions_from_reg!(deps; options)
 
         for dep in deps
             dep_section = dep_sections[dep]
