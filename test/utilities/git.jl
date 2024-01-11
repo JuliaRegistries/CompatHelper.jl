@@ -19,6 +19,17 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
 -----END OPENSSH PRIVATE KEY-----
 """
 
+# TODO: begin delete these lines
+struct MyForge <: GitForge.Forge
+end
+struct MyCIService <: CompatHelper.CIService
+end
+struct MyRepo <: CompatHelper.AbstractRepo
+    local_remote_path::String
+end
+CompatHelper.get_url_for_ssh(::MyForge, ::MyCIService, repo::MyRepo) = repo.local_remote_path
+# TODO: end delete these lines
+
 @testset "git_push" begin
     function create_local_remote(dir::AbstractString)
         remote_path = joinpath(dir, "localremote.git")
@@ -114,7 +125,11 @@ QQDtEmQvWdgz+HtIuTG1ySJ9FYO6LeCEXHtQX78aOfNaj2jqLTXHdqrMr0V5exJcNV4XSc
                     output = read(`git log --decorate`, String)
                     @test !occursin(pushed_str, output)
 
-                    CompatHelper.git_push("origin", "master", pkey)
+                    # TODO: use patches (via Mocking.jl) instead of the current approach.
+                    forge = MyForge()
+                    ci_cfg = MyCIService()
+                    repo = MyRepo(local_remote_path)
+                    CompatHelper.git_push("origin", "master", pkey; forge, ci_cfg, repo)
 
                     output = read(`git log --decorate`, String)
                     @test occursin(pushed_str, output)
