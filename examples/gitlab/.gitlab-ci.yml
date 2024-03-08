@@ -1,0 +1,22 @@
+CompatHelper:
+  image: julia:1.6 # Set to the Julia version you want to use
+  stage: compat # You can place this in any stage that makes sense for your setup
+  before_script:
+    - apt-get update -qq && apt-get install -y git
+    - |
+      julia --color=yes -e "
+        import Pkg;
+        ENV[\"JULIA_PKG_SERVER\"] = \"\";
+        Pkg.Registry.add(\"General\");"
+    - |
+      julia --color=yes -e "
+        import Pkg;
+        name = \"CompatHelper\";
+        uuid = \"aa819f21-2bde-4658-8897-bab36330d9b7\";
+        version = \"3\";
+        Pkg.add(; name, uuid, version)"
+  script:
+    - |
+      julia --color=yes -e "
+        import CompatHelper;
+        CompatHelper.main()"
