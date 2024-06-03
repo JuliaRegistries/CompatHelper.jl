@@ -287,7 +287,7 @@ function make_pr_for_new_version(
             @info("Commit was a success")
             api_retry() do
                 @mock git_push(
-                    "origin", new_branch_name, pkey_filename; force=true, env=env
+                    "origin", new_branch_name, pkey_filename; force=true, env=env, forge=forge, ci_cfg=ci_cfg, repo=repo,
                 )
             end
 
@@ -297,7 +297,7 @@ function make_pr_for_new_version(
 
             options.cc_user && cc_mention_user(forge, repo, new_pr; env=env)
             options.unsub_from_prs && unsub_from_pr(forge, new_pr)
-            force_ci_trigger(forge, new_pr_title, new_branch_name, pkey_filename; env=env)
+            force_ci_trigger(forge, ci_cfg, repo, new_pr_title, new_branch_name, pkey_filename; env=env)
 
             # Return to the master branch
             git_checkout(master_branch_name)
@@ -311,6 +311,8 @@ end
 
 function force_ci_trigger(
     api::GitLab.GitLabAPI,
+    ci_cfg::Union{CIService, Nothing},
+    repo::Union{GitLab.Project, Nothing},
     pr_title::AbstractString,
     branch_name::AbstractString,
     pkey_filename::Union{AbstractString,Nothing};
@@ -322,6 +324,8 @@ end
 
 function force_ci_trigger(
     api::GitHub.GitHubAPI,
+    ci_cfg::Union{CIService, Nothing},
+    repo::Union{GitHub.Repo, Nothing},
     pr_title::AbstractString,
     branch_name::AbstractString,
     pkey_filename::Union{AbstractString,Nothing};
@@ -345,7 +349,7 @@ function force_ci_trigger(
         # Force push the changes to trigger the PR
         api_retry() do
             @debug "force_ci_trigger: force-pushing the changes to trigger CI on the PR"
-            @mock git_push("origin", branch_name, pkey_filename; force=true, env=env)
+            @mock git_push("origin", branch_name, pkey_filename; force=true, env=env, forge=api, ci_cfg=ci_cfg, repo=repo)
         end
     end
 

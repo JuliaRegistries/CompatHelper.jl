@@ -10,6 +10,8 @@ struct Package
     uuid::UUIDs.UUID
 end
 
+abstract type AbstractRepo end # TODO: delete this line
+
 mutable struct DepInfo
     package::Package
     latest_version::Union{VersionNumber,Nothing}
