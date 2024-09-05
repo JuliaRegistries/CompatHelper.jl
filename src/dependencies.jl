@@ -21,7 +21,7 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
     dep_section = Dict{DepInfo,String}()
     project = TOML.parsefile(project_file)
 
-    for section in ["deps", "weakdeps"]
+    for section in ["deps", "weakdeps", "extras"]
         if haskey(project, section)
             deps = project[section]
             add_compat_section!(project)
