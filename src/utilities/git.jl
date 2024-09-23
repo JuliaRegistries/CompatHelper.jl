@@ -90,13 +90,13 @@ function git_get_master_branch(master_branch::DefaultBranch)
 end
 git_get_master_branch(master_branch::AbstractString) = master_branch
 
+function remote_exists(remote_name::AbstractString)
+    return remote_name in split(strip(read(`git remote`, String)), '\n')
+end
+
 function git_remote_add_or_seturl(remote_name::AbstractString, url::AbstractString)
-    remotes = split(strip(read(`git remote`, String)), '\n')
-    if remote_name in remotes
-        run(`git remote set-url $remote_name $url`)
-    else
-        run(`git remote add $remote_name $url`)
-    end
+    git_remote_subcommand = remote_exists(remote_name) ? "set-url" : "add"
+    run(`git remote $git_remote_subcommand $remote_name $url`)
 
     return nothing
 end

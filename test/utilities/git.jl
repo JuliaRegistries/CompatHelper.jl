@@ -362,3 +362,43 @@ end
         end
     end
 end
+
+@testset "remote_exists" begin
+    mktempdir() do f
+        cd(f) do
+            run(`git init`)
+            run(`git remote add origin foo-url`)
+            run(`git remote add upstream bar-url`)
+
+            @testset "remote exists" begin
+                @test CompatHelper.remote_exists("origin")
+                @test CompatHelper.remote_exists("upstream")
+            end
+            @testset "remote does not exist" begin
+                @test !CompatHelper.remote_exists("nonexistent")
+            end
+        end
+    end
+end
+
+@testset "git_remote_add_or_seturl" begin
+    mktempdir() do f
+        cd(f) do
+            run(`git init`)
+            run(`git remote add origin foo-url`)
+
+            @testset "set existing remote" begin
+                url = "foo-url"
+                CompatHelper.git_remote_add_or_seturl("origin", "foo-url")
+                output = strip(read(`git remote get-url origin`, String))
+                @test output == url
+            end
+            @testset "add new remote" begin
+                url = "bar-url"
+                CompatHelper.git_remote_add_or_seturl("upstream", "bar-url")
+                output = strip(read(`git remote get-url upstream`, String))
+                @test output == url
+            end
+        end
+    end
+end
