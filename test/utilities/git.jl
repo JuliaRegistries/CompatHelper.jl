@@ -388,14 +388,14 @@ end
             run(`git remote add origin foo-url`)
 
             @testset "set existing remote" begin
-                url = "foo-url"
-                CompatHelper.git_remote_add_or_seturl("origin", "foo-url")
+                url = "bar-url"
+                CompatHelper.git_remote_add_or_seturl("origin", url)
                 output = strip(read(`git remote get-url origin`, String))
                 @test output == url
             end
             @testset "add new remote" begin
-                url = "bar-url"
-                CompatHelper.git_remote_add_or_seturl("upstream", "bar-url")
+                url = "baz-url"
+                CompatHelper.git_remote_add_or_seturl("upstream", url)
                 output = strip(read(`git remote get-url upstream`, String))
                 @test output == url
             end
