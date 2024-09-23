@@ -392,6 +392,11 @@ end
                 CompatHelper.git_remote_add_or_seturl("origin", url)
                 output = strip(read(`git remote get-url origin`, String))
                 @test output == url
+
+                url2 = "bar-url2"
+                CompatHelper.git_remote_add_or_seturl("origin", url2)
+                output = strip(read(`git remote get-url origin`, String))
+                @test output == url2
             end
             @testset "add new remote" begin
                 url = "baz-url"
