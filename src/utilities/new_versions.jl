@@ -305,7 +305,7 @@ function make_pr_for_new_version(
             # If we have an SSH key, we need to create a new remote (or update
             # it) with the appropriate URL (ssh/https) so that force_ci_trigger()
             # can use it
-            git_remote_add_and_seturl(COMPATHELPER_SSH_REMOTE_NAME, repo_git_url)
+            git_remote_add_or_seturl(COMPATHELPER_SSH_REMOTE_NAME, repo_git_url)
 
             force_ci_trigger(forge, new_pr_title, new_branch_name, pkey_filename; env=env)
 
