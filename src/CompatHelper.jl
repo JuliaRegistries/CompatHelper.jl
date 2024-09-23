@@ -1,5 +1,7 @@
 module CompatHelper
 
+# Hello world.
+
 using Base64: Base64
 using Dates: Dates
 using GitForge: GitForge, Forge, GitHub, GitLab
