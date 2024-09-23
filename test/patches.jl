@@ -23,7 +23,6 @@ git_push_patch = @patch function CompatHelper.git_push(
 end
 git_gmb_patch = @patch CompatHelper.git_get_master_branch(master_branch) = nothing
 git_checkout_patch = @patch CompatHelper.git_checkout(branch) = nothing
-git_remote_add_or_seturl_patch = @patch CompatHelper.git_remote_add_or_seturl(remote_name, url) = nothing
 mktempdir_patch = @patch Base.mktempdir(; cleanup::Bool=true) = Random.randstring()
 rm_patch = @patch Base.rm(tmp_dir; force=true, recursive=true) = nothing
 cd_patch = @patch Base.cd(f, path) = nothing
