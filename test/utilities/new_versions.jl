@@ -266,7 +266,7 @@ end
 
                 hash = read(`git rev-parse HEAD`, String)
 
-                CompatHelper.force_ci_trigger(GitLab.GitLabAPI(), "title", "master", "pkey")
+                CompatHelper.force_ci_trigger(GitLab.GitLabAPI(), "title", "origin", "master", "pkey")
                 new_hash = read(`git rev-parse HEAD`, String)
                 @test hash == new_hash
             end
@@ -291,7 +291,7 @@ end
 
                     apply(git_push_patch) do
                         CompatHelper.force_ci_trigger(
-                            GitHub.GitHubAPI(), "title", "master", "pkey"
+                            GitHub.GitHubAPI(), "title", "origin", "master", "pkey"
                         )
                     end
                     new_hash = read(`git rev-parse HEAD`, String)
@@ -317,7 +317,7 @@ end
 
                     apply(git_push_patch) do
                         CompatHelper.force_ci_trigger(
-                            GitHub.GitHubAPI(), "title", "master", nothing
+                            GitHub.GitHubAPI(), "title", "origin", "master", nothing
                         )
                     end
                     new_hash = read(`git rev-parse HEAD`, String)

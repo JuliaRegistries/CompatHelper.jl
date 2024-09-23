@@ -216,6 +216,7 @@ function make_pr_for_new_version(
     subdir::String,
     local_clone_path::AbstractString,
     dep_section::String,
+    remote_name::AbstractString="compathelper-remote",
 )
     if !continue_with_pr(dep, options.bump_compat_containing_equality_specifier)
         return nothing
@@ -266,6 +267,10 @@ function make_pr_for_new_version(
         master_branch_name = git_get_master_branch(options.master_branch)
         git_checkout(master_branch_name)
 
+        # Create a new remote (or update the given remote) with the appropriate
+        # URL (ssh/https)
+        git_remote_add_and_seturl(remote_name, repo_git_url)
+
         # Create compathelper branch and check it out
         new_branch_name = "compathelper/new_version/$(get_random_string())"
         git_branch(new_branch_name; checkout=true)
@@ -287,7 +292,7 @@ function make_pr_for_new_version(
             @info("Commit was a success")
             api_retry() do
                 @mock git_push(
-                    "origin", new_branch_name, pkey_filename; force=true, env=env
+                    remote_name, new_branch_name, pkey_filename; force=true, env=env
                 )
             end
 
@@ -297,7 +302,7 @@ function make_pr_for_new_version(
 
             options.cc_user && cc_mention_user(forge, repo, new_pr; env=env)
             options.unsub_from_prs && unsub_from_pr(forge, new_pr)
-            force_ci_trigger(forge, new_pr_title, new_branch_name, pkey_filename; env=env)
+            force_ci_trigger(forge, new_pr_title, remote_name, new_branch_name, pkey_filename; env=env)
 
             # Return to the master branch
             git_checkout(master_branch_name)
@@ -312,6 +317,7 @@ end
 function force_ci_trigger(
     api::GitLab.GitLabAPI,
     pr_title::AbstractString,
+    remote_name::AbstractString,
     branch_name::AbstractString,
     pkey_filename::Union{AbstractString,Nothing};
     env=ENV,
@@ -323,6 +329,7 @@ end
 function force_ci_trigger(
     api::GitHub.GitHubAPI,
     pr_title::AbstractString,
+    remote_name::AbstractString,
     branch_name::AbstractString,
     pkey_filename::Union{AbstractString,Nothing};
     env=ENV,
@@ -345,7 +352,7 @@ function force_ci_trigger(
         # Force push the changes to trigger the PR
         api_retry() do
             @debug "force_ci_trigger: force-pushing the changes to trigger CI on the PR"
-            @mock git_push("origin", branch_name, pkey_filename; force=true, env=env)
+            @mock git_push(remote_name, branch_name, pkey_filename; force=true, env=env)
         end
     end
 

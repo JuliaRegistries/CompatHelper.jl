@@ -89,3 +89,13 @@ function git_get_master_branch(master_branch::DefaultBranch)
     return string(strip(read(`git rev-parse --abbrev-ref HEAD`, String)))
 end
 git_get_master_branch(master_branch::AbstractString) = master_branch
+
+function git_remote_add_and_seturl(remote_name::AbstractString, url::AbstractString)
+    try
+        run(`git remote add $remote_name $url`)
+    catch
+        run(`git remote set-url $remote_name $url`)
+    end
+
+    return nothing
+end
