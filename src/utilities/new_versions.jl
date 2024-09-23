@@ -291,8 +291,10 @@ function make_pr_for_new_version(
         if commit_was_success
             @info("Commit was a success")
             api_retry() do
+                # For the first push, we intentionally push to the HTTPS remote (`origin`),
+                # because we want to avoid triggering duplicate CI runs.
                 @mock git_push(
-                    remote_name, new_branch_name, pkey_filename; force=true, env=env
+                    "origin", new_branch_name, pkey_filename; force=true, env=env
                 )
             end
 
@@ -313,6 +315,8 @@ function make_pr_for_new_version(
 
     return created_pr
 end
+
+const COMPATHELPER_SSH_REMOTE_NAME = "compathelper-ssh-remote"
 
 function force_ci_trigger(
     api::GitLab.GitLabAPI,
@@ -352,7 +356,7 @@ function force_ci_trigger(
         # Force push the changes to trigger the PR
         api_retry() do
             @debug "force_ci_trigger: force-pushing the changes to trigger CI on the PR"
-            @mock git_push(remote_name, branch_name, pkey_filename; force=true, env=env)
+            @mock git_push(COMPATHELPER_SSH_REMOTE_NAME, branch_name, pkey_filename; force=true, env=env)
         end
     end
 
