@@ -276,7 +276,7 @@ end
 
 const services_to_test = [
     GITHUB,
-    # GITLAB,
+    GITLAB,
 ]
 @testset "$(service)" for service in services_to_test
     personal_access_token = ENV["INTEGRATION_PAT_$(service)"]
