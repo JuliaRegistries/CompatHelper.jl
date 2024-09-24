@@ -205,6 +205,8 @@ function continue_with_pr(dep::DepInfo, bump_compat_containing_equality_specifie
     return true
 end
 
+const COMPATHELPER_SSH_REMOTE_NAME = "compathelper-ssh-remote"
+
 function make_pr_for_new_version(
     forge::Forge,
     repo::Union{GitHub.Repo,GitLab.Project},
@@ -286,6 +288,8 @@ function make_pr_for_new_version(
         if commit_was_success
             @info("Commit was a success")
             api_retry() do
+                # For the first push, we intentionally push to the HTTPS remote (`origin`),
+                # because we want to avoid triggering duplicate CI runs.
                 @mock git_push(
                     "origin", new_branch_name, pkey_filename; force=true, env=env
                 )
@@ -297,6 +301,12 @@ function make_pr_for_new_version(
 
             options.cc_user && cc_mention_user(forge, repo, new_pr; env=env)
             options.unsub_from_prs && unsub_from_pr(forge, new_pr)
+
+            # If we have an SSH key, we need to create a new remote (or update
+            # it) with the appropriate URL (ssh/https) so that force_ci_trigger()
+            # can use it
+            git_remote_add_or_seturl(COMPATHELPER_SSH_REMOTE_NAME, repo_git_url)
+
             force_ci_trigger(forge, new_pr_title, new_branch_name, pkey_filename; env=env)
 
             # Return to the master branch
@@ -345,7 +355,7 @@ function force_ci_trigger(
         # Force push the changes to trigger the PR
         api_retry() do
             @debug "force_ci_trigger: force-pushing the changes to trigger CI on the PR"
-            @mock git_push("origin", branch_name, pkey_filename; force=true, env=env)
+            @mock git_push(COMPATHELPER_SSH_REMOTE_NAME, branch_name, pkey_filename; force=true, env=env)
         end
     end
 
