@@ -355,7 +355,13 @@ function force_ci_trigger(
         # Force push the changes to trigger the PR
         api_retry() do
             @debug "force_ci_trigger: force-pushing the changes to trigger CI on the PR"
-            @mock git_push(COMPATHELPER_SSH_REMOTE_NAME, branch_name, pkey_filename; force=true, env=env)
+            @mock git_push(
+                COMPATHELPER_SSH_REMOTE_NAME,
+                branch_name,
+                pkey_filename;
+                force=true,
+                env=env,
+            )
         end
     end
 
