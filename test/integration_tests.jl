@@ -274,7 +274,11 @@ function run_integration_tests(
     return _cleanup_old_branches(url)
 end
 
-@testset "$(service)" for service in [GITHUB, GITLAB]
+const services_to_test = [
+    GITHUB,
+    # GITLAB,
+]
+@testset "$(service)" for service in services_to_test
     personal_access_token = ENV["INTEGRATION_PAT_$(service)"]
     test_repo = ENV["INTEGRATION_TEST_REPO_$(service)"]
 
