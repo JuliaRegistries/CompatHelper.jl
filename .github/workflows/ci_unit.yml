@@ -47,14 +47,8 @@ jobs:
       - uses: julia-actions/setup-julia@v2
         with:
           version: '1'
-      - run: |
-          julia --project=docs -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
-        env:
-          JULIA_PKG_SERVER: ''
-      - run: julia --project=docs docs/make.jl
+      - uses: julia-actions/cache@v2
+      - uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
@@ -66,16 +60,18 @@ jobs:
       - uses: julia-actions/setup-julia@v2
         with:
           version: '1'
-      - run: |
-          julia --project=docs -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
+      - name: Instantiate environment
+        shell: julia --color=yes --project=docs {0}
+        run: |
+          using Pkg
+          Pkg.develop(PackageSpec(path=pwd()))
+          Pkg.instantiate()
         env:
           JULIA_PKG_SERVER: ''
-      - run: |
-          julia --project=docs -e '
-            using Documenter: DocMeta, doctest
-            using CompatHelper
-            DocMeta.setdocmeta!(CompatHelper, :DocTestSetup, :(using CompatHelper); recursive=true)
-            doctest(CompatHelper)'
+      - name: Run doctests
+        shell: julia --color=yes --project=docs {0}
+        run: |
+          using Documenter: DocMeta, doctest
+          using CompatHelper
+          DocMeta.setdocmeta!(CompatHelper, :DocTestSetup, :(using CompatHelper); recursive=true)
+          doctest(CompatHelper)
