@@ -15,6 +15,7 @@ Ext = ["Bex_jll", "Skix"]
 
 [extras]
 Baz = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
+Car = "0add4187-88db-462b-bf06-da4bec59fd54"
 
 [compat]
 Foobar_jll = "1"

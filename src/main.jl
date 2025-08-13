@@ -15,6 +15,7 @@
         cc_user=false,
         bump_version=false,
         include_yanked=false,
+        open_prs_for_extras::ExtrasType=IfExistingCompatExtras(),
     )
 
 Main entry point for the package.
@@ -37,6 +38,10 @@ Main entry point for the package.
 - `cc_user=false`: CC the user on the pull requests
 - `bump_version=false`: When set to true, the version in Project.toml will be bumped if a pull request is made. Minor bump if >= 1.0, or patch bump if < 1.0
 - `include_yanked=false`: When set to true, yanked versions will be included when calculating what the latest version of a package is
+- `open_prs_for_extras::ExtrasType=IfExistingCompatExtras()`: How to handle dependencies in `[extras]`.
+  Can be `IfExistingCompatExtras()` (only open a pull request for a dependency in `[extras]` if a compat entry for it exists),
+  `AllExtras()` (open pull requests for all dependencies in `[extras]`),
+  or `NoExtras()` (do not open pull requests for dependencies in `[extras]`).
 """
 function main(
     env::AbstractDict=ENV, ci_cfg::CIService=auto_detect_ci_service(; env=env); kwargs...
@@ -51,7 +56,7 @@ function main(
 
     for subdir in options.subdirs
         project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
-        deps, dep_sections = get_project_deps(project_file; include_jll=options.include_jll)
+        deps, dep_sections = get_project_deps(project_file; include_jll=options.include_jll, open_prs_for_extras=options.open_prs_for_extras)
 
         populate_dep_versions_from_reg!(deps; options)
 

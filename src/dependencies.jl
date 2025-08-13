@@ -16,12 +16,17 @@ function get_local_clone(
     return local_path
 end
 
-function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
+function get_project_deps(project_file::AbstractString; include_jll::Bool, open_prs_for_extras::ExtrasType)
     project_deps = Set{DepInfo}()
     dep_section = Dict{DepInfo,String}()
     project = TOML.parsefile(project_file)
 
-    for section in ["deps", "weakdeps", "extras"]
+    sections = if open_prs_for_extras isa NoExtras
+        ["deps", "weakdeps"]
+    else
+        ["deps", "weakdeps", "extras"]
+    end
+    for section in sections
         if haskey(project, section)
             deps = project[section]
             add_compat_section!(project)
@@ -38,7 +43,12 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool=false)
                     compat_entry = DepInfo(package)
                     dep_entry = convert(String, strip(get(compat, name, "")))
 
-                    if !isempty(dep_entry)
+                    if isempty(dep_entry)
+                        # Ignore dependencies in `[extras]` without a compat entry if `open_prs_for_extras` is `IfExistingCompatExtras()`
+                        if section == "extras" && open_prs_for_extras isa IfExistingCompatExtras
+                            continue
+                        end
+                    else
                         compat_entry.version_spec = semver_spec(dep_entry)
                         compat_entry.version_verbatim = dep_entry
                     end

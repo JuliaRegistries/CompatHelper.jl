@@ -26,6 +26,11 @@ mutable struct DepInfo
     end
 end
 
+abstract type ExtrasType end
+struct AllExtras <: ExtrasType end
+struct IfExistingCompatExtras <: ExtrasType end
+struct NoExtras <: ExtrasType end
+
 function Base.in(p::Package, s::Set{DepInfo})
     for i in s
         if i.package == p
@@ -56,4 +61,5 @@ Base.@kwdef struct Options
     cc_user::Bool = false
     bump_version::Bool = false
     include_yanked::Bool = false
+    open_prs_for_extras::ExtrasType = IfExistingCompatExtras()
 end

@@ -12,6 +12,7 @@ using UUIDs: UUIDs, UUID
 using RegistryInstances: RegistryInstances
 
 export DropEntry, KeepEntry, NewEntry
+export AllExtras, IfExistingCompatExtras, NoExtras
 export CIService, GitHubActions, GitLabCI
 
 @static if Base.VERSION >= v"1.7-"
