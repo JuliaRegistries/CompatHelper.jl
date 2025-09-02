@@ -62,7 +62,9 @@ end
     @testset "$(entry)" for entry in entries
         for case in cases[entry]
             old_compat, new_compat, expected = case
-            result = CompatHelper.new_compat_entry(entry, not_stdlib, old_compat, new_compat)
+            result = CompatHelper.new_compat_entry(
+                entry, not_stdlib, old_compat, new_compat
+            )
 
             @test result == expected
         end

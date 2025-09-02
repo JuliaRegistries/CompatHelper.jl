@@ -25,21 +25,22 @@ end
 function new_compat_entry(entry_type::EntryType, ::RegularPackage, dep::DepInfo)
     old_compat = dep.version_verbatim
     new_compat = compat_version_number(dep.latest_version)
-    result = new_compat_entry(
-        entry_type,
-        RegularPackage(),
-        old_compat,
-        new_compat,
-    )
+    result = new_compat_entry(entry_type, RegularPackage(), old_compat, new_compat)
     return result
 end
-function new_compat_entry(::KeepEntry, ::RegularPackage, old_compat::String, new_compat::String)
+function new_compat_entry(
+    ::KeepEntry, ::RegularPackage, old_compat::String, new_compat::String
+)
     return "$(strip(old_compat)), $(strip(new_compat))"
 end
-function new_compat_entry(::Union{DropEntry,NewEntry}, ::RegularPackage, old_compat::String, new_compat::String)
+function new_compat_entry(
+    ::Union{DropEntry,NewEntry}, ::RegularPackage, old_compat::String, new_compat::String
+)
     return "$(strip(new_compat))"
 end
-function new_compat_entry(::EntryType, ::RegularPackage, old_compat::Nothing, new_compat::String)
+function new_compat_entry(
+    ::EntryType, ::RegularPackage, old_compat::Nothing, new_compat::String
+)
     return "$(strip(new_compat))"
 end
 
@@ -47,13 +48,7 @@ end
 function new_compat_entry(entry_type::EntryType, ::StdlibPackage, dep::DepInfo)
     old_compat = dep.version_verbatim
     new_compat = compat_version_number(dep.latest_version)
-    result = new_compat_entry(
-        entry_type,
-        RegularPackage(),
-        dep,
-        old_compat,
-        new_compat,
-    )
+    result = new_compat_entry(entry_type, RegularPackage(), dep, old_compat, new_compat)
     return result
 end
 function new_compat_entry(::KeepEntry, ::StdlibPackage, dep::DepInfo, old_compat::String)
@@ -64,7 +59,9 @@ function new_compat_entry(::KeepEntry, ::StdlibPackage, dep::DepInfo, old_compat
     compat_entry = ensure_stdlib_entry_supports_older_julia(compat_entry)
     return compat_entry
 end
-function new_compat_entry(::Union{DropEntry,NewEntry}, ::StdlibPackage, dep::DepInfo, old_compat::String)
+function new_compat_entry(
+    ::Union{DropEntry,NewEntry}, ::StdlibPackage, dep::DepInfo, old_compat::String
+)
     # compat_entry = strip(old_compat)
     # compat_entry = append_latest_version(old_compat, ver) # TODO
     compat_entry = strip(compat_version_number(dep.latest_version))
