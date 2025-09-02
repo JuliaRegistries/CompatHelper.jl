@@ -12,20 +12,129 @@ function body_info(::NewEntry, name::AbstractString)
     return "This is a brand new compat entry. Previously, you did not have a compat entry for the `$(name)` package.\n\n"
 end
 
-function new_compat_entry(
-    ::KeepEntry, old_compat::AbstractString, new_compat::AbstractString
-)
+function new_compat_entry(entry_type::EntryType, dep::DepInfo)
+    if is_stdlib(dep.package)
+        return new_compat_entry(entry_type, StdlibPackage(), dep, dep.latest_version)
+    else
+        return new_compat_entry(entry_type, RegularPackage(), dep)
+    end
+end
+
+# RegularPackage:
+# RegularPackage = not a stdlib
+function new_compat_entry(entry_type::EntryType, ::RegularPackage, dep::DepInfo)
+    old_compat = dep.version_verbatim
+    new_compat = compat_version_number(dep.latest_version)
+    result = new_compat_entry(
+        entry_type,
+        RegularPackage(),
+        old_compat,
+        new_compat,
+    )
+    return result
+end
+function new_compat_entry(::KeepEntry, ::RegularPackage, old_compat::String, new_compat::String)
     return "$(strip(old_compat)), $(strip(new_compat))"
 end
-
-function new_compat_entry(
-    ::Union{DropEntry,NewEntry}, old_compat::AbstractString, new_compat::AbstractString
-)
+function new_compat_entry(::Union{DropEntry,NewEntry}, ::RegularPackage, old_compat::String, new_compat::String)
+    return "$(strip(new_compat))"
+end
+function new_compat_entry(::EntryType, ::RegularPackage, old_compat::Nothing, new_compat::String)
     return "$(strip(new_compat))"
 end
 
-function new_compat_entry(::EntryType, old_compat::Nothing, new_compat::AbstractString)
-    return "$(strip(new_compat))"
+# StdlibPackage:
+function new_compat_entry(entry_type::EntryType, ::StdlibPackage, dep::DepInfo)
+    old_compat = dep.version_verbatim
+    new_compat = compat_version_number(dep.latest_version)
+    result = new_compat_entry(
+        entry_type,
+        RegularPackage(),
+        dep,
+        old_compat,
+        new_compat,
+    )
+    return result
+end
+function new_compat_entry(::KeepEntry, ::StdlibPackage, dep::DepInfo, old_compat::String)
+    compat_entry = strip(old_compat)
+    if !isnothing(dep.latest_version)
+        compat_entry = append_latest_version(old_compat, ver)
+    end
+    compat_entry = ensure_stdlib_entry_supports_older_julia(compat_entry)
+    return compat_entry
+end
+function new_compat_entry(::Union{DropEntry,NewEntry}, ::StdlibPackage, dep::DepInfo, old_compat::String)
+    # compat_entry = strip(old_compat)
+    # compat_entry = append_latest_version(old_compat, ver) # TODO
+    compat_entry = strip(compat_version_number(dep.latest_version))
+    compat_entry = ensure_stdlib_entry_supports_older_julia(compat_entry)
+    return compat_entry
+end
+function new_compat_entry(::EntryType, ::StdlibPackage, dep::DepInfo, old_compat::Nothing)
+    compat_entry = stdlib_initial_compat_entry(dep)
+    if isnothing(dep.latest_version)
+        compat_entry = append_latest_version(old_compat, ver)
+    end
+    compat_entry = ensure_stdlib_entry_supports_older_julia(compat_entry::String)
+    return compat_entry
+end
+
+function append_latest_version(old_compat::String, ver::VersionNumber)
+    potential_addition = compat_version_number(ver)
+    if ver in Pkg.Types.semver_spec(old_compat)
+        return old_compat
+    else
+        new_compat = "$(strip(old_compat)), $(strip(potential_addition))"
+        return new_compat
+    end
+end
+
+# Like `in`, but enforcing correct types
+function typed_equality(x::T, y::T) where {T}
+    return x == y
+end
+
+function stdlib_initial_compat_entry(dep::DepInfo)
+    SHA_package = Package("SHA", UUIDs.UUID("ea8e919c-243c-51af-8825-aaa63cd721ce"))
+    if typed_equality(dep.package, SHA_package)
+        # The SHA stdlib is a weird case, because it has had both 1.x.y versions and 0.7.x versions.
+        # So we need to support both.
+        # (plus "< 0.0.1", of course).
+        compat_entry = "<0.0.1, 0.7, 1"
+    else
+        # For all other stdlibs, just 1.x.y is sufficient.
+        # (plus "< 0.0.1", of course).
+        compat_entry = "< 0.0.1, 1"
+    end
+    return compat_entry
+end
+
+function ensure_stdlib_entry_supports_older_julia(compat_entry::String)
+    # On older versions of Julia, when you run `Pkg.test()`, Pkg will set the versions
+    # of all stdlibs to v0.0.0
+    #
+    # Therefore, if a package Foo.jl depends on stdlib Bar, and if Foo.jl's [compat] entry
+    # for Bar does not cover v0.0.0, then when you run `Pkg.test("MyPackage)`, you will get
+    # an error. This occurs even if Foo.jl is an indirect (recursive) dependency of MyPackage.
+    #
+    # Therefore, if  Foo.jl's [compat] entry for Bar does not cover v0.0.0, then we can see
+    # widespread breakage (throughout the ecosystem) whenever people try to run their package
+    # tests (either locally or in CI) on older versions of Julia. We don't want that kind of
+    # breakage (even if the Julia versions are a little old),
+    #
+    # Note: To reduce noise, we won't open a PR if the only change would be e.g.
+    # "1, 2" ---> "< 0.0.1, 1, 2".
+    # We'll only open a PR if there is some other change (a non-"< 0.0.1" change) that we are
+    # already going to open a PR for. And in that case, we'll just include the "< 0.0.1" in
+    # that same PR.
+    # Hopefully this will reduce noise.
+
+    compat_spec = Pkg.Types.semver_spec(compat_entry)
+    if v"0.0.0" ∉ compat_spec
+        compat_entry = "< 0.0.1, " * compat_entry
+    end
+    return compat_entry
 end
 
 function compat_version_number(ver::VersionNumber)
@@ -224,15 +333,12 @@ function make_pr_for_new_version(
     end
 
     # Get new compat entry version, pr title, and pr body text
-    compat_entry_for_latest_version = compat_version_number(dep.latest_version)
-    brand_new_compat = new_compat_entry(
-        entry_type, dep.version_verbatim, compat_entry_for_latest_version
-    )
+    brand_new_compat = new_compat_entry(entry_type, dep)
     new_pr_title, new_pr_body = pr_info(
         dep.version_verbatim,
         dep.package.name,
         section_string(dep_section),
-        compat_entry_for_latest_version,
+        compat_version_number(dep.latest_version),
         brand_new_compat,
         subdir_string(subdir),
         body_info(entry_type, dep.package.name),
