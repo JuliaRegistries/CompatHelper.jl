@@ -36,5 +36,6 @@ include("main.jl")
 include("exceptions.jl")
 include("dependencies.jl")
 include("pull_requests.jl")
+include("init.jl")
 
 end # module
