@@ -44,7 +44,7 @@ Main entry point for the package.
   or `NoExtras()` (do not open pull requests for dependencies in `[extras]`).
 
 !!! note
-    The `open_prs_for_extras` keyword argument is considered experimental and may be changed in a non-breaking release.
+    The `open_prs_for_extras` keyword argument is considered experimental (not public API) and may be changed or removed in a non-breaking release.
 """
 function main(
     env::AbstractDict=ENV, ci_cfg::CIService=auto_detect_ci_service(; env=env); kwargs...
