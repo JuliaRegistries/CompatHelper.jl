@@ -18,6 +18,7 @@ If you would like to help with adding Julia support to Dependabot, join us in th
 Create a file at `.github/workflows/CompatHelper.yml` with the contents of the [CompatHelper.yml](https://github.com/JuliaRegistries/CompatHelper.jl/blob/master/.github/workflows/CompatHelper.yml) that is included in this repository.
 
 If you need to use any special arguments for the `main` function, you can modify this file to add them.
+In particular, don't forget to add subfolders like `"test"` or `"docs"` to the `subdirs` keyword argument if you are developing a full-fledged Julia package.
 
 ### GitLab
 For GitLab you will want to add CompatHelper as a job in your `.gitlab-ci.yml` file such as:
