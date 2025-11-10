@@ -1,7 +1,10 @@
 abstract type EntryType end
-struct KeepEntry <: EntryType end
-struct DropEntry <: EntryType end
-struct NewEntry <: EntryType end
+struct KeepEntry <: EntryType end # "1, 2" ---> "1, 2, 3"
+struct DropEntry <: EntryType end # "1, 2" ---> "3"
+struct NewEntry <: EntryType end # no [compat] entry ---> "3"
+
+struct StdlibPackage end
+struct RegularPackage end # RegularPackage = not a stdlib
 
 struct DefaultBranch end
 
