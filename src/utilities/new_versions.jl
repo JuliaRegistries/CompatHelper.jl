@@ -180,6 +180,7 @@ function continue_with_pr(dep::DepInfo, bump_compat_containing_equality_specifie
             dep.version_spec,
             dep.package.name,
             dep,
+            dep.version_verbatim,
         )
 
         return false
@@ -191,16 +192,30 @@ function continue_with_pr(dep::DepInfo, bump_compat_containing_equality_specifie
             dep.version_verbatim,
             dep.package.name,
             dep,
+            dep.latest_version,
+            dep.version_spec,
         )
 
         return false
     elseif isnothing(dep.latest_version)
         @error(
-            "The dependency was not found in any of the registries", dep.package.name, dep,
+            "The dependency was not found in any of the registries",
+            dep.package.name,
+            dep,
+            dep.latest_version,
         )
 
         return false
     end
+
+    @info(
+        "continue_with_pr = true",
+        dep.latest_version,
+        dep.version_spec,
+        dep.package.name,
+        dep,
+        dep.version_verbatim,
+    )
 
     return true
 end
