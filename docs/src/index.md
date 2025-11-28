@@ -13,11 +13,18 @@ Whenever one of your package's dependencies releases a new breaking version, Com
 We would like to eventually add Julia support to [Dependabot](https://dependabot.com).
 If you would like to help with adding Julia support to Dependabot, join us in the `#dependabot` channel on the [Julia Language Slack](https://julialang.org/slack/).
 
-## Installation
-### GitHub
-Create a file at `.github/workflows/CompatHelper.yml` with the contents of the [CompatHelper.yml](https://github.com/JuliaRegistries/CompatHelper.jl/blob/master/.github/workflows/CompatHelper.yml) that is included in this repository.
+## Usage
 
-If you need to use any special arguments for the `main` function, you can modify this file to add them.
+### GitHub
+Create a file at `.github/workflows/CompatHelper.yml` with the contents of the [CompatHelper.yml](https://github.com/JuliaRegistries/CompatHelper.jl/blob/master/.github/workflows/CompatHelper.yml) that is included in this repository. If you need to use any special arguments for the `main` function, you can modify this file to add them.
+
+!!! warning "Avoiding 403 Permission Error"
+    Make sure to check the item "*Allow GitHub Actions to create and approve pull requests*" under Settings > Actions > General > Workflow Permissions in your repo. Otherwise, even with `permissions: pull-requests: write` in the `CompatHelper.yml`, CompatHelper won't be able to create pull requests in your repo, resuting in:
+    ```
+    remote: Permission to <your repo>.jl.git denied to github-actions[bot].
+    fatal: unable to access '<repo url>`: The requested URL returned error: 403
+    ```
+
 
 ### GitLab
 For GitLab you will want to add CompatHelper as a job in your `.gitlab-ci.yml` file such as:
