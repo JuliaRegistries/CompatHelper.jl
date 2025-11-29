@@ -20,6 +20,8 @@ end
     for (k, s) in pairs(dep_section)
         if k.package.name ∈ ["Bex_jll", "Skix"]
             @test s == "weakdeps"
+        elseif k.package.name ∈ ["Baz"]
+            @test s == "extras"
         else
             @test s == "deps"
         end
@@ -31,6 +33,8 @@ end
     for (k, s) in pairs(dep_section)
         if k.package.name == "Skix"
             @test s == "weakdeps"
+        elseif k.package.name == "Baz"
+            @test s == "extras"
         else
             @test s == "deps"
         end
@@ -142,7 +146,7 @@ end
     project_file = joinpath(pkgdir(CompatHelper), "Project.toml")
 
     # Just for this test, we hardcode this list
-    unregistered_stdlibs = ["Base64", "Dates", "Pkg", "UUIDs"]
+    unregistered_stdlibs = ["Base64", "Dates", "Pkg", "Random", "Test", "UUIDs"]
 
     @test ispath(project_file)
     @test isfile(project_file)
