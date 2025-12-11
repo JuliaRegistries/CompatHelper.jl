@@ -4,6 +4,7 @@ version = "1.0.0"
 
 [deps]
 Foobar_jll = "6ca821de-e512-569d-89d9-0b16ce691416"
+Baz = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [weakdeps]
@@ -14,12 +15,15 @@ Skix = "3db6da90-6ed3-11ee-0779-f549c8e3e90d"
 Ext = ["Bex_jll", "Skix"]
 
 [extras]
-Baz = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
 Car = "0add4187-88db-462b-bf06-da4bec59fd54"
+Foo_jll = "0be83bae-493a-40c1-8229-59ac3dac309f"
+Quux = "003fabfa-981b-4d75-adc0-5509e3bb7342"
 
 [compat]
 Foobar_jll = "1"
 Baz = "1"
 Bex_jll = "1"
+Car = "1"
+Foo_jll = "2"
 Skix = "1"
 julia = "1.6"
