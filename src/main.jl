@@ -61,7 +61,11 @@ function main(
 
     for subdir in options.subdirs
         project_file = @mock joinpath(local_clone_path, subdir, "Project.toml")
-        deps, dep_sections = get_project_deps(project_file; include_jll=options.include_jll, open_prs_for_extras=options.open_prs_for_extras)
+        deps, dep_sections = get_project_deps(
+            project_file;
+            include_jll=options.include_jll,
+            open_prs_for_extras=options.open_prs_for_extras,
+        )
 
         populate_dep_versions_from_reg!(deps; options)
 
