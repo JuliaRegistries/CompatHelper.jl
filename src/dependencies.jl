@@ -16,7 +16,9 @@ function get_local_clone(
     return local_path
 end
 
-function get_project_deps(project_file::AbstractString; include_jll::Bool, open_prs_for_extras::ExtrasType)
+function get_project_deps(
+    project_file::AbstractString; include_jll::Bool, open_prs_for_extras::ExtrasType
+)
     project_deps = Set{DepInfo}()
     dep_section = Dict{DepInfo,String}()
     project = TOML.parsefile(project_file)
@@ -45,7 +47,8 @@ function get_project_deps(project_file::AbstractString; include_jll::Bool, open_
 
                     if isempty(dep_entry)
                         # Ignore dependencies in `[extras]` without a compat entry if `open_prs_for_extras` is `IfExistingCompatExtras()`
-                        if section == "extras" && open_prs_for_extras isa IfExistingCompatExtras
+                        if section == "extras" &&
+                            open_prs_for_extras isa IfExistingCompatExtras
                             continue
                         end
                     else

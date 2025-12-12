@@ -14,9 +14,14 @@ end
 @testset "get_project_deps" begin
     project = joinpath(@__DIR__, "deps", "Project.toml")
 
-    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=true, open_prs_for_extras = AllExtras())
+    deps, dep_section = CompatHelper.get_project_deps(
+        project; include_jll=true, open_prs_for_extras=AllExtras()
+    )
     @test length(deps) == 8
-    @test issetequal([dep.package.name for dep in deps], ["Baz", "Bex_jll", "Car", "Foo_jll", "Foobar_jll", "LinearAlgebra", "Quux", "Skix"])
+    @test issetequal(
+        [dep.package.name for dep in deps],
+        ["Baz", "Bex_jll", "Car", "Foo_jll", "Foobar_jll", "LinearAlgebra", "Quux", "Skix"],
+    )
     @test issetequal(keys(dep_section), deps)
     for (k, s) in pairs(dep_section)
         if k.package.name ∈ ["Bex_jll", "Skix"]
@@ -28,9 +33,13 @@ end
         end
     end
 
-    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=false, open_prs_for_extras = AllExtras())
+    deps, dep_section = CompatHelper.get_project_deps(
+        project; include_jll=false, open_prs_for_extras=AllExtras()
+    )
     @test length(deps) == 5
-    @test issetequal([dep.package.name for dep in deps], ["Baz", "Car", "LinearAlgebra", "Quux", "Skix"])
+    @test issetequal(
+        [dep.package.name for dep in deps], ["Baz", "Car", "LinearAlgebra", "Quux", "Skix"]
+    )
     @test issetequal(keys(dep_section), deps)
     for (k, s) in pairs(dep_section)
         if k.package.name == "Skix"
@@ -42,9 +51,14 @@ end
         end
     end
 
-    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=true, open_prs_for_extras = IfExistingCompatExtras())
+    deps, dep_section = CompatHelper.get_project_deps(
+        project; include_jll=true, open_prs_for_extras=IfExistingCompatExtras()
+    )
     @test length(deps) == 7
-    @test issetequal([dep.package.name for dep in deps], ["Baz", "Bex_jll", "Car", "Foo_jll", "Foobar_jll", "LinearAlgebra", "Skix"])
+    @test issetequal(
+        [dep.package.name for dep in deps],
+        ["Baz", "Bex_jll", "Car", "Foo_jll", "Foobar_jll", "LinearAlgebra", "Skix"],
+    )
     @test issetequal(keys(dep_section), deps)
     for (k, s) in pairs(dep_section)
         if k.package.name ∈ ["Bex_jll", "Skix"]
@@ -56,9 +70,13 @@ end
         end
     end
 
-    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=false, open_prs_for_extras = IfExistingCompatExtras())
+    deps, dep_section = CompatHelper.get_project_deps(
+        project; include_jll=false, open_prs_for_extras=IfExistingCompatExtras()
+    )
     @test length(deps) == 4
-    @test issetequal([dep.package.name for dep in deps], ["Baz", "Car", "LinearAlgebra", "Skix"])
+    @test issetequal(
+        [dep.package.name for dep in deps], ["Baz", "Car", "LinearAlgebra", "Skix"]
+    )
     @test issetequal(keys(dep_section), deps)
     for (k, s) in pairs(dep_section)
         if k.package.name == "Skix"
@@ -70,9 +88,14 @@ end
         end
     end
 
-    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=true, open_prs_for_extras = NoExtras())
+    deps, dep_section = CompatHelper.get_project_deps(
+        project; include_jll=true, open_prs_for_extras=NoExtras()
+    )
     @test length(deps) == 5
-    @test issetequal([dep.package.name for dep in deps], ["Baz", "Bex_jll", "Foobar_jll", "LinearAlgebra", "Skix"])
+    @test issetequal(
+        [dep.package.name for dep in deps],
+        ["Baz", "Bex_jll", "Foobar_jll", "LinearAlgebra", "Skix"],
+    )
     @test issetequal(keys(dep_section), deps)
     for (k, s) in pairs(dep_section)
         if k.package.name ∈ ["Bex_jll", "Skix"]
@@ -82,7 +105,9 @@ end
         end
     end
 
-    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=false, open_prs_for_extras = NoExtras())
+    deps, dep_section = CompatHelper.get_project_deps(
+        project; include_jll=false, open_prs_for_extras=NoExtras()
+    )
     @test length(deps) == 3
     @test issetequal([dep.package.name for dep in deps], ["Baz", "LinearAlgebra", "Skix"])
     @test issetequal(keys(dep_section), deps)
@@ -207,9 +232,7 @@ end
     for use_existing_registries in [true, false]
         options = CompatHelper.Options(; use_existing_registries)
         deps, _ = CompatHelper.get_project_deps(
-            project_file;
-            include_jll=false,
-            open_prs_for_extras=IfExistingCompatExtras(),
+            project_file; include_jll=false, open_prs_for_extras=IfExistingCompatExtras()
         )
         for dep in deps
             @test dep.latest_version === nothing
