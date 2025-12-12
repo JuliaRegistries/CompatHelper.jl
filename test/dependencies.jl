@@ -14,24 +14,82 @@ end
 @testset "get_project_deps" begin
     project = joinpath(@__DIR__, "deps", "Project.toml")
 
-    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=true)
-    @test length(deps) == 5
+    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=true, open_prs_for_extras = AllExtras())
+    @test length(deps) == 8
+    @test issetequal([dep.package.name for dep in deps], ["Baz", "Bex_jll", "Car", "Foo_jll", "Foobar_jll", "LinearAlgebra", "Quux", "Skix"])
     @test issetequal(keys(dep_section), deps)
     for (k, s) in pairs(dep_section)
         if k.package.name ∈ ["Bex_jll", "Skix"]
             @test s == "weakdeps"
-        else
+        elseif k.package.name ∈ ["Car", "Foo_jll", "Quux"]
+            @test s == "extras"
+        else # k.package.name ∈ ["Baz", "Foobar_jll", "LinearAlgebra"]
             @test s == "deps"
         end
     end
 
-    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=false)
-    @test length(deps) == 3
+    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=false, open_prs_for_extras = AllExtras())
+    @test length(deps) == 5
+    @test issetequal([dep.package.name for dep in deps], ["Baz", "Car", "LinearAlgebra", "Quux", "Skix"])
     @test issetequal(keys(dep_section), deps)
     for (k, s) in pairs(dep_section)
         if k.package.name == "Skix"
             @test s == "weakdeps"
-        else
+        elseif k.package.name ∈ ["Car", "Quux"]
+            @test s == "extras"
+        else # k.package.name ∈ ["Baz", "LinearAlgebra"]
+            @test s == "deps"
+        end
+    end
+
+    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=true, open_prs_for_extras = IfExistingCompatExtras())
+    @test length(deps) == 7
+    @test issetequal([dep.package.name for dep in deps], ["Baz", "Bex_jll", "Car", "Foo_jll", "Foobar_jll", "LinearAlgebra", "Skix"])
+    @test issetequal(keys(dep_section), deps)
+    for (k, s) in pairs(dep_section)
+        if k.package.name ∈ ["Bex_jll", "Skix"]
+            @test s == "weakdeps"
+        elseif k.package.name ∈ ["Car", "Foo_jll"]
+            @test s == "extras"
+        else # k.package.name ∈ ["Baz", "Foobar_jll", "LinearAlgebra"]
+            @test s == "deps"
+        end
+    end
+
+    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=false, open_prs_for_extras = IfExistingCompatExtras())
+    @test length(deps) == 4
+    @test issetequal([dep.package.name for dep in deps], ["Baz", "Car", "LinearAlgebra", "Skix"])
+    @test issetequal(keys(dep_section), deps)
+    for (k, s) in pairs(dep_section)
+        if k.package.name == "Skix"
+            @test s == "weakdeps"
+        elseif k.package.name == "Car"
+            @test s == "extras"
+        else # k.package.name ∈ ["Baz", "LinearAlgebra"]
+            @test s == "deps"
+        end
+    end
+
+    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=true, open_prs_for_extras = NoExtras())
+    @test length(deps) == 5
+    @test issetequal([dep.package.name for dep in deps], ["Baz", "Bex_jll", "Foobar_jll", "LinearAlgebra", "Skix"])
+    @test issetequal(keys(dep_section), deps)
+    for (k, s) in pairs(dep_section)
+        if k.package.name ∈ ["Bex_jll", "Skix"]
+            @test s == "weakdeps"
+        else # k.package.name ∈ ["Baz", "Foobar_jll", "LinearAlgebra"]
+            @test s == "deps"
+        end
+    end
+
+    deps, dep_section = CompatHelper.get_project_deps(project; include_jll=false, open_prs_for_extras = NoExtras())
+    @test length(deps) == 3
+    @test issetequal([dep.package.name for dep in deps], ["Baz", "LinearAlgebra", "Skix"])
+    @test issetequal(keys(dep_section), deps)
+    for (k, s) in pairs(dep_section)
+        if k.package.name == "Skix"
+            @test s == "weakdeps"
+        else # k.package.name ∈ ["Baz", "LinearAlgebra"]
             @test s == "deps"
         end
     end
@@ -142,13 +200,17 @@ end
     project_file = joinpath(pkgdir(CompatHelper), "Project.toml")
 
     # Just for this test, we hardcode this list
-    unregistered_stdlibs = ["Base64", "Dates", "Pkg", "UUIDs"]
+    unregistered_stdlibs = ["Base64", "Dates", "Pkg", "Random", "Test", "UUIDs"]
 
     @test ispath(project_file)
     @test isfile(project_file)
     for use_existing_registries in [true, false]
         options = CompatHelper.Options(; use_existing_registries)
-        deps, _ = CompatHelper.get_project_deps(project_file)
+        deps, _ = CompatHelper.get_project_deps(
+            project_file;
+            include_jll=false,
+            open_prs_for_extras=IfExistingCompatExtras(),
+        )
         for dep in deps
             @test dep.latest_version === nothing
         end

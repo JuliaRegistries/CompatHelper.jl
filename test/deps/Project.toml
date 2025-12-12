@@ -14,9 +14,16 @@ Skix = "3db6da90-6ed3-11ee-0779-f549c8e3e90d"
 [extensions]
 Ext = ["Bex_jll", "Skix"]
 
+[extras]
+Car = "0add4187-88db-462b-bf06-da4bec59fd54"
+Foo_jll = "0be83bae-493a-40c1-8229-59ac3dac309f"
+Quux = "003fabfa-981b-4d75-adc0-5509e3bb7342"
+
 [compat]
 Foobar_jll = "1"
 Baz = "1"
 Bex_jll = "1"
+Car = "1"
+Foo_jll = "2"
 Skix = "1"
 julia = "1.6"
