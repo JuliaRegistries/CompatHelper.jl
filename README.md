@@ -1,4 +1,9 @@
-# CompatHelper.jl
+# CompatHelper.jl: We recommend migrating to Dependabot
+
+> [!IMPORTANT]
+> CompatHelper is now in maintenance mode. We recommend that users migrate to GitHub Dependabot, which [now supports Julia](https://discourse.julialang.org/t/psa-github-dependabot-now-supports-julia/134997).
+
+---
 
 `CompatHelper.jl` is a Julia package which keeps your `Project.toml` `[compat]` entries up to date.
 
