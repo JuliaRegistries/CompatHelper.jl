@@ -1,4 +1,4 @@
-# [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)
+# [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl): We recommend migrating to Dependabot
 
 CompatHelper is a Julia package that helps you keep your `[compat]` entries up-to-date.
 Whenever one of your package's dependencies releases a new breaking version, CompatHelper opens a pull request on your repository that modifies your `[compat]` entry to reflect the newly released version.
