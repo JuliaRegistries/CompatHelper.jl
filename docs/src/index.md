@@ -1,11 +1,3 @@
-```@meta
-CurrentModule = CompatHelper
-```
-
-```@autodocs
-Modules = [CompatHelper]
-```
-
 # [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)
 
 CompatHelper is a Julia package that helps you keep your `[compat]` entries up-to-date.
@@ -85,3 +77,13 @@ openssl enc -base64 -in compathelper_key.pub -out compathelper_key.pub.base64
 ```
 
 You can then use the Base64 version in your CI Secret rather than the plain text version. Once that is done, you can delete it from your computer.
+
+## Docstrings
+
+```@meta
+CurrentModule = CompatHelper
+```
+
+```@autodocs
+Modules = [CompatHelper]
+```
