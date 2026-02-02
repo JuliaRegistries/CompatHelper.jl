@@ -3,10 +3,9 @@
 CompatHelper is a Julia package that helps you keep your `[compat]` entries up-to-date.
 Whenever one of your package's dependencies releases a new breaking version, CompatHelper opens a pull request on your repository that modifies your `[compat]` entry to reflect the newly released version.
 
-> [!IMPORTANT]
-> CompatHelper is now in maintenance mode. We recommend that users migrate to GitHub Dependabot, which [now supports Julia](https://discourse.julialang.org/t/psa-github-dependabot-now-supports-julia/134997).
->
-> Dependabot doesn't support custom or private registries yet, so if you use custom/private registries, you should hold off on migrating for now.
+!!! tip "Important"
+    CompatHelper is now in maintenance mode. We recommend that users migrate to GitHub Dependabot, which [now supports Julia](https://discourse.julialang.org/t/psa-github-dependabot-now-supports-julia/134997).
+    Dependabot doesn't support custom or private registries yet, so if you use custom/private registries, you should hold off on migrating for now.
 
 ## Usage
 
