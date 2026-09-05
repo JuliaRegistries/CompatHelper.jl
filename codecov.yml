@@ -11,3 +11,5 @@ coverage:
         # we need to set this threshold to 99%.
         # target: "100%"
         target: "99%"
+
+comment: false
