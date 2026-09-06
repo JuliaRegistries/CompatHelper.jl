@@ -430,7 +430,7 @@ function modify_project_toml(
 
     # Write the file back out
     open(project_file, "w") do io
-        TOML.print(
+        return TOML.print(
             io, project; sorted=true, by=key -> (Pkg.Types.project_key_order(key), key)
         )
     end
@@ -472,7 +472,7 @@ function create_ssh_private_key(dir::AbstractString; env=ENV)
     ssh_envvar_contents = env[PRIVATE_SSH_ENVVAR]
     ssh_pkey = @mock decode_ssh_private_key(ssh_envvar_contents)
     open(pkey_filename, "w") do io
-        println(io, ssh_pkey)
+        return println(io, ssh_pkey)
     end
     run(`chmod 600 $pkey_filename`)
 

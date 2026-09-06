@@ -80,7 +80,7 @@ function generate_branch(
         )
         CompatHelper.api_retry(() -> CompatHelper.git_push("origin", b))
 
-        rm(git_repo_dir; force=true, recursive=true)
+        return rm(git_repo_dir; force=true, recursive=true)
     end
 
     return b
