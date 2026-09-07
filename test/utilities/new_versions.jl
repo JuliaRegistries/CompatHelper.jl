@@ -2,6 +2,8 @@ keep_entry = CompatHelper.KeepEntry()
 drop_entry = CompatHelper.DropEntry()
 new_entry = CompatHelper.NewEntry()
 
+not_stdlib = CompatHelper.RegularPackage()
+
 hostname = "hostname"
 github = GitHubActions(; clone_hostname=hostname)
 gitlab = GitLabCI(; clone_hostname=hostname)
@@ -60,7 +62,9 @@ end
     @testset "$(entry)" for entry in entries
         for case in cases[entry]
             old_compat, new_compat, expected = case
-            result = CompatHelper.new_compat_entry(entry, old_compat, new_compat)
+            result = CompatHelper.new_compat_entry(
+                entry, not_stdlib, old_compat, new_compat
+            )
 
             @test result == expected
         end
@@ -77,6 +81,18 @@ end
     (VersionNumber("0.0.0"), "0.0.0"),
 ]
     @test CompatHelper.compat_version_number(vn) == expected
+end
+
+@testset "append_latest_version -- $(inputs)" for (inputs, expected) in [
+    (("1", VersionNumber("1.0.0")), "1"),
+    (("1", VersionNumber("2.0.0")), "1, 2"),
+    (("1", VersionNumber("1.0.0")), "1"),
+    (("1, 2", VersionNumber("2.0.0")), "1, 2"),
+    (("1, 2", VersionNumber("3.0.0")), "1, 2, 3"),
+]
+    (old_compat, ver) = inputs
+    observed_output = CompatHelper.append_latest_version(old_compat, ver)
+    @test observed_output == expected
 end
 
 @testset "subdir_string -- $(subdir)" for (subdir, expected) in [
