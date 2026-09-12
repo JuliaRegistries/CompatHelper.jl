@@ -62,7 +62,10 @@ end
 
 function auto_detect_ci_service(; env::AbstractDict=ENV)
     if haskey(env, "GITHUB_REPOSITORY")
-        return GitHubActions()
+        api_hostname = get(env, "GITHUB_API_URL", "https://api.github.com")
+        clone_hostname = get(env, "GITHUB_SERVER_URL", "github.com")
+        clone_hostname = replace(clone_hostname, r"^(https?://)?" => "")
+        return GitHubActions(; api_hostname, clone_hostname)
     elseif haskey(env, "GITLAB_CI")
         return GitLabCI()
     else
